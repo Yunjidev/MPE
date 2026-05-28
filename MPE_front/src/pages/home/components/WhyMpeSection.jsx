@@ -47,7 +47,7 @@ function EnterpriseCard({ slug, id, name, job, city, logo, rating }) {
 
 export default function WhyMpeSection({ premiumEnterprises }) {
   const base = premiumEnterprises.length > 0
-    ? Array.from({ length: Math.ceil(12 / premiumEnterprises.length) }).flatMap(() => premiumEnterprises)
+    ? Array.from({ length: Math.min(Math.ceil(6 / premiumEnterprises.length), 3) }).flatMap(() => premiumEnterprises)
     : [];
   const doubled = [...base, ...base];
 
@@ -89,7 +89,7 @@ export default function WhyMpeSection({ premiumEnterprises }) {
 
           <div className="w-full h-px bg-[#dce7e2] mt-16 sm:mt-24" />
 
-          <div className="relative py-12 sm:py-16 overflow-hidden flex bg-transparent w-full rv-up rv-d2">
+          <div aria-hidden="true" data-nosnippet className="relative py-12 sm:py-16 overflow-hidden flex bg-transparent w-full rv-up rv-d2">
             <div className="absolute inset-y-0 left-0 w-24 sm:w-48 bg-gradient-to-r from-[#eef5f1] to-transparent z-10 pointer-events-none" />
             <div className="absolute inset-y-0 right-0 w-24 sm:w-48 bg-gradient-to-l from-[#eef5f1] to-transparent z-10 pointer-events-none" />
 
