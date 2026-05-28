@@ -51,7 +51,7 @@ exports.getAllEnterprisesPremium = async (req, res) => {
         {
           model: User,
           as: "entrepreneur",
-          attributes: ["id", "avatar", "username"],
+          attributes: ["id", "avatar", "username", "firstname", "lastname"],
         },
         {
           model: Job,

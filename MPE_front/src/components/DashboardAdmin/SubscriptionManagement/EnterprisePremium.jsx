@@ -86,7 +86,7 @@ const PremiumCompanies = () => {
                 </div>
                 <div className="flex items-center gap-1.5 text-xs text-[#879f98] font-light">
                   <FaUser className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">{company.entrepreneur?.username || "—"}</span>
+                  <span className="truncate">{[company.entrepreneur?.firstname, company.entrepreneur?.lastname].filter(Boolean).join(" ") || company.entrepreneur?.username || "—"}</span>
                 </div>
               </div>
 
