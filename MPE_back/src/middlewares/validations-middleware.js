@@ -8,6 +8,7 @@ const validate = (req, res, next) => {
   const extractedErrors = [];
   errors.array().map((err) => extractedErrors.push({ [err.path]: err.msg }));
 
+  console.log("⚠️ VALIDATION ERRORS:", JSON.stringify(extractedErrors));
   return res.status(422).json({ errors: extractedErrors });
 };
 

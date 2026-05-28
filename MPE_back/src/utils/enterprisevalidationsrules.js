@@ -50,11 +50,13 @@ const enterpriseValidationRules = (isUpdate = false) => {
       body("zip_code")
         .optional({ checkFalsy: true })
         .trim()
-        .isLength({ min: 5, max: 5 }),
+        .isLength({ min: 5, max: 5 })
+        .withMessage("Le code postal doit contenir exactement 5 chiffres"),
       body("siret_number")
         .optional({ checkFalsy: true })
         .trim()
-        .isLength({ min: 14, max: 14 }),
+        .isLength({ min: 14, max: 14 })
+        .withMessage("Le numéro SIRET doit contenir exactement 14 chiffres"),
       body("description")
         .notEmpty()
         .withMessage("La description est obligatoire")
@@ -97,17 +99,19 @@ const enterpriseValidationRules = (isUpdate = false) => {
         .optional({ checkFalsy: true })
         .trim()
         .isLength({ min: 10 })
-        .withMessage("le numéro de téléphone doit contenir 10 chiffres"),
+        .withMessage("Le numéro de téléphone doit contenir au moins 10 chiffres"),
       body("adress").optional({ checkFalsy: true }).trim(),
       body("city").optional({ checkFalsy: true }).trim(),
       body("zip_code")
         .optional({ checkFalsy: true })
         .trim()
-        .isLength({ min: 5, max: 5 }),
+        .isLength({ min: 5, max: 5 })
+        .withMessage("Le code postal doit contenir exactement 5 chiffres"),
       body("siret_number")
         .optional({ checkFalsy: true })
         .trim()
-        .isLength({ min: 14, max: 14 }),
+        .isLength({ min: 14, max: 14 })
+        .withMessage("Le numéro SIRET doit contenir exactement 14 chiffres"),
       body("description").optional({ checkFalsy: true }).bail().trim(),
       body("website").optional({ checkFalsy: true }).trim().isURL().withMessage("URL de site invalide"),
       body("facebook").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Facebook invalide"),
