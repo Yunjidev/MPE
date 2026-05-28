@@ -32,6 +32,9 @@ app.use(cors(corsOptions));
 // Health check — avant tout middleware, toujours disponible
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
+// Sitemap dynamique (hors préfixe /api pour que Nginx le route directement)
+app.get("/sitemap.xml", require("./controllers/sitemap-controller").getSitemap);
+
 // Webhook Stripe : raw body AVANT express.json() pour la vérification de signature
 app.post(
   "/api/stripe/webhook",
