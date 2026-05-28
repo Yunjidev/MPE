@@ -4,12 +4,9 @@ import { getData } from "../../services/data-fetch";
 import "./home.css";
 
 import HeroSection       from "./components/HeroSection";
-import HowItWorksSection from "./components/HowItWorksSection";
 import WhyMpeSection     from "./components/WhyMpeSection";
 import FeaturesSection   from "./components/FeaturesSection";
-import StatsSection      from "./components/StatsSection";
 import PricingSection    from "./components/PricingSection";
-import FAQSection        from "./components/FAQSection";
 
 /* ─── Scroll reveal ──────────────────────────────────────────── */
 function useReveal() {
@@ -35,14 +32,9 @@ const BASE_URL = "https://proxilio.fr";
 export default function HomeClient() {
   useReveal();
 
-  const [stats, setStats] = useState({
-    userLength: 0, entrepreneurLength: 0,
-    enterpriseLength: 0, premiumEnterpriseLength: 0,
-  });
   const [premiumEnterprises, setPremiumEnterprises] = useState([]);
 
   useEffect(() => {
-    getData("stats").then(setStats).catch(() => {});
     getData("enterprises/premium")
       .then((data) => { if (Array.isArray(data)) setPremiumEnterprises(data); })
       .catch(() => {});
@@ -155,8 +147,6 @@ export default function HomeClient() {
       <div className="w-full h-px bg-black/5" />
       <WhyMpeSection premiumEnterprises={premiumEnterprises} />
       <FeaturesSection />
-      <StatsSection stats={stats} />
-      <FAQSection />
       <PricingSection />
     </div>
     </>
