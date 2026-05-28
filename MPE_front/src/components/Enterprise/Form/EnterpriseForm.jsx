@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
-import { FaPenAlt } from "react-icons/fa";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { getData } from "../../../services/data-fetch";
 import Input from "../../Utils/Inputs/Input";
 import SocialMedia from "./Social";
 import Basic from "./Basic";
 import ContactEnterprise from "./ContactEnterprise";
+import MarkdownEditor from "./MarkdownEditor";
 
 export default function EnterpriseForm({
   title,
@@ -292,15 +292,11 @@ export default function EnterpriseForm({
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">
                 Description
               </p>
-              <Input.Text
+              <MarkdownEditor
                 id="description"
-                type="textarea"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Décrivez votre entreprise, vos services, votre histoire…"
-                icon={<FaPenAlt />}
-                className="h-36"
-                inputStyle="h-full"
+                placeholder="Décrivez votre entreprise, vos services, votre histoire…&#10;&#10;Vous pouvez utiliser **gras**, *italique*, - listes, ## titres…"
               />
             </div>
 

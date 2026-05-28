@@ -23,8 +23,7 @@ const enterpriseValidationRules = (isUpdate = false) => {
           }
         }),
       body("mail")
-        .notEmpty()
-        .withMessage("L'email est obligatoire")
+        .optional({ checkFalsy: true })
         .trim()
         .isEmail()
         .withMessage("Email invalide")
@@ -35,16 +34,14 @@ const enterpriseValidationRules = (isUpdate = false) => {
           }
         }),
       body("phone")
-        .notEmpty()
-        .withMessage("Le numéro de téléphone est obligatoire")
+        .optional({ checkFalsy: true })
         .trim()
         .isLength({ min: 10 })
-        .withMessage("le numéro de téléphone doit contenir 10 chiffres"),
-      body("adress").bail().trim().escape(),
-      body("city").notEmpty().withMessage("La ville est obligatoire").trim(),
+        .withMessage("Le numéro de téléphone doit contenir au moins 10 chiffres"),
+      body("adress").optional({ checkFalsy: true }).bail().trim().escape(),
+      body("city").optional({ checkFalsy: true }).trim(),
       body("zip_code")
-        .notEmpty()
-        .withMessage("Le code postal est obligatoire")
+        .optional({ checkFalsy: true })
         .trim()
         .isLength({ min: 5, max: 5 }),
       body("siret_number")
