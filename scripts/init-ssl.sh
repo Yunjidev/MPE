@@ -17,14 +17,19 @@ echo "▶ Attente 5s que Nginx soit prêt..."
 sleep 5
 
 echo "▶ Obtention du certificat Let's Encrypt..."
-docker compose run --rm certbot certonly \
+# Utilise docker run directement pour éviter le conflit avec l'entrypoint du service certbot
+docker run --rm \
+  -v proxilio_certbot-conf:/etc/letsencrypt \
+  -v proxilio_certbot-www:/var/www/certbot \
+  --network proxilio_proxilio-net \
+  certbot/certbot:latest certonly \
   --webroot \
   --webroot-path=/var/www/certbot \
-  --email $EMAIL \
+  --email "$EMAIL" \
   --agree-tos \
   --no-eff-email \
-  -d $DOMAIN \
-  -d www.$DOMAIN
+  -d "$DOMAIN" \
+  -d "www.$DOMAIN"
 
 echo "▶ Activation de la config HTTPS..."
 cp nginx/conf.d/proxilio.conf.template nginx/conf.d/proxilio.conf
