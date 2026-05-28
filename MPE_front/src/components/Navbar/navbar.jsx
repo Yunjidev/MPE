@@ -87,7 +87,7 @@ const Navbar = () => {
           <img
             src={logo}
             alt="Proxilio"
-            className="h-8 sm:h-10 object-contain transition-all duration-500 group-hover:scale-110"
+            className="h-11 sm:h-14 object-contain transition-all duration-500 group-hover:scale-110"
           />
           <span className="hidden lg:block font-light text-xl tracking-tight text-[#132A24]">
             Proxilio
