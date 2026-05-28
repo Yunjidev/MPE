@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
   FiShare2, FiCheck, FiMapPin, FiPhone, FiMail, FiGlobe, FiCalendar,
@@ -14,6 +14,7 @@ import PremiumReservationModal from "../../components/ShowEnterprise/PremiumRese
 
 const EnterpriseShow = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [enterprise, setEnterprise] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -32,6 +33,12 @@ const EnterpriseShow = () => {
   }, [slug]);
 
   useEffect(() => { fetchEnterprise(); }, [fetchEnterprise]);
+
+  useEffect(() => {
+    if (enterprise?.slug && /^\d+$/.test(slug)) {
+      navigate(`/enterprise/${enterprise.slug}`, { replace: true });
+    }
+  }, [enterprise, slug, navigate]);
 
   const handleBookingSuccess = useCallback(() => { fetchEnterprise(); }, [fetchEnterprise]);
 
