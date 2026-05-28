@@ -14,7 +14,6 @@ import ScrollToTop from "./context/Scrolltotop";
 // Components
 import NavBar from "./components/Navbar/navbar";
 import Footer from "./components/Footer/footer";
-import SocialLinks from "./components/SocialLinks/sociallinks";
 import Pricing_page from "./components/pricing_page/pricing_page";
 
 // Pages
@@ -159,7 +158,6 @@ function AppContent() {
         </Routes>
       </main>
       <Footer />
-      <SocialLinks />
     </div>
   );
 }
