@@ -230,9 +230,10 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = resetExpires;
     await user.save();
 
+    const clientUrl = (process.env.CLIENT_URL || "https://www.proxilio.fr").split(",")[0].trim();
     sendEmail(email, "Réinitialisation de votre mot de passe — Proxilio", "resetpassword", {
       user: user.username,
-      url: `${process.env.REACT_URL}/${resetToken}`,
+      url: `${clientUrl}/reset-password/${resetToken}`,
     });
     res.status(200).json({ message: "Email de re-initialisation envoyé" });
   } catch (error) {
