@@ -5,6 +5,7 @@ import {
 } from "react-icons/fi";
 import { FaStar, FaFacebookF, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import ReactMarkdown from "react-markdown";
 import { getData } from "../../services/data-fetch";
 import OfferList from "../../components/ShowEnterprise/OfferList";
 import CommentList from "../../components/ShowEnterprise/CommentList";
@@ -225,10 +226,9 @@ const EnterpriseShow = () => {
             {enterprise.description && (
               <section>
                 <SectionLabel>À propos</SectionLabel>
-                <div
-                  className="prose max-w-none prose-p:text-[#4b615a] prose-p:font-light prose-headings:text-[#132A24] prose-headings:font-light prose-a:text-[#4b8a74] text-[#4b615a] font-light leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: enterprise.description }}
-                />
+                <div className="prose max-w-none prose-p:text-[#4b615a] prose-p:font-light prose-headings:text-[#132A24] prose-headings:font-light prose-a:text-[#4b8a74] text-[#4b615a] font-light leading-relaxed">
+                  <ReactMarkdown>{enterprise.description}</ReactMarkdown>
+                </div>
               </section>
             )}
 
