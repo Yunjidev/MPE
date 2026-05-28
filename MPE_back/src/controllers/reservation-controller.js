@@ -8,6 +8,15 @@ const {
   getAvailabilityDates,
 } = require("../utils/availability");
 const moment = require("moment-timezone");
+const sendEmail = require("../mailers/email-service");
+
+const CLIENT_URL = process.env.CLIENT_URL?.split(",")[0]?.trim() || "https://www.proxilio.fr";
+
+function formatDateFr(dateStr) {
+  return new Date(dateStr).toLocaleDateString("fr-FR", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric",
+  });
+}
 
 const FRENCH_DAYS = [
   "Dimanche",
@@ -332,6 +341,33 @@ exports.createReservation = async (req, res) => {
       User_id: req.user.id,
       Enterprise_id: enterprise.id,
     });
+
+    const formattedDate = formatDateFr(date);
+    const enterpriseUrl = `${CLIENT_URL}/enterprise/${enterprise.slug || enterprise.id}`;
+
+    // Email au client
+    sendEmail(req.user.email, "Votre réservation est bien enregistrée — Proxilio", "reservation-confirmation-client", {
+      clientName: req.user.username || req.user.firstname || "Client",
+      enterpriseName: enterprise.name,
+      offerName: offer.name,
+      date: formattedDate,
+      startTime: start_time,
+      enterpriseUrl,
+    });
+
+    // Email au propriétaire de l'entreprise
+    const owner = await sequelize.models.User.findByPk(enterprise.User_id, { attributes: ["email", "username", "firstname"] });
+    if (owner) {
+      sendEmail(owner.email, "Nouvelle réservation reçue — Proxilio", "reservation-new-owner", {
+        ownerName: owner.username || owner.firstname || "Professionnel",
+        clientName: req.user.username || req.user.firstname || "Client",
+        offerName: offer.name,
+        date: formattedDate,
+        startTime: start_time,
+        dashboardUrl: `${CLIENT_URL}/dashboard/enterprise/${enterprise.slug || enterprise.id}/reservations`,
+      });
+    }
+
     res.status(201).json({ message: "Réservation créée" });
   } catch (error) {
     res.status(500).json({ errors: error.errors });
@@ -492,6 +528,34 @@ exports.updateReservation = async (req, res) => {
       }
     }
     await reservation.save();
+
+    // Notifier le client si accepté ou refusé par le propriétaire
+    if (isReservationOfferOwner && (status === "accepted" || status === "rejected")) {
+      const client = await sequelize.models.User.findByPk(reservation.User_id, { attributes: ["email", "username", "firstname"] });
+      if (client) {
+        const enterprise = reservation.offer.enterprise;
+        const isAccepted = status === "accepted";
+        sendEmail(
+          client.email,
+          isAccepted ? "Votre réservation a été confirmée — Proxilio" : "Votre réservation a été refusée — Proxilio",
+          "reservation-status-update",
+          {
+            clientName: client.username || client.firstname || "Client",
+            statusLabel: isAccepted ? "confirmée" : "refusée",
+            headerColor: isAccepted ? "#132A24" : "#7f1d1d",
+            statusMessage: isAccepted
+              ? `Bonne nouvelle ! <strong style="font-weight:500;">${enterprise.name}</strong> a confirmé votre rendez-vous. Pensez à vous préparer avant l'heure prévue.`
+              : `<strong style="font-weight:500;">${enterprise.name}</strong> n'est pas en mesure d'honorer ce créneau. Vous pouvez en choisir un autre directement sur la fiche.`,
+            offerName: reservation.offer.name,
+            date: formatDateFr(reservation.date),
+            startTime: reservation.start_time,
+            enterpriseName: enterprise.name,
+            enterpriseUrl: `${CLIENT_URL}/enterprise/${enterprise.slug || enterprise.id}`,
+          }
+        );
+      }
+    }
+
     res.status(200).json({ message: "Réservation modifiée" });
   } catch (error) {
     res.status(500).json({ errors: error.errors });

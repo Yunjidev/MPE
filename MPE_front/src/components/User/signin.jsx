@@ -1,5 +1,5 @@
 import { authSignInUp } from "../../services/auth-fetch";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import UserForm from "./UserForm";
 import { useAtom } from "jotai";
 import { userAtom } from "../../store/user";
@@ -8,8 +8,11 @@ import { toast } from "react-toastify";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [, setUser] = useAtom(userAtom);
   const [, setEnterprises] = useAtom(enterprisesAtom);
+
+  const redirectTo = new URLSearchParams(location.search).get("redirect") || "/dashboard/user-db";
 
   const handleSubmit = async (data) => {
     try {
@@ -19,7 +22,7 @@ export default function SignIn() {
         isLogged: true,
       });
       setEnterprises(userData.enterprises);
-      navigate("/dashboard/user-db");
+      navigate(redirectTo);
       toast.success("Authentification réussie");
     } catch (error) {
       const errorData = await JSON.parse(error.message);

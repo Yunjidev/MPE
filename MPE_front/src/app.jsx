@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import NotFound from "./pages/NotFound/NotFound";
+import EnterpriseBooking from "./pages/EnterpriseBooking/EnterpriseBooking";
 import { useEffect, useState } from "react";
 import { Provider } from "jotai";
 import { ToastContainer } from "react-toastify";
@@ -124,6 +126,7 @@ function AppContent() {
           <Route path="/subscribe" element={<SubscribePage />} />
           <Route path="/subscribe/success" element={<SubscribeSuccess />} />
           <Route path="/enterprise/:slug" element={<EnterprisePage />} />
+          <Route path="/enterprise/:slug/booking" element={<EnterpriseBooking />} />
           <Route path="forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           {/* Routes protégées pour les utilisateurs authentifiés */}
@@ -155,6 +158,7 @@ function AppContent() {
               </Route>
             </Route>
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />

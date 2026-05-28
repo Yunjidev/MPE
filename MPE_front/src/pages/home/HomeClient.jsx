@@ -61,6 +61,16 @@ export default function HomeClient() {
       <title>Proxilio — Professionnels locaux vérifiés</title>
       <meta name="description" content="Trouvez, réservez et évaluez des professionnels locaux vérifiés près de chez vous. Plombiers, électriciens, artisans — Proxilio vous met en relation avec les meilleurs pros de votre région." />
       <link rel="canonical" href="https://www.proxilio.fr/" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://www.proxilio.fr/" />
+      <meta property="og:title" content="Proxilio — Professionnels locaux vérifiés" />
+      <meta property="og:description" content="Trouvez, réservez et évaluez des professionnels locaux vérifiés près de chez vous." />
+      <meta property="og:image" content="https://www.proxilio.fr/assets/img/og-default.jpg" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@Proxilioapp" />
+      <meta name="twitter:image" content="https://www.proxilio.fr/assets/img/og-default.jpg" />
       <script type="application/ld+json">{JSON.stringify(organizationJsonLd)}</script>
     </Helmet>
     <div className="text-[#132A24] antialiased overflow-x-hidden">

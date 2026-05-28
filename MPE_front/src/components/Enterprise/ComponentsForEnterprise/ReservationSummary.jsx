@@ -1,7 +1,8 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaEye, FaClock, FaStar } from "react-icons/fa";
+import { FaEdit, FaEye, FaClock, FaStar, FaLink, FaCheck } from "react-icons/fa";
 
 function getTodayReservations(enterprise) {
   if (!enterprise?.offers?.length) return [];
@@ -26,9 +27,18 @@ function getTodayReservations(enterprise) {
 
 export default function ReservationSummary({ enterprise, onEdit, onView }) {
   const navigate = useNavigate();
+  const [copied, setCopied] = useState(false);
   const todayReservations = getTodayReservations(enterprise);
   const currentDate = new Date().toLocaleDateString();
   const isPremium = enterprise?.isPremium;
+
+  const handleCopyBookingLink = () => {
+    const url = `https://www.proxilio.fr/enterprise/${enterprise?.slug || enterprise?.id}/booking`;
+    navigator.clipboard?.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -83,10 +93,21 @@ export default function ReservationSummary({ enterprise, onEdit, onView }) {
             />
           )}
           {isPremium && (
-            <div className="flex items-center gap-2 h-11 px-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm font-light">
-              <FaStar className="w-3.5 h-3.5" />
-              Entreprise Premium
-            </div>
+            <>
+              <div className="flex items-center gap-2 h-11 px-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 text-sm font-light">
+                <FaStar className="w-3.5 h-3.5" />
+                Entreprise Premium
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyBookingLink}
+                className="flex items-center gap-2.5 h-11 px-4 rounded-xl border border-black/5 bg-[#f5f7f6] text-[#132A24] hover:bg-[#eef5f1] transition text-sm font-light"
+                title="Copier le lien de réservation à partager"
+              >
+                {copied ? <FaCheck className="text-green-500 w-3.5 h-3.5" /> : <FaLink className="text-[#879f98] w-3.5 h-3.5" />}
+                {copied ? "Lien copié !" : "Lien de réservation"}
+              </button>
+            </>
           )}
         </div>
 

@@ -1,0 +1,14 @@
+Bonjour {ownerName},
+
+{clientName} vient de faire une demande de réservation.
+Acceptez ou refusez ce créneau depuis votre tableau de bord.
+
+--- Détails ---
+Client     : {clientName}
+Service    : {offerName}
+Date       : {date}
+Heure      : {startTime}
+
+Gérer les réservations : {dashboardUrl}
+
+© Proxilio — www.proxilio.fr

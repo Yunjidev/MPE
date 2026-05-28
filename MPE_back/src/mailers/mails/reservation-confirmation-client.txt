@@ -1,0 +1,16 @@
+Bonjour {clientName},
+
+Votre demande de réservation a bien été transmise à {enterpriseName}.
+Vous recevrez une confirmation dès que le professionnel aura accepté votre créneau.
+
+--- Détails ---
+Service    : {offerName}
+Date       : {date}
+Heure      : {startTime}
+Professionnel : {enterpriseName}
+
+Statut : En attente de confirmation
+
+Voir la fiche : {enterpriseUrl}
+
+© Proxilio — www.proxilio.fr

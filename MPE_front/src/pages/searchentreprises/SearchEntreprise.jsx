@@ -23,6 +23,8 @@ const SearchEntreprise = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [geoResults, setGeoResults] = useState(null);
   const [geoActive, setGeoActive] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 12;
 
   const sortEnterprises = useCallback((list) => {
     return [...list].sort((a, b) => {
@@ -66,6 +68,7 @@ const SearchEntreprise = () => {
       return jobMatch && countryMatch && cityMatch && ratingMatch && premiumMatch && searchMatch;
     });
     setEntreprises(sortEnterprises(filtered));
+    setCurrentPage(1);
   }, [allEnterprises, geoResults, selectedJobs, selectedCountries, selectedCities, minRating, onlyPremium, searchTerm, sortEnterprises]);
 
   useEffect(() => { applyFilters(); }, [applyFilters]);
@@ -83,6 +86,8 @@ const SearchEntreprise = () => {
   }, [allEnterprises, navigate, sortEnterprises]);
 
   const activeFilterCount = selectedJobs.length + selectedCountries.length + selectedCities.length + (minRating ? 1 : 0) + (onlyPremium ? 1 : 0);
+  const totalPages = Math.ceil(entreprises.length / PAGE_SIZE);
+  const paginatedEntreprises = entreprises.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <>
@@ -90,6 +95,13 @@ const SearchEntreprise = () => {
       <title>Trouver un professionnel local vérifié | Proxilio</title>
       <meta name="description" content="Recherchez parmi des centaines de professionnels locaux vérifiés : plombiers, électriciens, artisans et plus. Filtrez par métier, région et note. Réservez en ligne." />
       <link rel="canonical" href="https://www.proxilio.fr/searchentreprise" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://www.proxilio.fr/searchentreprise" />
+      <meta property="og:title" content="Trouver un professionnel local vérifié | Proxilio" />
+      <meta property="og:description" content="Recherchez parmi des centaines de professionnels locaux vérifiés : plombiers, électriciens, artisans et plus." />
+      <meta property="og:image" content="https://www.proxilio.fr/assets/img/og-default.jpg" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@Proxilioapp" />
     </Helmet>
     <div className="px-4 sm:px-8 lg:px-16 2xl:px-24 py-10 sm:py-14 w-full">
 
@@ -157,11 +169,56 @@ const SearchEntreprise = () => {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-              {entreprises.map((entreprise) => (
-                <IndexCardsEntreprises key={entreprise.id} entreprise={entreprise} userId={userId} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                {paginatedEntreprises.map((entreprise) => (
+                  <IndexCardsEntreprises key={entreprise.id} entreprise={entreprise} userId={userId} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-10">
+                  <button
+                    onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 rounded-xl text-sm font-light border border-black/10 text-[#132A24] hover:bg-[#eef5f1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ←
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                    .reduce((acc, p, idx, arr) => {
+                      if (idx > 0 && p - arr[idx - 1] > 1) acc.push("…");
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((p, idx) =>
+                      p === "…" ? (
+                        <span key={`ellipsis-${idx}`} className="px-2 text-[#879f98] text-sm">…</span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                          className={`w-9 h-9 rounded-xl text-sm font-light transition-colors ${
+                            p === currentPage
+                              ? "bg-[#132A24] text-white"
+                              : "border border-black/10 text-[#132A24] hover:bg-[#eef5f1]"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      )
+                    )}
+                  <button
+                    onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 rounded-xl text-sm font-light border border-black/10 text-[#132A24] hover:bg-[#eef5f1] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    →
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>

@@ -1,0 +1,13 @@
+Bonjour {clientName},
+
+{statusMessage}
+
+--- Détails ---
+Service       : {offerName}
+Date          : {date}
+Heure         : {startTime}
+Professionnel : {enterpriseName}
+
+Voir la fiche : {enterpriseUrl}
+
+© Proxilio — www.proxilio.fr
