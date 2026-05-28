@@ -124,7 +124,7 @@ export default function ContactEnterprise({ formData, countryOptions, onChange }
   return (
     <>
       <Input.Text id="phone" value={formData.phone} onChange={onChange} placeholder="Contact" icon={<FaPhone />} />
-      <Input.Text id="mail" value={formData.mail} placeholder="E-mail" onChange={onChange} icon={<MdOutlineAlternateEmail />} />
+      <Input.Text id="mail" value={formData.mail} placeholder="E-mail *" onChange={onChange} icon={<MdOutlineAlternateEmail />} required />
       <Input.Text id="adress" value={formData.adress} onChange={onChange} placeholder="Adresse" icon={<FaMapMarkerAlt />} />
 
       <div ref={wrapperRef} className="relative">
@@ -176,7 +176,7 @@ export default function ContactEnterprise({ formData, countryOptions, onChange }
       </div>
 
       <Input.Text id="city" value={formData.city} onChange={onChange} placeholder="Ville" icon={<FaCity />} disabled />
-      <Input.Select id="Country_id" value={formData.Country_id} onChange={onChange} placeholder="Région" options={countryOptions} icon={<MdOutlineAreaChart />} />
+      <Input.Select id="Country_id" value={formData.Country_id} onChange={onChange} placeholder="Région *" options={countryOptions} icon={<MdOutlineAreaChart />} required />
     </>
   );
 }

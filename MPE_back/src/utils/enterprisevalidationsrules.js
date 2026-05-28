@@ -23,7 +23,8 @@ const enterpriseValidationRules = (isUpdate = false) => {
           }
         }),
       body("mail")
-        .optional({ checkFalsy: true })
+        .notEmpty()
+        .withMessage("L'email est obligatoire")
         .trim()
         .isEmail()
         .withMessage("Email invalide")
@@ -33,6 +34,12 @@ const enterpriseValidationRules = (isUpdate = false) => {
             return Promise.reject("L'email existe déjà");
           }
         }),
+      body("Job_id")
+        .notEmpty()
+        .withMessage("Le secteur d'activité est obligatoire"),
+      body("Country_id")
+        .notEmpty()
+        .withMessage("La région est obligatoire"),
       body("phone")
         .optional({ checkFalsy: true })
         .trim()
@@ -48,7 +55,11 @@ const enterpriseValidationRules = (isUpdate = false) => {
         .optional({ checkFalsy: true })
         .trim()
         .isLength({ min: 14, max: 14 }),
-      body("description").bail().trim().escape(),
+      body("description")
+        .notEmpty()
+        .withMessage("La description est obligatoire")
+        .bail()
+        .trim(),
       body("website").optional({ checkFalsy: true }).trim().isURL().withMessage("URL de site invalide"),
       body("facebook").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Facebook invalide"),
       body("instagram").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Instagram invalide"),

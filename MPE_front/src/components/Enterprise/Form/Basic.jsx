@@ -10,8 +10,9 @@ export default function Basic({ formData, jobOptions, onChange }) {
         id="name"
         value={formData.name}
         onChange={onChange}
-        placeholder="Nom Entreprise"
+        placeholder="Nom Entreprise *"
         icon={<FaUser />}
+        required
       />
       <Input.Text
         id="siret_number"
@@ -25,9 +26,10 @@ export default function Basic({ formData, jobOptions, onChange }) {
         className="col-span-2"
         value={formData.Job_id}
         onChange={onChange}
-        placeholder="Secteur d'activité"
+        placeholder="Secteur d'activité *"
         options={jobOptions}
         icon={<MdOutlineAreaChart />}
+        required
       />
     </>
   );

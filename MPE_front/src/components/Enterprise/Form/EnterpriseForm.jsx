@@ -297,6 +297,7 @@ export default function EnterpriseForm({
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="Décrivez votre entreprise, vos services, votre histoire…&#10;&#10;Vous pouvez utiliser **gras**, *italique*, - listes, ## titres…"
+                required
               />
             </div>
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 
-export default function MarkdownEditor({ id, value, onChange, placeholder }) {
+export default function MarkdownEditor({ id, value, onChange, placeholder, required }) {
   const [tab, setTab] = useState("write");
 
   const handleChange = (e) => {
@@ -47,6 +47,7 @@ export default function MarkdownEditor({ id, value, onChange, placeholder }) {
           onChange={handleChange}
           placeholder={placeholder}
           rows={10}
+          required={required}
           className="w-full bg-[#f5f7f6] text-[#132A24] placeholder:text-[#879f98] px-4 py-3 text-sm font-light resize-y focus:outline-none focus:ring-2 focus:ring-[#132A24]/20 min-h-[200px]"
         />
       )}
