@@ -67,12 +67,16 @@ export default function MultipleUpload({
     <div className="col-span-3 w-full">
       <label
         htmlFor="photos-upload"
-        className={`border ${isDisabled ? "border-gray-500" : "border-dashed hover:bg-neutral-700 cursor-pointer"} p-10 h-30 w-full rounded-lg  text-gray-400  flex flex-row justify-center items-center`}
+        className={`flex flex-row items-center justify-center gap-4 w-full rounded-xl p-10 transition
+          ${isDisabled
+            ? "border border-black/10 bg-[#f5f7f6] cursor-not-allowed"
+            : "border border-dashed border-black/10 bg-[#f5f7f6] cursor-pointer hover:bg-[#eef5f1] hover:border-[#132A24]/20"
+          }`}
       >
         <FaCloudUploadAlt
-          className={`${isDisabled ? "text-red-500" : ""} w-16 h-16 mx-5`}
+          className={`w-8 h-8 shrink-0 ${isDisabled ? "text-red-400" : "text-[#879f98]"}`}
         />
-        <p className={`${isDisabled ? "text-red-500" : "text-white"}`}>
+        <p className={`text-sm font-light ${isDisabled ? "text-red-400" : "text-[#879f98]"}`}>
           {isDisabled
             ? `Vous avez déjà ajouté ${maxPhotos} photos`
             : placeholder}

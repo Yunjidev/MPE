@@ -41,8 +41,8 @@ export default function SingleUpload({
         className="
           h-40 w-40 rounded-full overflow-hidden
           grid place-items-center cursor-pointer
-          bg-neutral-900/70
-          ring-1 ring-neutral-800 hover:ring-neutral-700
+          bg-[#f5f7f6]
+          border border-dashed border-black/10 hover:bg-[#eef5f1] hover:border-[#132A24]/20
           transition
         "
         title={logoUrl ? "Changer l’avatar" : "Choisir un avatar"}
@@ -50,7 +50,7 @@ export default function SingleUpload({
         {logoUrl ? (
           <img src={logoUrl} alt="Avatar" className="h-full w-full object-cover" />
         ) : (
-          <span className="text-neutral-500 text-sm text-center px-4 leading-relaxed">
+          <span className="text-[#879f98] text-sm text-center px-4 leading-relaxed font-light">
             {placeholder || "Sélectionnez un avatar"}
           </span>
         )}
@@ -65,8 +65,8 @@ export default function SingleUpload({
           className="
             absolute right-2 top-2
             h-8 w-8 rounded-full
-            bg-neutral-800 text-neutral-200
-            ring-1 ring-neutral-700 hover:bg-neutral-700
+            bg-white/90 text-red-400
+            border border-black/10 hover:bg-red-50 hover:text-red-500
             flex items-center justify-center
             transition
           "
