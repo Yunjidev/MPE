@@ -28,8 +28,10 @@ const ensurePremium = (enterprise) => {
 
 exports.listPublic = async (req, res) => {
   try {
-    const { id } = req.params;
-    const enterprise = await Enterprise.findByPk(id, {
+    const identifier = req.params.id || req.params.slug;
+    const isNumeric = /^\d+$/.test(identifier);
+    const whereClause = isNumeric ? { id: parseInt(identifier) } : { slug: identifier };
+    const enterprise = await Enterprise.findOne({ where: whereClause,
       attributes: ["id", "isPremium"],
       include: [
         {

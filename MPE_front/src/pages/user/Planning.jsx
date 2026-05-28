@@ -350,7 +350,7 @@ export default function Planning() {
     if (!slotId) return;
     const dayValue = Array.isArray(payload.day) ? payload.day[0] : payload.day;
     try {
-      await putData(`enterprise/${id}/disponibility/${slotId}`, {
+      await putData(`enterprise/${slug}/disponibility/${slotId}`, {
         day: dayValue,
         start_hour: payload.start_hour,
         end_hour: payload.end_hour,
