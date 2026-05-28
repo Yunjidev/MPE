@@ -6,11 +6,11 @@ import DisponibilityForm from "./Form/DisponibilityForm";
 import { FiCalendar, FiClock } from "react-icons/fi";
 
 export default function CreateAvailability({ onCreated }) {
-  const { id } = useParams();
+  const { slug } = useParams();
 
   const handleSubmit = async (payload) => {
     try {
-      await postData(`enterprises/${id}/disponibilites`, payload);
+      await postData(`enterprises/${slug}/disponibilites`, payload);
       toast.success("Créneau ajouté avec succès");
       if (typeof onCreated === "function") {
         onCreated();
