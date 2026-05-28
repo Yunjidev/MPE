@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
 import Input from "../Utils/Inputs/Input"; // doit exposer Input.Text et Input.SingleUpload
 import Inscription from "./Form/Inscription";
 import Edit from "./Form/Edit";
+import { Link } from "react-router-dom";
 
 const innerWidthClass = "w-10/12 mx-auto";
 
@@ -230,12 +231,12 @@ export default function UserForm({ onSubmit, mode }) {
             {/* Lien mdp oublié */}
             {mode === "Connexion" && (
               <div className="text-right">
-                <a
+                <Link
+                  to="/forgot-password"
                   className="text-[#4b8a74] hover:text-[#132A24] text-sm font-light underline underline-offset-4 transition-colors"
-                  href="http://localhost:5173/forgot-password"
                 >
                   Mot de passe oublié ?
-                </a>
+                </Link>
               </div>
             )}
           </form>
