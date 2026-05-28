@@ -38,4 +38,7 @@ router.post("/validate-refresh-token", authController.validateRefreshToken);
 router.post("/forgot-password", forgotPasswordLimiter, authController.forgotPassword);
 router.post("/reset-password/:token", forgotPasswordLimiter, authController.resetPassword);
 
+const { sendContact, contactLimiter, contactValidation } = require("../../controllers/contact-controller");
+router.post("/contact", contactLimiter, contactValidation, sendContact);
+
 module.exports = router;
