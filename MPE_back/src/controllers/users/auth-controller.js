@@ -83,6 +83,7 @@ exports.login = async (req, res) => {
     const enterprisesData = enterprises.map((enterprise) => {
       const filteredEnterprise = {
         id: enterprise.id,
+        slug: enterprise.slug,
         name: enterprise.name,
         isValidate: enterprise.isValidate,
         isPremium: enterprise.isPremium,
