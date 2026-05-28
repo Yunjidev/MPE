@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import NotFound from "./pages/NotFound/NotFound";
 import EnterpriseBooking from "./pages/EnterpriseBooking/EnterpriseBooking";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Provider } from "jotai";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
