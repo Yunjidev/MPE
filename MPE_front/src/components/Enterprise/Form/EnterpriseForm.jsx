@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
 import { getData } from "../../../services/data-fetch";
 import Input from "../../Utils/Inputs/Input";
 import SocialMedia from "./Social";
@@ -143,6 +144,16 @@ export default function EnterpriseForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.siret_number && formData.siret_number.length !== 14) {
+      toast.error("Le numéro SIRET doit contenir exactement 14 chiffres");
+      return;
+    }
+    if (formData.zip_code && formData.zip_code.length !== 5) {
+      toast.error("Le code postal doit contenir exactement 5 chiffres");
+      return;
+    }
+
     const formDataToSubmit = new FormData();
 
     Object.keys(formData).forEach((key) => {
