@@ -28,8 +28,7 @@ docker run --rm \
   --email "$EMAIL" \
   --agree-tos \
   --no-eff-email \
-  -d "$DOMAIN" \
-  -d "www.$DOMAIN"
+  -d "$DOMAIN"
 
 echo "▶ Activation de la config HTTPS..."
 cp nginx/conf.d/proxilio.conf.template nginx/conf.d/proxilio.conf

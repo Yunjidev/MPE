@@ -4,7 +4,7 @@
 # Redirect HTTP → HTTPS
 server {
     listen 80;
-    server_name proxilio.fr www.proxilio.fr;
+    server_name proxilio.fr;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
@@ -18,7 +18,7 @@ server {
 # HTTPS
 server {
     listen 443 ssl;
-    server_name proxilio.fr www.proxilio.fr;
+    server_name proxilio.fr;
     http2 on;
 
     # SSL
