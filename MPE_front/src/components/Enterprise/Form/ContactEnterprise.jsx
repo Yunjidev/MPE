@@ -128,7 +128,7 @@ export default function ContactEnterprise({ formData, countryOptions, onChange }
       <Input.Text id="adress" value={formData.adress} onChange={onChange} placeholder="Adresse" icon={<FaMapMarkerAlt />} />
 
       <div ref={wrapperRef} className="relative">
-        <Input.Text id="zip_code" value={formData.zip_code} onChange={handleZipCodeChange} placeholder="Code Postal" icon={<FaBarcode />} />
+        <Input.Text id="zip_code" value={formData.zip_code} onChange={handleZipCodeChange} placeholder="Code Postal" icon={<FaBarcode />} maxLength={5} />
         {isLoadingCities && (
           <div className="absolute right-2 top-1/2 -translate-y-1/2">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500" />

@@ -9,6 +9,7 @@ export default function InputText({
   inputStyle="",
   icon,
   type = "text",
+  ...rest
 }) {
   return (
     <div className={`relative flex items-center ${className}`}>
@@ -20,6 +21,7 @@ export default function InputText({
         onChange={onChange}
         placeholder={placeholder}
         className={`${inputStyle} block ps-9 h-11 border border-black/5 w-full bg-[#f5f7f6] text-[#132A24] placeholder:text-[#879f98] rounded-xl text-start focus:outline-none focus:ring-2 focus:ring-[#132A24]/20 focus:border-[#132A24]/30 transition-colors`}
+        {...rest}
       />
     </div>
   );

@@ -18,8 +18,9 @@ export default function Basic({ formData, jobOptions, onChange }) {
         id="siret_number"
         value={formData.siret_number}
         onChange={onChange}
-        placeholder="Numéro Siret"
+        placeholder="Numéro Siret (14 chiffres)"
         icon={<FaBarcode />}
+        maxLength={14}
       />
       <Input.Select
         id="Job_id"
