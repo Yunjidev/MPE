@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Link } from 'react-router-dom';
-import { BsInstagram, BsFacebook, BsTwitterX, BsLinkedin } from 'react-icons/bs';
+import { BsFacebook, BsTwitterX, BsLinkedin } from 'react-icons/bs';
 import Logo from '/assets/img/logo.png';
 
 const Footer = () => {
@@ -58,16 +58,13 @@ const Footer = () => {
             © {new Date().getFullYear()} Proxilio. Tous droits réservés.
           </span>
             <div className="flex items-center gap-4 mt-1">
-              <a href="https://www.instagram.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="Instagram">
-                <BsInstagram size={17} />
-              </a>
-              <a href="https://www.facebook.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="Facebook">
+              <a href="https://www.facebook.com/profile.php?id=61590573535992" target="_blank" rel="noopener noreferrer" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="Facebook">
                 <BsFacebook size={17} />
               </a>
-              <a href="https://twitter.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="X / Twitter">
+              <a href="https://x.com/Proxilioapp" target="_blank" rel="noopener noreferrer" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="X / Twitter">
                 <BsTwitterX size={17} />
               </a>
-              <a href="https://www.linkedin.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/company/proxilio-pro-et-particulier/" target="_blank" rel="noopener noreferrer" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="LinkedIn">
                 <BsLinkedin size={17} />
               </a>
             </div>
