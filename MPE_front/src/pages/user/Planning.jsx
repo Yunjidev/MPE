@@ -555,7 +555,7 @@ export default function Planning() {
                   <div className="flex items-center gap-2">
                     {r.user && (
                       <span className="text-xs text-[#879f98] font-light">
-                        {r.user.firstname || r.user.firstName || r.user.username || ""}
+                        {[r.user.firstname, r.user.lastname].filter(Boolean).join(" ") || r.user.username || ""}
                       </span>
                     )}
                     <span className={`text-[11px] font-light px-2.5 py-0.5 rounded-full ${sc.cls}`}>
@@ -658,7 +658,11 @@ export default function Planning() {
                 label="Horaire"
                 value={r.start_time && r.end_time ? `${r.start_time} → ${r.end_time}` : "—"}
               />
-              <Row label="Client" value={r.user?.firstname || r.user?.firstName || r.user?.username || "—"} />
+              <Row
+                label="Client"
+                value={[r.user?.firstname, r.user?.lastname].filter(Boolean).join(" ") || r.user?.username || "—"}
+              />
+              {r.user?.email && <Row label="Email" value={r.user.email} />}
               {r.contact_phone && <Row label="Téléphone" value={r.contact_phone} />}
               {r.offer?.price && <Row label="Prix" value={`${r.offer.price} €`} />}
               {r.offer?.duration && (

@@ -623,6 +623,7 @@ exports.getEnterpriseReservationsForOwner = async (req, res) => {
             "username",
             "firstname",
             "lastname",
+            "email",
             "avatar",
           ],
         },

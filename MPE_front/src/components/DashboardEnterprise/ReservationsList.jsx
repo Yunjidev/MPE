@@ -9,6 +9,7 @@ import {
   IoCloseCircleOutline,
   IoEllipseOutline,
   IoCallOutline,
+  IoMailOutline,
 } from "react-icons/io5";
 import { useParams } from "react-router-dom";
 
@@ -423,8 +424,14 @@ const ReservationsList = () => {
                   <div className="mt-3 grid gap-2 text-xs text-[#879f98] font-light md:grid-cols-2">
                     <span className="inline-flex items-center gap-1.5">
                       <IoPersonOutline className="text-sm text-[#879f98]" />
-                      {reservation.user?.firstname || reservation.user?.firstName || reservation.user?.username || "Client"}
+                      {[reservation.user?.firstname, reservation.user?.lastname].filter(Boolean).join(" ") || reservation.user?.username || "Client"}
                     </span>
+                    {reservation.user?.email && (
+                      <span className="inline-flex items-center gap-1.5">
+                        <IoMailOutline className="text-sm text-[#879f98]" />
+                        {reservation.user.email}
+                      </span>
+                    )}
                     <span className="inline-flex items-center gap-1.5">
                       <IoCalendarOutline className="text-sm text-[#879f98]" />
                       {formattedDate}
