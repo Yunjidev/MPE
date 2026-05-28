@@ -1,4 +1,11 @@
 node_modules
 build
+dist
 .dockerignore
 Dockerfile
+.env
+.env.*
+.git
+.gitignore
+*.md
+npm-debug.log
