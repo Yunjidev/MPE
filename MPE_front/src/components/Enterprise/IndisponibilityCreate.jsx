@@ -4,12 +4,12 @@ import { toast } from "react-toastify";
 import InDisponibilityForm from "./Form/InDisponibilityForm";
 
 export default function CreateIndisponibility() {
-  const { id } = useParams();
+  const { slug } = useParams();
 
   const handleSubmit = async (data) => {
     event.preventDefault();
     try {
-      await postData(`enterprise/${id}/indisponibility`, data);
+      await postData(`enterprise/${slug}/indisponibility`, data);
       toast.success("Indisponibilité créée");
     } catch (error) {
       const errorData = await JSON.parse(error.message);

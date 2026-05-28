@@ -47,7 +47,7 @@ const DurationSort = ({ sortOrder, onSortOrderChange }) => (
 );
 
 const OffersList = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [offers, setOffers] = useState([]);
   const [filteredOffers, setFilteredOffers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,7 +61,7 @@ const OffersList = () => {
 
   const fetchOffers = async () => {
     try {
-      const response = await getData(`enterprise/${id}`);
+      const response = await getData(`enterprise/${slug}`);
       setOffers(response.offers || []);
     } catch (error) {
       console.error('Error fetching offers:', error);
@@ -69,8 +69,8 @@ const OffersList = () => {
   };
 
   useEffect(() => {
-    if (id) fetchOffers();
-  }, [id]);
+    if (slug) fetchOffers();
+  }, [slug]);
 
   useEffect(() => {
     let filtered = offers
@@ -94,7 +94,7 @@ const OffersList = () => {
 
   const handleDelete = async (offerId) => {
     try {
-      await deleteData(`enterprise/${id}/offer/${offerId}`);
+      await deleteData(`enterprise/${slug}/offer/${offerId}`);
       fetchOffers();
     } catch (error) {
       console.error('Error deleting offer:', error);
@@ -114,11 +114,11 @@ const OffersList = () => {
   const handleSave = async (formDataToSend) => {
     try {
       if (selectedOffer) {
-        await putData(`enterprise/${id}/offer/${selectedOffer.id}`, formDataToSend, {
+        await putData(`enterprise/${slug}/offer/${selectedOffer.id}`, formDataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       } else {
-        await postData(`enterprise/${id}/offer`, formDataToSend, {
+        await postData(`enterprise/${slug}/offer`, formDataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       }

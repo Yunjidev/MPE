@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { postData, putData } from "../../services/data-fetch";
+import { toast } from "react-toastify";
 
 const OfferForm = ({ offer, onClose = () => {} }) => {
-  const { id } = useParams(); // Récupération de l'ID de l'entreprise
+  const { slug } = useParams();
   const isEdit = !!offer; // Vérification si on modifie une offre existante ou non
 
   const [formData, setFormData] = useState({
@@ -68,25 +69,20 @@ const OfferForm = ({ offer, onClose = () => {} }) => {
       let response;
   
       if (isEdit) {
-        // Modification de l'offre existante avec une requête PUT
-        response = await putData(`/enterprise/${id}/offer/${offer.id}`, formDataToSend);
+        response = await putData(`enterprise/${slug}/offer/${offer.id}`, formDataToSend);
       } else {
-        // Création d'une nouvelle offre avec une requête POST
-        response = await postData(`/enterprise/${id}/offer`, formDataToSend);
+        response = await postData(`enterprise/${slug}/offer`, formDataToSend);
       }
-  
+
       if (response.message === 'Offre créée') {
-        alert("Offre créée avec succès !");
+        toast.success("Offre créée avec succès !");
       } else if (response.message === 'Offre modifiée') {
-        alert("Offre modifiée avec succès !");
-      } else {
-        alert("Une erreur est survenue lors de la soumission de l'offre.");
+        toast.success("Offre modifiée avec succès !");
       }
-      
-      onClose(); // Ferme le formulaire après la soumission
+      onClose();
     } catch (error) {
       console.error("Erreur lors de la soumission de l'offre:", error);
-      alert("Une erreur est survenue lors de la soumission de l'offre.");
+      toast.error("Une erreur est survenue lors de la soumission de l'offre.");
     }
   };
 
