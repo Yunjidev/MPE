@@ -4,7 +4,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci && npm cache clean --force
+RUN npm install
 COPY . .
 
 ARG VITE_API_URL=https://proxilio.fr/api/
