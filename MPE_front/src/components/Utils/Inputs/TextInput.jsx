@@ -12,14 +12,14 @@ export default function InputText({
 }) {
   return (
     <div className={`relative flex items-center ${className}`}>
-      {icon && <span className="absolute left-3 text-gray-400">{icon}</span>}
+      {icon && <span className="absolute left-3 text-[#879f98]">{icon}</span>}
       <input
         type={type}
         id={id}
         value={value !== null ? value : ""}
         onChange={onChange}
         placeholder={placeholder}
-        className={`${inputStyle} block ps-9 border-none w-full h-full shadow-[inset_0_6px_10px_rgba(0,0,0,0.6)] rounded-xl bg-neutral-900 text-white text-start focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400`}
+        className={`${inputStyle} block ps-9 h-11 border border-black/5 w-full bg-[#f5f7f6] text-[#132A24] placeholder:text-[#879f98] rounded-xl text-start focus:outline-none focus:ring-2 focus:ring-[#132A24]/20 focus:border-[#132A24]/30 transition-colors`}
       />
     </div>
   );

@@ -48,6 +48,25 @@ export async function putData(object, data) {
   }
 }
 
+export async function patchData(object, data) {
+  try {
+    const options = {
+      headers: {},
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    };
+
+    if (!(data instanceof FormData)) {
+      options.headers["Content-Type"] = "application/json";
+    }
+
+    const response = await kyInstance.patch(BASE_URL + object, options);
+    return response.json();
+  } catch (error) {
+    let errorData = await error.responseData;
+    throw new Error(JSON.stringify(errorData));
+  }
+}
+
 // Fonction pour supprimer les données
 export async function deleteData(object) {
   try {

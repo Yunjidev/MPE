@@ -48,6 +48,10 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      stripe_subscription_id: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       Enterprise_id: {
         type: DataTypes.INTEGER,
         references: {

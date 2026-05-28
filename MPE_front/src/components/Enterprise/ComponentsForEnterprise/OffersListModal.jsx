@@ -5,18 +5,21 @@ import OffersList from "@/components/DashboardEnterprise/OffersList";
 export default function OffersListModal({ onClose }) {
   return (
     <div
-      className="fixed inset-0 bg-neutral-800 bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
-        className="bg-neutral-800 p-6 w-11/12 rounded-lg shadow-lg relative"
+        className="bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_-12px_rgba(0,0,0,0.15)] p-6 w-11/12 max-w-3xl relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <FaTimes
-          className="absolute top-3 right-3 text-[#67FFCC] cursor-pointer text-2xl z-50"
-          title="Fermer"
+        <button
+          type="button"
           onClick={onClose}
-        />
+          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-[#879f98] hover:text-[#132A24] hover:bg-[#eef5f1] transition"
+          title="Fermer"
+        >
+          <FaTimes className="w-3.5 h-3.5" />
+        </button>
         <OffersList />
       </div>
     </div>

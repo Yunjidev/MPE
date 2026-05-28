@@ -1,18 +1,13 @@
 import AdminStats from "../../components/DashboardAdmin/ComponentsForStatsAdmin/AdminStats";
 
-
 const Admindb = () => {
   return (
-    <div className="bg-neutral-900 text-white p-6 rounded-lg lg:mt-6 mt-16 mb-8">
-      <h2 className="text-2xl font-semibold mb-4 text-[#67FFCC]">
-        Tableau de Bord Admin
-      </h2>
-      <hr className=" mb-12" />
-      <div>
-          <AdminStats />
+    <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 lg:p-6 mt-6 mb-8">
+      <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-0.5">Administration</p>
+      <h2 className="text-xl font-light text-[#132A24] tracking-tight mb-1">Tableau de Bord Admin</h2>
+      <div className="border-t border-black/5 mt-4 pt-6">
+        <AdminStats />
       </div>
-
-
     </div>
   );
 };

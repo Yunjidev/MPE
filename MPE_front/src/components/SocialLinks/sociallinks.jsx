@@ -1,6 +1,4 @@
 import { BsInstagram, BsFacebook, BsTwitterX, BsLinkedin } from 'react-icons/bs';
-import ParticlesDemo from '../ParticlesDemo';
-
 const SocialLinks = () => {
   return (
     <div>
@@ -46,7 +44,6 @@ const SocialLinks = () => {
           <BsLinkedin className="text-2xl" />
         </a>
       </section>
-      <ParticlesDemo isDarkMode={true} />
     </div>
   );
 };

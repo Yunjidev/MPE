@@ -20,6 +20,7 @@ const likeController = require("../../controllers/like-controller");
 
 // Route User
 router.get("/user/profile", userController.getUserProfile);
+router.get("/user/enterprises", userController.getUserEnterprises);
 router.put(
   "/user/update",
   files.upload("users").single("avatar"),

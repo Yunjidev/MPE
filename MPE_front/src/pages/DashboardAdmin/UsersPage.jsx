@@ -2,13 +2,11 @@ import UsersList from '../../components/DashboardAdmin/UsersList'; // Adjust the
 
 const UsersPage = () => {
     return (
-        <div className="bg-neutral-900 text-white p-4 sm:p-6 rounded-lg max-w-full sm:max-w-8xl mt-8 sm:mt-12 mb-4 sm:mb-8">
-            <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-[#67FFCC]">Liste des Utilisateurs</h2>
-            <hr className="w-full sm:w-11/12 mb-8 sm:mb-12" />
-            <div className="flex flex-col sm:flex-wrap">
-                <div className="w-full">
-                  <UsersList />
-                </div>
+        <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 lg:p-6 mt-6 mb-8">
+            <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-0.5">Administration</p>
+            <h2 className="text-xl font-light text-[#132A24] tracking-tight mb-1">Liste des Utilisateurs</h2>
+            <div className="border-t border-black/5 mt-4 pt-6">
+                <UsersList />
             </div>
         </div>
     );

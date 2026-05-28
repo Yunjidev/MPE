@@ -19,7 +19,7 @@ const isAuthenticated = async (req, res, next) => {
 };
 
 const isAdmin = async (req, res, next) => {
-  if (!req.user.isAdmin) {
+  if (!req.user || !req.user.isAdmin) {
     return res.status(403).json({ message: "Action non autorisée" });
   }
   next();
@@ -31,12 +31,12 @@ const isOwner = (model) => async (req, res, next) => {
     if (model === "User") {
       return next();
     }
-    let resourceId;
     const resource = await sequelize.models[model].findByPk(id);
     if (!resource) {
       return res.status(404).json({ message: "Ressource non trouvée" });
     }
-    if (resourceId !== req.user.id && req.user.isAdmin !== true) {
+    const resourceOwnerId = resource.User_id ?? resource.user_id ?? resource.userId;
+    if (resourceOwnerId !== req.user.id && req.user.isAdmin !== true) {
       return res
         .status(403)
         .json({ message: "Vous n'êtes pas autorisé à effectuer cette action" });
@@ -44,7 +44,7 @@ const isOwner = (model) => async (req, res, next) => {
     req.resource = resource;
     next();
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: "Erreur serveur" });
   }
 };
 
@@ -72,7 +72,7 @@ const isEnterpriseOwner = () => async (req, res, next) => {
     req.enterprise = enterprise;
     next();
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: "Erreur serveur" });
   }
 };
 
@@ -116,7 +116,7 @@ const isAuthorizedReservation = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: "Erreur serveur" });
   }
 };
 

@@ -3,6 +3,7 @@ const { getIo } = require("../../io");
 const Enterprise = sequelize.models.Enterprise;
 const { Job, User, Country } = require("../../../models/index");
 const files = require("../../utils/files");
+const sendEmail = require("../../mailers/email-service");
 
 exports.createEnterprise = async (req, res) => {
   try {
@@ -79,6 +80,13 @@ exports.createEnterprise = async (req, res) => {
         newEnterprise.logo,
       );
     }
+    sendEmail(
+      req.user.email,
+      "Votre entreprise est en cours de validation — Proxilio",
+      "enterprise-pending",
+      { user: req.user.username, enterprise: newEnterprise.name },
+    );
+
     res
       .status(201)
       .json({ enterprise: enterpriseData, message: "Entreprise créée" });
@@ -124,14 +132,25 @@ exports.updateEnterprise = async (req, res) => {
     enterprise.Job_id = Job_id || enterprise.Job_id;
 
     if (req.user.isAdmin) {
-      enterprise.isValidate = isValidate || enterprise.isValidate;
-      if (isValidate !== enterprise.isValidate) {
-        const io = getIo();
-        if (io) {
-          io.emit("enterpriseValidated", { id: enterprise.id, isValidate });
-        } else {
-          console.log("io not defined");
+      const wasValidated = enterprise.isValidate;
+      enterprise.isValidate = isValidate !== undefined ? isValidate : enterprise.isValidate;
+
+      if (!wasValidated && enterprise.isValidate === true) {
+        const owner = await User.findByPk(enterprise.User_id);
+        if (owner) {
+          sendEmail(
+            owner.email,
+            "Votre entreprise est validée — Proxilio",
+            "enterprise-validated",
+            {
+              user: owner.username,
+              enterprise: enterprise.name,
+              url: `${process.env.CLIENT_URL}/enterprise/${enterprise.id}`,
+            },
+          );
         }
+        const io = getIo();
+        if (io) io.emit("enterpriseValidated", { id: enterprise.id, isValidate: true });
       }
     }
     // Gestion du logo

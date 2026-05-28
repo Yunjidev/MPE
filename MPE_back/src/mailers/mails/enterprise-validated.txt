@@ -1,0 +1,18 @@
+Félicitations — Votre entreprise est en ligne sur Proxilio !
+
+Bonjour {user},
+
+Votre entreprise "{enterprise}" vient d'être validée et est maintenant visible par tous les utilisateurs de Proxilio.
+
+Ce qui est maintenant actif :
+- Visible dans les recherches par métier et ville
+- Réservations en ligne depuis votre dashboard
+- Statistiques et suivi de performances
+
+Voir votre page entreprise : {url}
+
+---
+Passez Premium pour apparaître en tête des résultats : {url}/pricing (à partir de 30 €/mois)
+
+Des questions ? contact@proxilio.fr
+© 2025 Proxilio — Tous droits réservés

@@ -12,16 +12,13 @@ import { ModalProvider } from "./context/ModalContext";
 import ScrollToTop from "./context/Scrolltotop";
 
 // Components
-import ParticlesDemo from "./components/ParticlesDemo";
 import NavBar from "./components/Navbar/navbar";
 import Footer from "./components/Footer/footer";
 import SocialLinks from "./components/SocialLinks/sociallinks";
-import UserChoiceModal from "./components/home/UserChoiceModal";
 import Pricing_page from "./components/pricing_page/pricing_page";
+
 // Pages
 import HomeClient from "./pages/home/HomeClient";
-import HomeEnterprise from "./pages/home/HomeEntreprise";
-import Team from "./pages/team/team";
 import Contact from "./pages/contact/contact";
 import SearchEntreprise from "./pages/searchentreprises/SearchEntreprise";
 import FAQ from "./pages/FAQ/FAQ";
@@ -50,6 +47,9 @@ import ForgotPasswordForm from "./pages/user/ForgotPassword.jsx";
 import ResetPassword from "./pages/user/ResetPassword";
 import Planning from "./pages/user/Planning";
 import StatsEnterprises from "./pages/DashboardEnterprise/StatsEnterprises";
+import OffersPage from "./pages/DashboardEnterprise/OffersPage";
+import SubscribePage from "./pages/subscribe/SubscribePage";
+import SubscribeSuccess from "./pages/subscribe/SubscribeSuccess";
 import Admindb from "./pages/DashboardAdmin/Admin_db";
 import CreateJobsandCountry from "./pages/DashboardAdmin/CreateJobsandCountry";
 import AdminDashboard from "./pages/DashboardAdmin/Admin_db";
@@ -76,10 +76,9 @@ function App() {
     <Provider>
       <UserProvider>
         <ModalProvider>
-          {/* BrowserRouter doit encapsuler tout le rendu */}
           <BrowserRouter>
             <ScrollToTop />
-            <AppContent /> {/* Déplacement du contenu principal ici */}
+            <AppContent />
             <ToastContainer />
           </BrowserRouter>
         </ModalProvider>
@@ -91,83 +90,68 @@ function App() {
 function AppContent() {
   const location = useLocation();
   const [isDashboardRoute, setIsDashboardRoute] = useState(false);
+  const [isFullWidthRoute, setIsFullWidthRoute] = useState(false);
 
-  // Utilise useEffect pour surveiller les changements de route
   useEffect(() => {
-    // Vérifie si la route commence par '/dashboard'
     setIsDashboardRoute(location.pathname.startsWith("/dashboard"));
-  }, [location.pathname]); // Dépendance : déclenche lorsque location.pathname change
+    setIsFullWidthRoute(
+      location.pathname === "/" || location.pathname === "/searchentreprise"
+    );
+  }, [location.pathname]);
 
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
-      <ParticlesDemo />
       <CookieBanner />
       <main
         className={
-          isDashboardRoute
-            ? ""
-            : "flex-1 lg:container mx-auto 2xl:w-5/6 w-full "
+          isDashboardRoute || isFullWidthRoute
+            ? "flex-1 w-full"
+            : "flex-1 lg:container mx-auto 2xl:w-5/6 w-full"
         }
       >
         <Routes>
-          <Route path="/" element={<UserChoiceModal />} />
-          <Route path="/home-client" element={<HomeClient />} />
-          <Route path="/home-enterprise" element={<HomeEnterprise />} />
+          <Route path="/" element={<HomeClient />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
-          <Route path="/about" element={<Team />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/searchentreprise" element={<SearchEntreprise />} />
           <Route path="/cookie-policies" element={<CookiePolicies />} />
           <Route path="/legal-notices" element={<LegalNotices />} />
-          <Route
-            path="/condifentiality-policies"
-            element={<ConfidentialityPolicies />}
-          />
+          <Route path="/condifentiality-policies" element={<ConfidentialityPolicies />} />
           <Route path="/usage-policies" element={<UsagePolicies />} />
           <Route path="/FAQ" element={<FAQ />} />
           <Route path="/pricing" element={<Pricing_page />} />
+          <Route path="/subscribe" element={<SubscribePage />} />
+          <Route path="/subscribe/success" element={<SubscribeSuccess />} />
           <Route path="/enterprise/:id" element={<EnterprisePage />} />
           <Route path="forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           {/* Routes protégées pour les utilisateurs authentifiés */}
           <Route element={<AuthenticatedRoute />}>
             <Route path="/dashboard" element={<Dashboard />}>
-              <Route index element={<Dashboard />} />
+              <Route index element={<User_db />} />
               <Route path="user-db" element={<User_db />} />
               <Route path="register-company" element={<RegisterCompany />} />
               <Route path="update-password" element={<UpdatePassWord />} />
               <Route path="deleteAccount" element={<DeleteAccount />} />
               {/* Routes protégées pour les entrepreneurs */}
               <Route element={<EntrepreneurRoute />}>
-                <Route
-                  path="enterprise/:enterpriseId/edit"
-                  element={<UpdateCompany />}
-                />
+                <Route path="enterprise/:enterpriseId/edit" element={<UpdateCompany />} />
                 <Route path="enterprise/:id/offer" element={<OfferList />} />
                 <Route path="enterprise/:id/planning" element={<Planning />} />
                 <Route path="enterprise/:id/reservations" element={<ReservationsList />} />
-                <Route
-                  path="enterprise/:id/dashboard"
-                  element={<StatsEnterprises />}
-                />
+                <Route path="enterprise/:id/dashboard" element={<StatsEnterprises />} />
+                <Route path="enterprise/:id/offers" element={<OffersPage />} />
               </Route>
               {/* Routes protégées pour les administrateurs */}
               <Route element={<AdminRoute />}>
                 <Route path="accept-company" element={<AcceptCompanyPage />} />
                 <Route path="manage-companies" element={<Company />} />
                 <Route path="manage-users" element={<ManageUser />} />
-                <Route
-                  path="jobsandcountrycreate"
-                  element={<CreateJobsandCountry />}
-                />
+                <Route path="jobsandcountrycreate" element={<CreateJobsandCountry />} />
                 <Route path="admin-overview" element={<AdminDashboard />} />
                 <Route path="admin-db" element={<Admindb />} />
-                <Route
-                  path="jobsandcountrycreate"
-                  element={<CreateJobsandCountry />}
-                />
                 <Route path="subscriptionmanagement" element={<SubscriptionManagement />} />
               </Route>
             </Route>

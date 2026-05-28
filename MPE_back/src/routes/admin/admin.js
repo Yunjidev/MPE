@@ -11,6 +11,7 @@ const userModerationController = require("../../controllers/users/user-moderatio
 const enterpriseController = require("../../controllers/enterprises/enterprises-controller");
 const enterpriseGetController = require("../../controllers/enterprises/enterprise-get");
 const enterpriseNotValidateController = require("../../controllers/enterprises/enterprises-not-validate-controller");
+const enterprisePremiumController = require("../../controllers/enterprises/enterprise-premium-controller");
 const disponibilityController = require("../../controllers/enterprises/disponibility-controller");
 const indisponibilityController = require("../../controllers/enterprises/indisponibility-controller");
 const offerController = require("../../controllers/enterprises/offer-controller");
@@ -44,6 +45,10 @@ router.get(
   enterpriseNotValidateController.getAllEnterprisesNotValidate,
 );
 router.get("/enterprises/:id", enterpriseGetController.getEnterpriseById);
+router.patch(
+  "/enterprises/:id/premium",
+  enterprisePremiumController.updateEnterprisePremiumStatus,
+);
 
 // Routes Job
 router.get("/job/:id", jobsController.getJobById);
@@ -97,6 +102,9 @@ router.get("/likes", likeController.getAllLikes);
 // Routes Subscription
 router.get("/subscriptions", subscriptionsController.getAllSubscriptions);
 router.get("/subscription/:id", subscriptionsController.getSubscriptionById);
+router.post("/subscription", subscriptionsController.createSubscriptionAdmin);
+router.put("/subscription/:id", subscriptionsController.updateSubscription);
+router.delete("/subscription/:id", subscriptionsController.deleteSubscription);
 
 // Rating routes
 router.get("/ratings", ratingController.getAllRatings);

@@ -1,26 +1,18 @@
+/* eslint-disable react/prop-types */
 import { LiaComment } from "react-icons/lia";
-import { useEnterpriseData } from "./useEnterpriseData";
 
-export default function Comments() {
-  const data = useEnterpriseData();
-
-  if (!data) {
-    return <div>Chargement...</div>;
-  }
-
-  // Compter le nombre de ratings dans les offres
-  const ratingsCount = data.offers.reduce((total, offer) => total + offer.ratings.length, 0);
-
+export default function Comments({ totalComments }) {
   return (
-    <div className="bg-neutral-700 text-black text-white shadow-md rounded-lg p-6 flex items-center space-x-4 w-56 h-32">
-      <LiaComment className="text-5xl" />
-      <div>
-        <h2 className="text-xl font-bold bg-gradient-to-r from-white to-[#67FFCC] text-transparent bg-clip-text">
-          Commentaires
-        </h2>
-        <p className="text-xl bg-gradient-to-r from-white to-[#67FFCC] text-transparent bg-clip-text">
-          {ratingsCount}
-        </p>
+    <div className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 h-32 flex items-center gap-4">
+      <div className="h-12 w-12 rounded-xl grid place-items-center bg-[#eef5f1] text-[#4b8a74] flex-shrink-0">
+        <LiaComment className="text-2xl" aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <div className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Commentaires</div>
+        <div className="mt-1">
+          <span className="text-2xl font-light text-[#132A24]">{totalComments ?? 0}</span>
+        </div>
+        <div className="text-[11px] text-[#879f98] font-light mt-0.5">Total des avis reçus</div>
       </div>
     </div>
   );

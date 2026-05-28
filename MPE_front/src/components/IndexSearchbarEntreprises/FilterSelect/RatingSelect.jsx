@@ -1,42 +1,26 @@
-import AsyncSelect from 'react-select/async';
-import Rating from 'react-rating-stars-component';
+/* eslint-disable react/prop-types */
+const thresholds = [1, 2, 3, 4, 5];
 
-// Fonction pour afficher les étoiles de notation
-export const renderRatingStars = (ratingValue) => {
+const RatingSelect = ({ minRating, setMinRating }) => {
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setMinRating(value === "all" ? null : Number(value));
+  };
+
   return (
-    <Rating
-      count={5}
-      value={ratingValue}
-      size={24}
-      activeColor="#ffd700"
-      isHalf={true}
-      edit={false}
-    />
+    <select
+      value={minRating ?? "all"}
+      onChange={handleChange}
+      className="w-full rounded-xl border border-black/5 bg-[#f5f7f6] px-3 py-2.5 text-sm text-[#132A24] font-light focus:border-[#132A24]/30 focus:ring-1 focus:ring-[#132A24]/20 focus:outline-none"
+    >
+      <option value="all">Toutes les notes</option>
+      {thresholds.map((threshold) => (
+        <option key={threshold} value={threshold}>
+          ≥ {threshold} ★
+        </option>
+      ))}
+    </select>
   );
 };
 
-
-const RatingSelect = ({ selectedRatings, setSelectedRatings, loadOptions }) => {
-
-  return (
-    <AsyncSelect
-      isMulti
-      cacheOptions
-      loadOptions={(inputValue) => loadOptions(inputValue, 'averageRating')}
-      onChange={setSelectedRatings}
-      defaultOptions
-      value={selectedRatings}
-      classNamePrefix="react-select-container"
-      className="react-select-container"
-      placeholder="Notes"
-      noOptionsMessage={() => "Pas de notes disponibles"}
-      loadingMessage={() => "Chargement ..."}
-      formatOptionLabel={(option) => (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {renderRatingStars(option.value)}
-        </div>
-      )}
-    />
-  );
-};
 export default RatingSelect;

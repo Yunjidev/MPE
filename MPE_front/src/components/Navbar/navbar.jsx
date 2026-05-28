@@ -1,357 +1,343 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
-import { useModal } from "../../context/ModalContext";
-import logo from "../../../public/assets/img/logo.png";
-import SignOut from "../User/signout";
+import { useState, useRef, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
+import { useResetAtom } from "jotai/utils";
 import { userAtom } from "../../store/user";
-import { motion, AnimatePresence } from "framer-motion";
-import "./navbar.css";
+import { AnimatePresence, motion } from "framer-motion";
+import { authSignOut } from "../../services/auth-fetch";
+import { toast } from "react-toastify";
+import logo from "../../../public/assets/img/logo.png";
+
+const NAV_LINKS = [
+  { label: "Accueil", to: "/" },
+  { label: "Recherche", to: "/searchentreprise" },
+  { label: "Tarifs", to: "/pricing" },
+  { label: "FAQ", to: "/FAQ" },
+  { label: "Contact", to: "/contact" },
+];
+
+const DropdownItem = ({ to, icon, children, onClick, danger }) => {
+  const base = `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-light tracking-tight transition-colors w-full text-left`;
+  const style = danger
+    ? `${base} text-red-500 hover:bg-red-50`
+    : `${base} text-[#4b615a] hover:bg-[#eef5f1] hover:text-[#132A24]`;
+
+  if (onClick) return (
+    <button onClick={onClick} className={style}>
+      <span className="w-4 h-4 flex-shrink-0 text-current opacity-70">{icon}</span>
+      {children}
+    </button>
+  );
+  return (
+    <Link to={to} className={style}>
+      <span className="w-4 h-4 flex-shrink-0 text-current opacity-70">{icon}</span>
+      {children}
+    </Link>
+  );
+};
 
 const Navbar = () => {
-  const { userType, setUserType } = useModal();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [user] = useAtom(userAtom);
-  const navigate = useNavigate();
+  const resetUser = useResetAtom(userAtom);
   const location = useLocation();
-  const isSelectionPage = location.pathname === "/";
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prev) => !prev);
-  };
+  const navigate = useNavigate();
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen((prev) => !prev);
-  };
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsDropdownOpen(false);
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setIsDropdownOpen(false);
+  }, [location.pathname]);
+
+  const handleSignOut = async () => {
+    try {
+      await authSignOut("signout");
+    } catch {
+      // ignore
+    } finally {
+      resetUser();
+      toast.info("Vous êtes maintenant déconnecté !");
+      navigate("/signin");
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  const handleUserTypeToggle = () => {
-    const newUserType = userType === "client" ? "enterprise" : "client";
-    setUserType(newUserType);
-    navigate(newUserType === "client" ? "/home-client" : "/home-enterprise");
-  };
-
-  const avatarUrl = user?.avatar
-    ? user.avatar
-    : "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp";
+  const avatarUrl = user?.avatar || null;
+  const displayName = user?.firstname && user?.lastname
+    ? `${user.firstname} ${user.lastname}`
+    : user?.username || "Utilisateur";
+  const firstEnterprise = user?.enterprises?.[0];
 
   return (
-    <>
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-full z-50 mt-4">
-        <div className="navbar flex justify-between items-center backdrop-filter backdrop-blur-lg bg-[#232323] bg-opacity-30 text-white border border-neutral-200 font-semibold mx-auto w-5/6 h-16 rounded-xl neon-nav">
-          <div className="flex items-center">
-            <Link to="/">
-              <img
-                src={logo}
-                alt="logo"
-                className="w-10 h-10 ml-2 lg:ml-9 transition-transform duration-300 hover:scale-110"
-              />
-            </Link>
-          </div>
+    <header className="sticky top-0 z-50 bg-[#f5f7f6]/90 backdrop-blur-md border-b border-black/5 transition-all duration-500">
+      <div className="w-full px-4 sm:px-8 lg:px-16 2xl:px-24 h-20 sm:h-24 flex items-center justify-between">
 
-          {!isSelectionPage && (
-            <div className="hidden md:flex justify-center items-center gap-8 text-white">
-              {userType === "client" ? (
-                <>
-                  <Link
-                    to="/home-client"
-                    className="hover:text-neutral-300"
-                  >
-                    Accueil
-                  </Link>
-                  <Link
-                    to="/searchentreprise"
-                    className="hover:text-neutral-300"
-                  >
-                    Recherche
-                  </Link>
-                  <Link
-                    to="/faq"
-                    className="hover:text-neutral-300"
-                  >
-                    FAQ
-                  </Link>
-                  <Link
-                    to="/about"
-                    className="hover:text-neutral-300"
-                  >
-                    À Propos
-                  </Link>
-                </>
-              ) : userType === "enterprise" ? (
-                <>
-                  <Link
-                    to="/home-enterprise"
-                    className="hover:text-neutral-300"
-                  >
-                    Accueil
-                  </Link>
-                  <Link
-                    to="/searchentreprise"
-                    className="hover:text-neutral-300"
-                  >
-                    Recherche
-                  </Link>
-                  <Link
-                    to="/pricing"
-                    className="hover:text-neutral-300"
-                  >
-                    Tarifs
-                  </Link>
-                  <Link
-                    to="/faq"
-                    className="hover:text-neutral-300"
-                  >
-                    FAQ
-                  </Link>
-                  <Link
-                    to="/about"
-                    className="hover:text-neutral-300"
-                  >
-                    À Propos
-                  </Link>
-                </>
-              ) : null}
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-3 sm:gap-4 group">
+          <img
+            src={logo}
+            alt="Proxilio"
+            className="h-8 sm:h-10 object-contain transition-all duration-500 group-hover:scale-110"
+          />
+          <span className="hidden lg:block font-light text-xl tracking-tight text-[#132A24]">
+            Proxilio
+          </span>
+        </Link>
 
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={userType === "enterprise"}
-                  onChange={handleUserTypeToggle}
-                />
-                <div
-                  className={`relative w-11 h-6 rounded-full transition-colors duration-300 ease-in-out 
-                  ${userType === "enterprise" ? "bg-[#67FFCC]" : "bg-[#A78BFA]"}
-                  peer-checked:after:translate-x-full peer-checked:bg-[#67FFCC]
-                  peer-checked:after:bg-[#67FFCC] peer-checked:after:border-white`}
-                >
-                  <div
-                    className={`absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full 
-                    h-5 w-5 transition-transform duration-300 ease-in-out
-                    ${userType === "enterprise" ? "translate-x-5" : ""}
-                    peer-checked:translate-x-full`}
-                  ></div>
-                </div>
-                <span className="ms-3 text-sm font-medium text-gray-300">
-                  {userType === "client"
-                    ? "Mode Particulier"
-                    : "Mode Professionnel"}
-                </span>
-              </label>
-            </div>
-          )}
-
-          <div className="flex items-center gap-2 lg:mr-9">
-            {!isSelectionPage && (
-              <div className="form-control">
-                <input
-                  type="text"
-                  placeholder="Recherche service ..."
-                  className="bg-neutral-800 rounded-xl input-bordered border-neutral-600 input-sm w-full max-w-xs"
-                />
-              </div>
-            )}
-            <div className="relative" ref={dropdownRef}>
-              <div
-                tabIndex="0"
-                role="button"
-                className="btn btn-ghost btn-circle flex items-center justify-center w-10 h-10 hover:border hover:border-[#67FFCC] rounded-full overflow-hidden"
-                onClick={toggleDropdown}
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-8 lg:gap-10 text-base text-[#546b64] font-light">
+          {NAV_LINKS.map(({ label, to }) => {
+            const isActive = location.pathname === to;
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`relative tracking-tight transition-colors
+                  after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:bg-[#132a24] after:transition-all after:duration-300
+                  ${isActive
+                    ? "text-[#132a24] after:w-full"
+                    : "hover:text-[#132a24] after:w-0 hover:after:w-full"
+                  }`}
               >
-                {user.isLogged ? (
-                  <img
-                    className="w-full h-full object-cover rounded-full"
-                    alt="User Avatar"
-                    src={avatarUrl} //
-                  />
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Right side */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {user.isLogged ? (
+            <div className="relative" ref={dropdownRef}>
+
+              {/* Trigger */}
+              <button
+                onClick={() => setIsDropdownOpen((p) => !p)}
+                className="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-full border border-black/5 bg-white hover:border-[#132A24]/15 hover:shadow-sm transition-all duration-200"
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
                 ) : (
-                  <FaUserCircle className="w-10 h-10 text-white" />
+                  <div className="w-7 h-7 rounded-full bg-[#eef5f1] flex items-center justify-center flex-shrink-0">
+                    <span className="text-[#132A24] text-xs font-light">{displayName[0]?.toUpperCase()}</span>
+                  </div>
                 )}
-              </div>
+                <span className="hidden sm:block text-sm font-light text-[#132A24] tracking-tight max-w-[120px] truncate">
+                  {displayName}
+                </span>
+                <svg
+                  className={`w-3.5 h-3.5 text-[#879f98] transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
+                  fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown */}
               <AnimatePresence>
                 {isDropdownOpen && (
-                  <motion.ul
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                    tabIndex="0"
-                    className="menu menu-sm dropdown-content bg-neutral-800 text-white border border-neutral-600 rounded-lg rounded-box z-[1] mt-2 absolute right-0 w-52 p-2 shadow-lg"
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="absolute right-0 mt-3 w-64 bg-white border border-black/5 rounded-2xl shadow-[0_12px_40px_-12px_rgba(0,0,0,0.12)] overflow-hidden"
                   >
-                    {user.isLogged ? (
-                      <>
-                        <li>
-                          <Link
-                            to={`/dashboard/user-db`}
-                            className="text-white hover:text-neutral-300"
-                          >
-                            Mon Dashboard
-                          </Link>
-                        </li>
-                        <li>
-                          <SignOut />
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li>
-                          <Link
-                            to="/signin"
-                            className="text-white hover:text-neutral-300"
-                          >
-                            Connexion
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/signup"
-                            className="text-white hover:text-neutral-300"
-                          >
-                            Inscription
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                  </motion.ul>
+
+                    {/* User info */}
+                    <div className="p-4 flex items-center gap-3 bg-[#f5f7f6]/60">
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-black/5 flex-shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-[#eef5f1] border border-[#132A24]/10 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[#132A24] text-base font-light">{displayName[0]?.toUpperCase()}</span>
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-light text-[#132A24] tracking-tight truncate">{displayName}</p>
+                        {user.email && (
+                          <p className="text-xs text-[#879f98] font-light truncate">{user.email}</p>
+                        )}
+                        {(user.isAdmin || user.isEntrepreneur) && (
+                          <span className="inline-block mt-1 text-[10px] font-light px-2 py-0.5 rounded-full bg-[#eef5f1] text-[#132A24] border border-[#132A24]/10">
+                            {user.isAdmin ? "Administrateur" : "Professionnel"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Nav links */}
+                    <div className="p-2 border-t border-black/5">
+                      <DropdownItem
+                        to="/dashboard/user-db"
+                        icon={
+                          <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                          </svg>
+                        }
+                      >
+                        Mon Dashboard
+                      </DropdownItem>
+
+                      {user.isEntrepreneur && firstEnterprise && (
+                        <DropdownItem
+                          to={`/dashboard/enterprise/${firstEnterprise.id}/dashboard`}
+                          icon={
+                            <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                            </svg>
+                          }
+                        >
+                          Mon Entreprise
+                        </DropdownItem>
+                      )}
+
+                      {user.isAdmin && (
+                        <DropdownItem
+                          to="/dashboard/admin-db"
+                          icon={
+                            <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                          }
+                        >
+                          Administration
+                        </DropdownItem>
+                      )}
+                    </div>
+
+                    {/* Sign out */}
+                    <div className="p-2 border-t border-black/5">
+                      <DropdownItem
+                        onClick={handleSignOut}
+                        danger
+                        icon={
+                          <svg fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                          </svg>
+                        }
+                      >
+                        Se déconnecter
+                      </DropdownItem>
+                    </div>
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>
+          ) : (
+            <>
+              <Link
+                to="/signin"
+                className="hidden sm:block text-sm font-light text-[#132A24]/70 hover:text-[#132A24] transition-colors tracking-tight"
+              >
+                Connexion
+              </Link>
+              <Link
+                to="/signup"
+                className="group bg-[#132A24] text-white px-5 py-2.5 rounded-full text-sm flex items-center gap-2 hover:bg-[#1b3b33] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 font-light tracking-tight"
+              >
+                S'inscrire
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </Link>
+            </>
+          )}
 
-            {!isSelectionPage && (
-              <div className="md:hidden flex items-center mr-2 lg:mr-9">
-                <button onClick={toggleMobileMenu}>
-                  {isMobileMenuOpen ? (
-                    <FaTimes className="w-6 h-6" />
-                  ) : (
-                    <FaBars className="w-6 h-6" />
-                  )}
-                </button>
-              </div>
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-1.5 text-[#132A24]"
+            onClick={() => setIsMobileMenuOpen((p) => !p)}
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              </svg>
             )}
-          </div>
+          </button>
         </div>
-        {!isSelectionPage && isMobileMenuOpen && (
-          <div className="md:hidden backdrop-filter backdrop-blur-lg bg-[#232323] bg-opacity-30 text-white border border-neutral-200 font-semibold mx-auto w-5/6 mt-4 rounded-xl neon-nav">
-            <div className="flex flex-col items-center gap-4 py-4">
-              {userType === "client" ? (
-                <>
-                  <Link
-                    to="/home-client"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    Accueil
-                  </Link>
-                  <a
-                    href="#"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    Recherche
-                  </a>
-                  <Link
-                    to="/faq"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    FAQ
-                  </Link>
-                  <Link
-                    to="/about"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    À Propos
-                  </Link>
-                </>
-              ) : userType === "enterprise" ? (
-                <>
-                  <Link
-                    to="/home-enterprise"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    Accueil
-                  </Link>
-                  <a
-                    href="#"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    Recherche
-                  </a>
-                  <Link
-                    to="/pricing"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    Tarifs
-                  </Link>
-                  <Link
-                    to="/faq"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    FAQ
-                  </Link>
-                  <Link
-                    to="/about"
-                    onClick={toggleMobileMenu}
-                    className="hover:text-neutral-300"
-                  >
-                    À Propos
-                  </Link>
-                </>
-              ) : null}
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={userType === "enterprise"}
-                  onChange={handleUserTypeToggle}
-                />
-                <div
-                  className={`relative w-11 h-6 rounded-full transition-colors duration-300 ease-in-out 
-                  ${userType === "enterprise" ? "bg-[#67FFCC]" : "bg-[#A78BFA]"}
-                  peer-checked:after:translate-x-full peer-checked:bg-[#67FFCC]
-                  peer-checked:after:bg-[#67FFCC] peer-checked:after:border-white`}
-                >
-                  <div
-                    className={`absolute top-0.5 left-0.5 bg-white border border-gray-300 rounded-full 
-                    h-5 w-5 transition-transform duration-300 ease-in-out
-                    ${userType === "enterprise" ? "translate-x-5" : ""}
-                    peer-checked:translate-x-full`}
-                  ></div>
-                </div>
-                <span className="ms-3 text-sm font-medium text-gray-300">
-                  {userType === "client"
-                    ? "Mode Particulier"
-                    : "Mode Professionnel"}
-                </span>
-              </label>
-            </div>
-          </div>
-        )}
       </div>
 
-      <div className="pt-14"></div>
-    </>
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden bg-[#f5f7f6]/95 backdrop-blur-md border-t border-black/5 overflow-hidden"
+          >
+            <div className="px-4 py-4 flex flex-col gap-1">
+              {NAV_LINKS.map(({ label, to }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-light tracking-tight transition-colors ${
+                    location.pathname === to
+                      ? "text-[#132A24] bg-[#eef5f1]"
+                      : "text-[#546b64] hover:text-[#132A24] hover:bg-[#eef5f1]"
+                  }`}
+                >
+                  {label}
+                </Link>
+              ))}
+
+              {user.isLogged ? (
+                <div className="mt-2 pt-2 border-t border-black/5 flex flex-col gap-1">
+                  <Link to="/dashboard/user-db" className="px-3 py-2.5 rounded-xl text-sm font-light text-[#132A24] hover:bg-[#eef5f1] transition-colors">
+                    Mon Dashboard
+                  </Link>
+                  {user.isEntrepreneur && firstEnterprise && (
+                    <Link to={`/dashboard/enterprise/${firstEnterprise.id}/dashboard`} className="px-3 py-2.5 rounded-xl text-sm font-light text-[#132A24] hover:bg-[#eef5f1] transition-colors">
+                      Mon Entreprise
+                    </Link>
+                  )}
+                  {user.isAdmin && (
+                    <Link to="/dashboard/admin-db" className="px-3 py-2.5 rounded-xl text-sm font-light text-[#132A24] hover:bg-[#eef5f1] transition-colors">
+                      Administration
+                    </Link>
+                  )}
+                  <button onClick={handleSignOut} className="px-3 py-2.5 rounded-xl text-sm font-light text-red-500 hover:bg-red-50 transition-colors text-left">
+                    Se déconnecter
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2 mt-2 pt-2 border-t border-black/5">
+                  <Link
+                    to="/signin"
+                    className="flex-1 text-center py-2 text-sm text-[#132A24] border border-[#132A24]/20 rounded-full hover:bg-[#eef5f1] transition-colors font-light"
+                  >
+                    Connexion
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="flex-1 text-center py-2 text-sm bg-[#132A24] text-white rounded-full hover:bg-[#1b3b33] transition-colors font-light"
+                  >
+                    S'inscrire
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 };
 

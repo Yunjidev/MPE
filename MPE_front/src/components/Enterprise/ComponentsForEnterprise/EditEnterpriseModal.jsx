@@ -5,18 +5,21 @@ import EditEnterprise from "../EditEnterprise";
 export default function EditEnterpriseModal({ enterpriseId, onSave, onClose }) {
   return (
     <div
-      className="fixed inset-0 bg-neutral-800 bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div
-        className="p-2 rounded-lg shadow-lg relative max-w-4xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_-12px_rgba(0,0,0,0.15)] p-2 relative max-w-4xl w-full max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <FaTimes
-          className="absolute top-6 right-6 z-50 text-[#67FFCC] cursor-pointer text-2xl"
-          title="Fermer"
+        <button
+          type="button"
           onClick={onClose}
-        />
+          className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full flex items-center justify-center text-[#879f98] hover:text-[#132A24] hover:bg-[#eef5f1] transition"
+          title="Fermer"
+        >
+          <FaTimes className="w-3.5 h-3.5" />
+        </button>
         <EditEnterprise
           enterpriseId={enterpriseId}
           onSave={onSave}

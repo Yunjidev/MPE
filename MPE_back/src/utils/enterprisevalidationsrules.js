@@ -52,10 +52,10 @@ const enterpriseValidationRules = (isUpdate = false) => {
         .trim()
         .isLength({ min: 14, max: 14 }),
       body("description").bail().trim().escape(),
-      body("website").optional({ checkFalsy: true }).trim(),
-      body("facebook").optional({ checkFalsy: true }).trim(),
-      body("instagram").optional({ checkFalsy: true }).trim(),
-      body("twitter").optional({ checkFalsy: true }).trim(),
+      body("website").optional({ checkFalsy: true }).trim().isURL().withMessage("URL de site invalide"),
+      body("facebook").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Facebook invalide"),
+      body("instagram").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Instagram invalide"),
+      body("twitter").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Twitter invalide"),
     );
   } else {
     rules.push(
@@ -101,10 +101,10 @@ const enterpriseValidationRules = (isUpdate = false) => {
         .trim()
         .isLength({ min: 14, max: 14 }),
       body("description").optional({ checkFalsy: true }).bail().trim(),
-      body("website").optional({ checkFalsy: true }).trim(),
-      body("facebook").optional({ checkFalsy: true }).trim(),
-      body("instagram").optional({ checkFalsy: true }).trim(),
-      body("twitter").optional({ checkFalsy: true }).trim(),
+      body("website").optional({ checkFalsy: true }).trim().isURL().withMessage("URL de site invalide"),
+      body("facebook").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Facebook invalide"),
+      body("instagram").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Instagram invalide"),
+      body("twitter").optional({ checkFalsy: true }).trim().isURL().withMessage("URL Twitter invalide"),
     );
   }
   return rules;

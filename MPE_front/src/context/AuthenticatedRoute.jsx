@@ -6,8 +6,6 @@ import { toast } from "react-toastify";
 const AuthenticatedRoute = () => {
   const [user] = useAtom(userAtom);
 
-  console.log("AuthenticatedRoute: user =", user);
-
   if (user && user.isLogged) {
     return <Outlet />;
   } else {

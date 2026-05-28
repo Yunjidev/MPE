@@ -32,21 +32,14 @@ const formatDisponibility = (disponibility) => {
     nextOccurence.add(1, "week");
   }
 
-  let dates = [];
-  for (let i = 0; i < 4; i++) {
+  const dates = [];
+  for (let i = 0; i < 12; i++) {
     const date = nextOccurence.clone().add(i, "week");
-    if (
-      date.isSameOrAfter(today) &&
-      date.isBefore(today.clone().add(1, "month").endOf("month"))
-    ) {
-      dates.push({
-        date: date.format("DD/MM"),
-        startHour,
-        endHour,
-      });
-    } else {
-      break;
-    }
+    dates.push({
+      date: date.format("DD/MM"),
+      startHour,
+      endHour,
+    });
   }
   return dates;
 };
@@ -55,6 +48,7 @@ const getAvailabilityDates = (
   disponibilities,
   indisponibilities,
   reservations,
+  manualBlocks = [],
 ) => {
   if (!Array.isArray(disponibilities)) {
     console.error(
@@ -81,8 +75,13 @@ const getAvailabilityDates = (
     indisponibilities,
   );
 
-  const finalAvailabilityDates = subtractReservations(
+  const afterManualBlocks = subtractManualBlocks(
     filteredAvailabilityDates,
+    manualBlocks,
+  );
+
+  const finalAvailabilityDates = subtractReservations(
+    afterManualBlocks,
     reservations,
   );
 
@@ -198,6 +197,62 @@ const subtractReservations = (availabilityDates, reservations) => {
           date: availabilityDate.date,
           startHour: startHour,
           endHour: endHour,
+        });
+      }
+    }
+  });
+
+  return filteredAvailabilityDates;
+};
+
+const subtractManualBlocks = (availabilityDates, manualBlocks) => {
+  if (!Array.isArray(manualBlocks) || manualBlocks.length === 0) {
+    return availabilityDates;
+  }
+
+  const filteredAvailabilityDates = [];
+
+  availabilityDates.forEach((availabilityDate) => {
+    let startHour = moment(availabilityDate.startHour, "HH:mm").format("HH:mm");
+    let endHour = moment(availabilityDate.endHour, "HH:mm").format("HH:mm");
+
+    manualBlocks.forEach((block) => {
+      const blockDate = moment(block.date).format("DD/MM");
+      if (blockDate !== availabilityDate.date) {
+        return;
+      }
+
+      const blockStart = moment(block.start_time, "HH:mm").format("HH:mm");
+      const blockEnd = moment(block.end_time, "HH:mm").format("HH:mm");
+
+      if (blockStart <= startHour && blockEnd >= endHour) {
+        startHour = null;
+        endHour = null;
+      } else if (blockStart > startHour && blockEnd < endHour) {
+        filteredAvailabilityDates.push({
+          date: availabilityDate.date,
+          startHour: startHour,
+          endHour: blockStart,
+        });
+        startHour = blockEnd;
+      } else if (blockStart <= startHour && blockEnd > startHour) {
+        startHour = blockEnd;
+      } else if (blockEnd >= endHour && blockStart < endHour) {
+        endHour = blockStart;
+      }
+    });
+
+    if (startHour && endHour) {
+      const duration = moment(endHour, "HH:mm").diff(
+        moment(startHour, "HH:mm"),
+        "minutes",
+      );
+
+      if (duration >= 15 && startHour !== endHour) {
+        filteredAvailabilityDates.push({
+          date: availabilityDate.date,
+          startHour,
+          endHour,
         });
       }
     }

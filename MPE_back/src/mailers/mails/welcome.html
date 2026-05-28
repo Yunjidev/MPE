@@ -1,59 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bienvenue !</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #232323;
-        margin: 0;
-        padding: 20px;
-      }
-      .container {
-        max-width: 600px;
-        margin: auto;
-        background: white;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        color: #ffffff;
-      }
-      p {
-        line-height: 1.6;
-        color: #555;
-      }
-      .button {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #232323;
-        color: white;
-        text-decoration: none;
-        border-color: #ffffff;
-        border-radius: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Bienvenue, {user} !</h1>
-      <p>
-        Nous sommes ravis de vous accueillir dans notre communauté. Merci de
-        vous être inscrit(e) !
-      </p>
-      <p>
-        Pour commencer, nous vous invitons à explorer notre site et à découvrir
-        toutes les fonctionnalités que nous offrons.
-      </p>
-      <p>
-        N'hésitez pas à nous contacter si vous avez des questions ou besoin
-        d'aide.
-      </p>
-      <a href="{URL}" class="button">Commencez ici</a>
-      <p>À bientôt,<br />L'équipe de Ma petite entreprise</p>
-    </div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bienvenue sur Proxilio</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f5f7f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f7f6;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#132A24;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+              <p style="margin:0;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#879f98;font-weight:300;margin-bottom:12px;">Votre compte</p>
+              <h1 style="margin:0;font-size:28px;font-weight:300;color:#ffffff;letter-spacing:-0.5px;line-height:1.3;">Bienvenue sur <span style="color:#eef5f1;">Proxilio</span></h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background-color:#ffffff;padding:40px 40px 32px;">
+              <p style="margin:0 0 8px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#879f98;font-weight:300;">Bonjour {user},</p>
+              <p style="margin:16px 0 24px;font-size:16px;font-weight:300;color:#132A24;line-height:1.6;letter-spacing:-0.2px;">
+                Votre compte a bien été créé. Nous sommes ravis de vous accueillir dans la communauté Proxilio — la plateforme qui connecte les professionnels locaux avec leurs futurs clients.
+              </p>
+
+              <!-- Divider -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+                <tr>
+                  <td style="border-top:1px solid rgba(0,0,0,0.05);"></td>
+                </tr>
+              </table>
+
+              <!-- Steps -->
+              <p style="margin:0 0 16px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#879f98;font-weight:300;">Par où commencer ?</p>
+
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="width:28px;height:28px;background-color:#eef5f1;border-radius:8px;text-align:center;vertical-align:middle;">
+                          <span style="font-size:12px;color:#132A24;font-weight:400;">01</span>
+                        </td>
+                        <td style="padding-left:14px;">
+                          <p style="margin:0;font-size:14px;font-weight:300;color:#132A24;letter-spacing:-0.1px;">Complétez votre profil</p>
+                          <p style="margin:2px 0 0;font-size:12px;font-weight:300;color:#879f98;">Ajoutez vos informations et une photo</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.04);">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="width:28px;height:28px;background-color:#eef5f1;border-radius:8px;text-align:center;vertical-align:middle;">
+                          <span style="font-size:12px;color:#132A24;font-weight:400;">02</span>
+                        </td>
+                        <td style="padding-left:14px;">
+                          <p style="margin:0;font-size:14px;font-weight:300;color:#132A24;letter-spacing:-0.1px;">Créez votre entreprise</p>
+                          <p style="margin:2px 0 0;font-size:12px;font-weight:300;color:#879f98;">Inscrivez votre activité sur la plateforme</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 0;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="width:28px;height:28px;background-color:#eef5f1;border-radius:8px;text-align:center;vertical-align:middle;">
+                          <span style="font-size:12px;color:#132A24;font-weight:400;">03</span>
+                        </td>
+                        <td style="padding-left:14px;">
+                          <p style="margin:0;font-size:14px;font-weight:300;color:#132A24;letter-spacing:-0.1px;">Trouvez vos premiers clients</p>
+                          <p style="margin:2px 0 0;font-size:12px;font-weight:300;color:#879f98;">Soyez visible localement dès aujourd'hui</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:32px;">
+                <tr>
+                  <td align="center">
+                    <a href="{url}" style="display:inline-block;background-color:#132A24;color:#ffffff;text-decoration:none;font-size:14px;font-weight:300;letter-spacing:0.5px;padding:14px 36px;border-radius:100px;">
+                      Accéder à mon compte
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f5f7f6;border-radius:0 0 16px 16px;padding:24px 40px;border-top:1px solid rgba(0,0,0,0.05);">
+              <p style="margin:0 0 8px;font-size:12px;font-weight:300;color:#879f98;text-align:center;line-height:1.6;">
+                Une question ? Écrivez-nous à <a href="mailto:contact@proxilio.fr" style="color:#132A24;text-decoration:none;">contact@proxilio.fr</a>
+              </p>
+              <p style="margin:0;font-size:11px;font-weight:300;color:#bcc9c6;text-align:center;letter-spacing:0.3px;">
+                © 2025 Proxilio — Tous droits réservés
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
 </html>

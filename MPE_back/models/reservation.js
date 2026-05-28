@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "User_id",
         as: "user",
       });
+      Reservation.belongsTo(models.Enterprise, {
+        foreignKey: "Enterprise_id",
+        as: "enterprise",
+      });
     }
   }
   Reservation.init(
@@ -59,12 +63,23 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      Enterprise_id: {
+        type: DataTypes.INTEGER,
+        references: {
+          model: "Enterprise",
+          key: "id",
+        },
+      },
       Offer_id: {
         type: DataTypes.INTEGER,
         references: {
           model: "Offer",
           key: "id",
         },
+      },
+      contact_phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {
@@ -76,6 +91,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         unique_user_reservation: {
           fields: ["User_id", "date"],
+        },
+        unique_enterprise_slot: {
+          fields: ["date", "start_time", "Enterprise_id"],
         },
       },
     },

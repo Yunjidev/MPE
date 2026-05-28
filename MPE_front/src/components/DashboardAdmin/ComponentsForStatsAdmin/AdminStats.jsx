@@ -1,5 +1,14 @@
 /* eslint-disable react/prop-types */
-import { FaUsers, FaBriefcase, FaBuilding, FaCalendarCheck, FaStar, FaEye, FaDollarSign, FaTimesCircle } from "react-icons/fa";
+import {
+  FaUsers,
+  FaBriefcase,
+  FaBuilding,
+  FaCalendarCheck,
+  FaStar,
+  FaEye,
+  FaDollarSign,
+  FaTimesCircle,
+} from "react-icons/fa";
 import { useAdminStatsData } from "./useAdminStatsData";
 import EnterprisesLast24h from "./EnterprisesLast24h";
 import UsersLast24h from "./UsersLast24h";
@@ -10,101 +19,72 @@ export default function AdminStats() {
   const data = useAdminStatsData();
 
   if (!data) {
-    return <div>Chargement...</div>;
+    return (
+      <div className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-6 text-[#879f98] font-light text-sm">
+        Chargement…
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className="flex flex-col items-center">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
-          <StatCard
-            icon={<FaUsers className="text-5xl" />}
-            title="Utilisateurs"
-            value={data.userLength}
-            gradientFrom="from-blue-400"
-            gradientTo="to-blue-800"
-          />
-          <StatCard
-            icon={<FaBriefcase className="text-5xl" />}
-            title="Entrepreneurs"
-            value={data.entrepreneurLength}
-            gradientFrom="from-green-400"
-            gradientTo="to-green-800"
-          />
-          <StatCard
-            icon={<FaBuilding className="text-5xl" />}
-            title="Entreprises"
-            value={data.enterpriseLength}
-            gradientFrom="from-purple-400"
-            gradientTo="to-purple-800"
-          />
-          <StatCard
-            icon={<FaCalendarCheck className="text-5xl" />}
-            title="Réservations"
-            value={data.reservationLength}
-            gradientFrom="from-orange-400"
-            gradientTo="to-orange-800"
-          />
-          <StatCard
-            icon={<FaStar className="text-5xl" />}
-            title="Entreprises Premium"
-            value={data.premiumEnterpriseLength}
-            gradientFrom="from-red-400"
-            gradientTo="to-red-800"
-          />
-          <StatCard
-            icon={<FaEye className="text-5xl" />}
-            title="Visites du site"
-            value="N/A" // Valeur fictive pour le moment
-            gradientFrom="from-yellow-400"
-            gradientTo="to-yellow-800"
-          />
-          <StatCard
-            icon={<FaDollarSign className="text-5xl" />}
-            title="Revenus"
-            value="N/A" // Valeur fictive pour le moment
-            gradientFrom="from-green-400"
-            gradientTo="to-green-800"
-          />
-          <StatCard
-            icon={<FaTimesCircle className="text-5xl" />}
-            title="Entreprises non validées"
-            value={data.notValidatedEnterprises}
-            gradientFrom="from-red-400"
-            gradientTo="to-red-800"
-          />
-          <StatCard
-            icon={<FaUsers className="text-5xl" />}
-            title="Abonnements"
-            value={data.subscriptions}
-            gradientFrom="from-blue-400"
-            gradientTo="to-blue-800"
-          />
-        </div>
-        <div className="m-4 p-4 border rounded-lg shadow-lg">
-          <GraphForView />
-        </div>
-        <EnterprisesLast24h />
-        <UsersLast24h />
-        <SubscriptionsLast24h />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <StatCard icon={<FaUsers />} title="Utilisateurs" value={safeValue(data.userLength)} subtitle="Comptes totaux" />
+        <StatCard icon={<FaBriefcase />} title="Entrepreneurs" value={safeValue(data.entrepreneurLength)} subtitle="Profils entrepreneur" />
+        <StatCard icon={<FaBuilding />} title="Entreprises" value={safeValue(data.enterpriseLength)} subtitle="Fiches entreprise" />
+        <StatCard icon={<FaCalendarCheck />} title="Réservations" value={safeValue(data.reservationLength)} subtitle="Total réservations" />
+        <StatCard icon={<FaStar />} title="Entreprises Premium" value={safeValue(data.premiumEnterpriseLength)} subtitle="Abonnés premium" accent="amber" />
+        <StatCard icon={<FaEye />} title="Visites du site" value="N/A" subtitle="Derniers 30 jours" />
+        <StatCard icon={<FaDollarSign />} title="Revenus" value="N/A" subtitle="CA cumulé" />
+        <StatCard icon={<FaTimesCircle />} title="Non validées" value={safeValue(data.notValidatedEnterprises)} subtitle="En attente de validation" accent="red" />
+        <StatCard icon={<FaUsers />} title="Abonnements" value={safeValue(data.subscriptions)} subtitle="Actifs" />
       </div>
 
+      <div className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5">
+        <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-3">Trafic &amp; vues</p>
+        <GraphForView />
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <CardShell title="Entreprises créées (24h)"><EnterprisesLast24h /></CardShell>
+        <CardShell title="Utilisateurs inscrits (24h)"><UsersLast24h /></CardShell>
+        <CardShell title="Abonnements (24h)"><SubscriptionsLast24h /></CardShell>
+      </div>
     </div>
   );
 }
 
-function StatCard({ icon, title, value, gradientFrom, gradientTo }) {
+function safeValue(v) {
+  if (v === null || v === undefined) return "—";
+  return typeof v === "number" ? v.toLocaleString() : v;
+}
+
+function StatCard({ icon, title, value, subtitle, accent }) {
+  const iconCls = accent === "amber"
+    ? "bg-amber-50 text-amber-500"
+    : accent === "red"
+    ? "bg-red-50 text-red-400"
+    : "bg-[#eef5f1] text-[#4b8a74]";
+
   return (
-    <div className={`bg-opacity-30 bg-neutral-700 text-black text-white shadow-md rounded-lg p-6 flex items-center space-x-4 w-full h-32`}>
-      {icon}
-      <div>
-        <h2 className={`text-xl font-bold bg-gradient-to-r ${gradientFrom} ${gradientTo} text-transparent bg-clip-text`}>
-          {title}
-        </h2>
-        <p className={`text-xl bg-gradient-to-r ${gradientFrom} ${gradientTo} text-transparent bg-clip-text`}>
-          {value}
-        </p>
+    <div className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 h-32 flex items-center gap-4">
+      <div className={`h-12 w-12 rounded-xl grid place-items-center flex-shrink-0 text-xl ${iconCls}`}>
+        {icon}
       </div>
+      <div className="min-w-0">
+        <div className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">{title}</div>
+        <div className="mt-1 text-2xl font-light text-[#132A24]">{value}</div>
+        {subtitle && <div className="text-[11px] text-[#879f98] font-light mt-0.5">{subtitle}</div>}
+      </div>
+    </div>
+  );
+}
+
+function CardShell({ title, children }) {
+  return (
+    <div className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5">
+      <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-3">{title}</p>
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }

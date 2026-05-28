@@ -20,7 +20,6 @@ const Localisation = ({ setSearchResults, setAllEnterprises }) => {
         try {
           const response = await getData(`enterprises/nearby?lat=${latitude}&lng=${longitude}&dist=${distance}`);
           setSearchResults(response);
-          console.log(` ${distance} km`);
           if (response.length === 0) {
             toast.info('Aucune entreprise trouvée dans votre périmètre.');
             const allEnterprises = await getData('enterprises/validate');

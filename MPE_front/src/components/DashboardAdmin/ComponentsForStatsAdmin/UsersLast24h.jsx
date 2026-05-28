@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { getData } from "../../../services/data-fetch";
 import { filterUsersLast24h } from "./filterLast24h";
 
+const thCls = "px-4 py-2 text-left text-[10px] uppercase tracking-widest text-[#879f98] font-light";
+const tdCls = "px-4 py-3 text-sm font-light text-[#4b615a] whitespace-nowrap";
+
 const UsersLast24h = () => {
   const [usersData, setUsersData] = useState([]);
 
@@ -9,73 +12,49 @@ const UsersLast24h = () => {
     const fetchUsers = async () => {
       try {
         const data = await getData("admin/users");
-        const filteredData = filterUsersLast24h(data);
-        // console.log("data", data);
-        setUsersData(filteredData);
+        setUsersData(filterUsersLast24h(data));
       } catch (error) {
         console.error("Erreur lors de la récupération des utilisateurs:", error);
       }
     };
-
     fetchUsers();
   }, []);
 
+  if (usersData.length === 0) {
+    return (
+      <p className="text-sm text-[#879f98] font-light py-4">Aucun utilisateur inscrit ces dernières 24h.</p>
+    );
+  }
+
   return (
-    <div className="bg-neutral-800 text-white p-6 rounded-lg shadow-md w-full overflow-x-auto mb-12">
-      <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-white to-[#67FFCC] text-transparent bg-clip-text">
-        Utilisateurs inscrits ces dernières 24h
-      </h2>
-      <table className="min-w-full divide-y divide-gray-700">
+    <div className="overflow-x-auto">
+      <table className="min-w-full">
         <thead>
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Username
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Email
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Firstname
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Lastname
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Is Entrepreneur
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Avatar
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Enterprises
-            </th>
+          <tr className="border-b border-black/5">
+            <th className={thCls}>Pseudo</th>
+            <th className={thCls}>Email</th>
+            <th className={thCls}>Prénom</th>
+            <th className={thCls}>Nom</th>
+            <th className={thCls}>Entrepreneur</th>
+            <th className={thCls}>Avatar</th>
+            <th className={thCls}>Entreprises</th>
           </tr>
         </thead>
-        <tbody className="bg-neutral-800 divide-y divide-gray-700">
+        <tbody>
           {usersData.map((user, index) => (
-            <tr key={index}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {user.username}
+            <tr key={index} className="border-b border-black/5 hover:bg-[#f5f7f6] transition">
+              <td className={tdCls}>{user.username}</td>
+              <td className={tdCls}>{user.email}</td>
+              <td className={tdCls}>{user.firstname}</td>
+              <td className={tdCls}>{user.lastname}</td>
+              <td className={tdCls}>{user.isentrepreneur ? "Oui" : "Non"}</td>
+              <td className="px-4 py-3 whitespace-nowrap">
+                <img src={user.avatar} alt="avatar" className="w-8 h-8 rounded-full border border-black/5 object-cover" />
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {user.email}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {user.firstname}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {user.lastname}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {user.isentrepreneur ? "Yes" : "No"}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full" />
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-              {user.enterprises.map((enterprise, idx) => (
+              <td className={tdCls}>
+                {user.enterprises.map((enterprise, idx) => (
                   <div key={idx}>{enterprise.name}</div>
-              ))}
+                ))}
               </td>
             </tr>
           ))}

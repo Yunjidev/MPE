@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { getData } from "../../../services/data-fetch";
 import { filterSubscriptionsLast24h } from "./filterLast24h";
 
+const thCls = "px-4 py-2 text-left text-[10px] uppercase tracking-widest text-[#879f98] font-light";
+const tdCls = "px-4 py-3 text-sm font-light text-[#4b615a] whitespace-nowrap";
+
 const SubscriptionsLast24h = () => {
   const [subscriptionsData, setSubscriptionsData] = useState([]);
 
@@ -9,54 +12,38 @@ const SubscriptionsLast24h = () => {
     const fetchSubscriptions = async () => {
       try {
         const data = await getData("admin/subscriptions");
-        // console.log("data", data);
-        const filteredData = filterSubscriptionsLast24h(data);
-        setSubscriptionsData(filteredData);
+        setSubscriptionsData(filterSubscriptionsLast24h(data));
       } catch (error) {
         console.error("Erreur lors de la récupération des abonnements:", error);
       }
     };
-
     fetchSubscriptions();
   }, []);
 
+  if (subscriptionsData.length === 0) {
+    return (
+      <p className="text-sm text-[#879f98] font-light py-4">Aucun abonnement ces dernières 24h.</p>
+    );
+  }
+
   return (
-    <div className="bg-neutral-800 text-white p-6 rounded-lg shadow-md w-full overflow-x-auto mb-12">
-      <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-white to-[#67FFCC] text-transparent bg-clip-text">
-        Abonnements des dernières 24h
-      </h2>
-      <table className="min-w-full divide-y divide-gray-700">
+    <div className="overflow-x-auto">
+      <table className="min-w-full">
         <thead>
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Nom Entreprise
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Type Abonnement
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Date de début
-            </th>
+          <tr className="border-b border-black/5">
+            <th className={thCls}>Nom Entreprise</th>
+            <th className={thCls}>Statut</th>
+            <th className={thCls}>Type</th>
+            <th className={thCls}>Date de début</th>
           </tr>
         </thead>
-        <tbody className="bg-neutral-800 divide-y divide-gray-700">
+        <tbody>
           {subscriptionsData.map((subscription, index) => (
-            <tr key={index}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {subscription.enterprise.name}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {subscription.status}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {subscription.subscription_type}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {new Date(subscription.start_date).toLocaleDateString()}
-              </td>
+            <tr key={index} className="border-b border-black/5 hover:bg-[#f5f7f6] transition">
+              <td className={tdCls}>{subscription.enterprise.name}</td>
+              <td className={tdCls}>{subscription.status}</td>
+              <td className={tdCls}>{subscription.subscription_type}</td>
+              <td className={tdCls}>{new Date(subscription.start_date).toLocaleDateString()}</td>
             </tr>
           ))}
         </tbody>

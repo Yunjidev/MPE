@@ -55,6 +55,10 @@ export const eventStyleGetter = (event) => {
     case "indisponibility":
       style.backgroundColor = "#fb923c";
       break;
+    case "manual-block":
+      style.backgroundColor = "#ef4444";
+      style.color = "white";
+      break;
     default:
       style.backgroundColor = "#cccccc";
       break;
@@ -75,7 +79,7 @@ export const translateMessage = {
   agenda: "Agenda",
   date: "Date",
   time: "Heure",
-  event: "�v�nement",
-  noEventsInRange: "Aucun �v�nement dans cette p�riode.",
-  showMore: (total) => `+ ${total} �v�nement(s) suppl�mentaire(s)`,
+  event: "Événement",
+  noEventsInRange: "Aucun événement dans cette période.",
+  showMore: (total) => `+ ${total} événement(s) supplémentaire(s)`,
 };

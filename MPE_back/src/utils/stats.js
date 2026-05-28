@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { sequelize } = require("../../models/index");
 
 async function getUserLength() {
@@ -32,13 +33,33 @@ async function getReservationLength() {
 }
 
 async function getPremiumEnterpriseLength() {
-  const premiumEnterprises = await sequelize.models.Subscription.findAll({
-    where: {
-      status: "active",
-    },
-    attributes: ["id"],
+  const now = new Date();
+  const [manualPremium, subscriptions] = await Promise.all([
+    sequelize.models.Enterprise.findAll({
+      where: {
+        premiumManualEnd: {
+          [Op.gt]: now,
+        },
+      },
+      attributes: ["id"],
+      raw: true,
+    }),
+    sequelize.models.Subscription.findAll({
+      where: { status: "active" },
+      attributes: ["Enterprise_id"],
+      raw: true,
+    }),
+  ]);
+
+  const premiumIds = new Set();
+  manualPremium.forEach((enterprise) => premiumIds.add(enterprise.id));
+  subscriptions.forEach((subscription) => {
+    if (subscription.Enterprise_id) {
+      premiumIds.add(subscription.Enterprise_id);
+    }
   });
-  return premiumEnterprises.length;
+
+  return premiumIds.size;
 }
 
 module.exports = {

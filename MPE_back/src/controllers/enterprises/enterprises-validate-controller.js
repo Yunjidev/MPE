@@ -1,9 +1,11 @@
 const { sequelize } = require("../../../models/index");
 const Enterprise = sequelize.models.Enterprise;
+const { Op } = require("sequelize");
 const { Job, User, Country } = require("../../../models/index");
 const files = require("../../utils/files");
 const { calculateAverageRatingForEnterprise } = require("../../utils/ratings");
 const { getAvailabilityDates } = require("../../utils/availability");
+const { normalizeEnterprisePremiumState } = require("../../utils/premium");
 
 exports.getAllEnterprisesValidate = async (req, res) => {
   try {
@@ -72,6 +74,12 @@ exports.getAllEnterprisesValidate = async (req, res) => {
           },
         },
         {
+          model: sequelize.models.ManualBlock,
+          as: "manualBlocks",
+          attributes: ["id", "date", "start_time", "end_time"],
+          required: false,
+        },
+        {
           model: sequelize.models.Offer,
           as: "offers",
           include: [
@@ -87,10 +95,37 @@ exports.getAllEnterprisesValidate = async (req, res) => {
             exclude: ["createdAt", "updatedAt", "Enterprise_id"],
           },
         },
+        {
+          model: sequelize.models.Reservation,
+          as: "reservations",
+          attributes: ["id", "date", "start_time", "end_time", "status"],
+          where: {
+            status: {
+              [Op.notIn]: ["cancelled", "rejected"],
+            },
+          },
+          required: false,
+        },
+        {
+          model: sequelize.models.Subscription,
+          as: "subscriptions",
+          attributes: ["id"],
+          where: { status: "active" },
+          required: false,
+          separate: true,
+        },
       ],
     });
     const enterpriseWithDetails = await Promise.all(
       enterprise.map(async (enterprise) => {
+        const hasActiveSubscription =
+          Array.isArray(enterprise.subscriptions) &&
+          enterprise.subscriptions.length > 0;
+
+        const { shouldBePremium } = await normalizeEnterprisePremiumState(
+          enterprise,
+          hasActiveSubscription,
+        );
         if (enterprise.logo) {
           enterprise.logo = files.getUrl(req, "enterprises/logo", enterprise.logo);
         }
@@ -107,16 +142,24 @@ exports.getAllEnterprisesValidate = async (req, res) => {
           }
         });
         const averageRating = await calculateAverageRatingForEnterprise(enterprise.id);
+        const aggregatedReservations = [
+          ...enterprise.offers.map((offer) => offer.reservations).flat(),
+          ...(enterprise.reservations || []),
+        ];
         const availabilityDates = getAvailabilityDates(
           enterprise.disponibilities,
           enterprise.indisponibilities,
-          enterprise.offers.map((offer) => offer.reservations).flat()
+          aggregatedReservations,
+          enterprise.manualBlocks || [],
         );
         const enterpriseData = Object.assign({}, enterprise.toJSON(), {
           averageRating: averageRating,
           availabilityDates: availabilityDates,
           nextAvalaibleDate: availabilityDates[0],
         });
+        enterpriseData.isPremium = shouldBePremium;
+        enterpriseData.hasActiveSubscription = hasActiveSubscription;
+        delete enterpriseData.subscriptions;
         return enterpriseData;
       })
     );
@@ -215,6 +258,31 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
             exclude: ["createdAt", "updatedAt", "Enterprise_id"],
           },
         },
+        {
+          model: sequelize.models.ManualBlock,
+          as: "manualBlocks",
+          attributes: ["id", "date", "start_time", "end_time", "reason"],
+          required: false,
+        },
+        {
+          model: sequelize.models.Reservation,
+          as: "reservations",
+          attributes: ["id", "date", "start_time", "end_time", "status"],
+          where: {
+            status: {
+              [Op.notIn]: ["cancelled", "rejected"],
+            },
+          },
+          required: false,
+        },
+        {
+          model: sequelize.models.Subscription,
+          as: "subscriptions",
+          attributes: ["id"],
+          where: { status: "active" },
+          required: false,
+          separate: true,
+        },
       ],
       attributes: {
         exclude: ["createdAt", "updatedAt", "User_id", "Job_id", "Country_id"],
@@ -226,6 +294,14 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
     if (!enterprise.isValidate) {
       return res.status(404).json({ errors: "L'entreprise n'est pas validée" });
     }
+    const hasActiveSubscription =
+      Array.isArray(enterprise.subscriptions) && enterprise.subscriptions.length > 0;
+
+    const { shouldBePremium } = await normalizeEnterprisePremiumState(
+      enterprise,
+      hasActiveSubscription,
+    );
+
     if (enterprise.logo) {
       enterprise.logo = files.getUrl(req, "enterprises/logo", enterprise.logo);
     }
@@ -248,7 +324,10 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
         offer.image = files.getUrl(req, "offers/image", offer.image);
       }
     });
-    const reservations = enterprise.offers.map((offer) => offer.reservations);
+    const reservations = [
+      ...enterprise.offers.map((offer) => offer.reservations).flat(),
+      ...(enterprise.reservations || []),
+    ];
     const ratings = enterprise.offers.map((offer) => offer.ratings).flat();
     const raters = ratings.map((rating) => rating.user);
     raters.forEach((rater) => {
@@ -270,13 +349,17 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
     enterprise.availabilityDates = getAvailabilityDates(
       enterprise.disponibilities,
       enterprise.indisponibilities,
-      enterprise.offers.map((offer) => offer.reservations).flat(),
+      reservations,
+      enterprise.manualBlocks || [],
     );
     const enterpriseData = Object.assign({}, enterprise.toJSON(), {
       averageRating: averageRating,
       availabilityDates: enterprise.availabilityDates,
       nextAvalaibleDate: enterprise.availabilityDates[0],
     });
+    enterpriseData.isPremium = shouldBePremium;
+    enterpriseData.hasActiveSubscription = hasActiveSubscription;
+    delete enterpriseData.subscriptions;
     res.status(200).json(enterpriseData);
   } catch (error) {
     console.error(error)

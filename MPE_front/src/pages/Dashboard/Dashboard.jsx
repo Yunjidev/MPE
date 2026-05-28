@@ -4,13 +4,13 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 
 const Dashboard = () => {
   return (
-    <div className="2xl:ml-44 2xl:mr-40">
-    <div className="flex lg:flex-row">
-      <Sidebar />
-      <div className="flex-1 p-4">
-        <Outlet />
+    <div className="min-h-screen 2xl:ml-44 2xl:mr-40">
+      <div className="flex lg:flex-row">
+        <Sidebar />
+        <div className="flex-1 p-4 min-w-0">
+          <Outlet />
+        </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -1,13 +1,9 @@
-//SERVICES
 import { authSignInUp } from "../../services/auth-fetch";
-//React
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import UserForm from "./UserForm";
-//ATOM
 import { useAtom } from "jotai";
 import { userAtom } from "../../store/user";
 import { enterprisesAtom } from "../../store/enterprises";
-//Toast
 import { toast } from "react-toastify";
 
 export default function SignIn() {
@@ -32,8 +28,17 @@ export default function SignIn() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center">
-      <UserForm onSubmit={handleSubmit} mode={"Connexion"} />;
+    <div className="min-h-screen flex items-center justify-center px-4">
+
+      <div className="w-full max-w-md">
+        <UserForm onSubmit={handleSubmit} mode="Connexion" />
+        <p className="mt-5 text-center text-sm font-light text-[#879f98]">
+          Pas encore de compte ?{" "}
+          <Link to="/signup" className="text-[#132A24] underline underline-offset-4 hover:text-[#4b8a74] transition-colors">
+            S'inscrire gratuitement
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,64 +1,63 @@
+/* eslint-disable react/prop-types */
 import { FaStar } from "react-icons/fa";
-import { useEnterpriseData } from "./useEnterpriseData";
 
-export default function CommentsList() {
-  const data = useEnterpriseData();
+export default function CommentsList({ enterprise }) {
+  if (!enterprise) return null;
 
-  if (!data) {
-    return <div>Chargement...</div>;
-  }
-
-  const commentsData = data.offers.flatMap(offer =>
-    offer.ratings.map(rating => ({
-      username: rating.user.username,
-      comment: rating.comment,
-      rating: parseFloat(rating.note),
-      offerName: offer.name
+  const commentsData = (enterprise.offers || []).flatMap((offer) =>
+    (offer.ratings || []).map((rating) => ({
+      username: rating?.user?.username ?? "Anonyme",
+      comment: rating?.comment ?? "",
+      rating: Number(rating?.note ?? 0),
+      offerName: offer?.name ?? "—",
     }))
   );
 
   return (
-    <div className="bg-neutral-800 text-white p-6 rounded-lg shadow-md w-full overflow-x-auto">
-      <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-white to-[#67FFCC] text-transparent bg-clip-text">
-        Mes Commentaires et Notes
-      </h2>
-      <table className="min-w-full divide-y divide-gray-700">
-        <thead>
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Offre
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Clients
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider max-w-xs">
-              Commentaires
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-              Note
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-neutral-800 divide-y divide-gray-700">
-          {commentsData.map((comment, index) => (
-            <tr key={index}>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                {comment.offerName}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                {comment.username}
-              </td>
-              <td className="px-6 py-4 text-sm text-white break-words max-w-xs">
-                {comment.comment}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-white flex items-center">
-                <FaStar className="text-yellow-400 mr-2" />
-                {comment.rating}/5
-              </td>
+    <div className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 md:p-6">
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-0.5">Retours clients</p>
+          <h2 className="text-base font-light text-[#132A24]">Avis et Notes</h2>
+        </div>
+        <span className="text-xs text-[#879f98] font-light">{commentsData.length} avis</span>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full">
+          <thead>
+            <tr className="border-b border-black/5">
+              <th className="px-4 py-2 text-left text-[10px] uppercase tracking-widest text-[#879f98] font-light">Offre</th>
+              <th className="px-4 py-2 text-left text-[10px] uppercase tracking-widest text-[#879f98] font-light">Client</th>
+              <th className="px-4 py-2 text-left text-[10px] uppercase tracking-widest text-[#879f98] font-light">Commentaire</th>
+              <th className="px-4 py-2 text-left text-[10px] uppercase tracking-widest text-[#879f98] font-light">Note</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {commentsData.map((c, idx) => (
+              <tr key={idx} className="border-b border-black/5 hover:bg-[#f5f7f6] transition">
+                <td className="px-4 py-3 text-sm font-light text-[#132A24]">{c.offerName}</td>
+                <td className="px-4 py-3 text-sm font-light text-[#4b615a]">{c.username}</td>
+                <td className="px-4 py-3 text-sm font-light text-[#4b615a] max-w-[480px] break-words">
+                  {c.comment || <span className="text-[#879f98]">—</span>}
+                </td>
+                <td className="px-4 py-3 text-sm font-light text-[#132A24]">
+                  <span className="inline-flex items-center gap-1.5">
+                    <FaStar className="text-amber-400 w-3.5 h-3.5" /> {c.rating.toFixed(1)}/5
+                  </span>
+                </td>
+              </tr>
+            ))}
+            {commentsData.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-4 py-8 text-center text-[#879f98] text-sm font-light">
+                  Pas encore d&apos;avis.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

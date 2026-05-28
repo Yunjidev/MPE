@@ -1,34 +1,43 @@
-import AsyncSelect from 'react-select/async';
+/* eslint-disable react/prop-types */
+import AsyncSelect from "react-select/async";
+import { selectClassNames } from "./selectTw";
+import { getData } from "../../../services/data-fetch";
 
+const JobSelect = ({ selectedJobs, setSelectedJobs }) => {
+  const loadOptions = async (inputValue) => {
+    const jobs = await getData("jobs");
+    const q = (inputValue || "").toLowerCase();
+    return (jobs || [])
+      .filter((j) => j.name && j.name.toLowerCase().includes(q))
+      .map((j) => ({ label: j.name, value: j.id }));
+  };
 
-
-const JobSelect = ({ selectedJobs, setSelectedJobs, loadOptions }) => {
-
-  // Ajout d'une fonction de transformation pour les options sélectionnées
   const handleChange = (selectedOptions) => {
-    // Transforme les options sélectionnées en un format approprié avant de mettre à jour l'état
-    const transformedSelectedJobs = selectedOptions.map(option => ({
-      label: option.label,
-      value: option.value || option.label // Utilisez label comme valeur de repli si value n'est pas défini
+    const transformed = (selectedOptions || []).map((opt) => ({
+      label: opt.label,
+      value: opt.value || opt.label,
     }));
-    setSelectedJobs(transformedSelectedJobs);
+    setSelectedJobs(transformed);
   };
 
-    return (
-      <AsyncSelect
-        
-        isMulti
-        cacheOptions
-        loadOptions={(inputValue) => loadOptions(inputValue, 'job')}
-        onChange={handleChange}
-        defaultOptions
-        value={selectedJobs}
-        classNamePrefix="react-select-container"
-        className="react-select-container first-select"
-        placeholder="Métiers"
-        noOptionsMessage={() => "Aucun métier trouvé"}
-        loadingMessage={() => "Chargement ..."}
-      />
-    );
-  };
+  return (
+    <AsyncSelect
+      isMulti
+      cacheOptions
+      defaultOptions
+      loadOptions={loadOptions}
+      value={selectedJobs}
+      onChange={handleChange}
+      placeholder="Métiers"
+      noOptionsMessage={() => "Aucun métier trouvé"}
+      loadingMessage={() => "Chargement ..."}
+      classNames={selectClassNames}
+      unstyled
+      menuPortalTarget={document.body}
+      menuPosition="fixed"
+      styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+    />
+  );
+};
+
 export default JobSelect;

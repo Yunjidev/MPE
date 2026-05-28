@@ -13,7 +13,7 @@ export default function Pricing() {
             features: [
                 "Possibilité de créer son entreprise",
                 "Page d'entreprise",
-                "Statistiques détaillées",
+                "Statistiques",
                 "Dashboard entreprise",
             ],
         },
@@ -23,7 +23,7 @@ export default function Pricing() {
         {
             name: "Mensuel",
             desc: "Profitez de notre solution mensuelle pour profiter de plus de services.",
-            price: "35€",
+            price: "30€",
             isMostPop: true,
             features: [
                 "Possibilité de créer son entreprise",
@@ -33,7 +33,6 @@ export default function Pricing() {
                 "Mise en avant sur l'accueil",
                 "Priorisation dans les recherches",
                 "Certification Premium",
-                "Galerie Photo",
                 "Calendrier + Réservations",
             ],
         },
@@ -43,7 +42,7 @@ export default function Pricing() {
         {
             name: "Annuel",
             desc: "Optez pour notre solution annuelle pour avoir 2 mois offerts.",
-            price: "350€",
+            price: "270€",
             isMostPop: false,
             features: [
                 "Possibilité de créer son entreprise",
@@ -53,7 +52,6 @@ export default function Pricing() {
                 "Mise en avant sur l'accueil",
                 "Priorisation dans les recherches",
                 "Certification Premium",
-                "Galerie Photo",
                 "Calendrier + Réservations",
             ],
         },

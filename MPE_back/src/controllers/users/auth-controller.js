@@ -2,10 +2,7 @@ const { sequelize } = require("../../../models/index");
 const User = sequelize.models.User;
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const {
-  generateAccessToken,
-  generateRefreshToken,
-} = require("../../../config/jwt");
+const { generateAccessToken, generateRefreshToken } = require("../../../config/jwt");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const sendEmail = require("../../mailers/email-service");
@@ -19,9 +16,7 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ errors: "Le nom d'utilisateur existe déjà" });
+      return res.status(400).json({ errors: "Le nom d'utilisateur existe déjà" });
     }
     const existingEmail = await User.findOne({ where: { email } });
     if (existingEmail) {
@@ -35,7 +30,7 @@ exports.signup = async (req, res) => {
     });
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
-    sendEmail(email, "Bienvenue à ma Petite Entreprise", "welcome", {
+    sendEmail(email, "Bienvenue sur Proxilio !", "welcome", {
       user: username,
       url: `${process.env.CLIENT_URL}`,
     });
@@ -58,13 +53,17 @@ exports.signup = async (req, res) => {
       message: "Utilisateur créé et connecté !",
     });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    console.error("❌ ERREUR DANS /signup :", error);
+    res.status(500).json({ errors: "Erreur serveur" });
   }
 };
 
 // Fonction pour se connecter
 exports.login = async (req, res) => {
   try {
+    console.log("📩 /signin hit !");
+    console.log("📬 req.body reçu :", req.body);
+
     const { identifier, password } = req.body;
     const user = await User.findOne({
       where: {
@@ -74,16 +73,19 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ errors: "Pas d'utilisateur trouvé" });
     }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ errors: "Mot de passe non valide" });
     }
+
     const enterprises = await user.getEnterprises();
     const enterprisesData = enterprises.map((enterprise) => {
       const filteredEnterprise = {
         id: enterprise.id,
         name: enterprise.name,
         isValidate: enterprise.isValidate,
+        isPremium: enterprise.isPremium,
       };
       if (enterprise.logo) {
         const logoUrl = files.getUrl(req, "enterprises/logo", enterprise.logo);
@@ -91,6 +93,7 @@ exports.login = async (req, res) => {
       }
       return filteredEnterprise;
     });
+
     const userData = {
       id: user.id,
       username: user.username,
@@ -105,8 +108,10 @@ exports.login = async (req, res) => {
       const avatarUrl = files.getUrl(req, "users/avatar", user.avatar);
       userData.avatar = avatarUrl;
     }
+
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
+
     res.setHeader("Authorization", `${accessToken}`);
     res.status(200).json({
       user: userData,
@@ -115,7 +120,8 @@ exports.login = async (req, res) => {
       message: "Utilisateur connecté !",
     });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    console.error("❌ ERREUR DANS /signin :", error);
+    res.status(500).json({ errors: "Erreur serveur" });
   }
 };
 
@@ -124,7 +130,7 @@ exports.logout = async (req, res) => {
   try {
     res.status(200).json({ message: "Utilisateur déconnecté !" });
   } catch (err) {
-    res.status(500).json({ errors: err.errors });
+    res.status(500).json({ errors: "Erreur serveur" });
   }
 };
 
@@ -189,7 +195,7 @@ exports.updateUser = async (req, res) => {
       .status(200)
       .json({ user: userData, message: "Utilisateur mis à jour !" });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    res.status(500).json({ errors: "Erreur serveur" });
   }
 };
 
@@ -203,7 +209,7 @@ exports.deleteUser = async (req, res) => {
     await req.user.destroy();
     res.status(200).json({ message: "Utilisateur supprimé" });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    res.status(500).json({ errors: "Erreur serveur" });
   }
 };
 
@@ -223,13 +229,13 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = resetExpires;
     await user.save();
 
-    sendEmail(email, "Re-initialiser votre mot de passe", "resetpassword", {
+    sendEmail(email, "Réinitialisation de votre mot de passe — Proxilio", "resetpassword", {
       user: user.username,
       url: `${process.env.REACT_URL}/${resetToken}`,
     });
     res.status(200).json({ message: "Email de re-initialisation envoyé" });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    res.status(500).json({ errors: "Erreur serveur" });
   }
 };
 
@@ -255,7 +261,7 @@ exports.resetPassword = async (req, res) => {
 
     res.status(200).json({ message: "Mot de passe modifié" });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    res.status(500).json({ errors: "Erreur serveur" });
   }
 };
 

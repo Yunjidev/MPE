@@ -9,6 +9,34 @@ const {
 } = require("../utils/availability");
 const moment = require("moment-timezone");
 
+const FRENCH_DAYS = [
+  "Dimanche",
+  "Lundi",
+  "Mardi",
+  "Mercredi",
+  "Jeudi",
+  "Vendredi",
+  "Samedi",
+];
+
+const normalizeDateInput = (value) => {
+  const parsed = moment(value);
+  if (!parsed.isValid()) {
+    return null;
+  }
+  return parsed.format("YYYY-MM-DD");
+};
+
+const ensurePremiumEnterprise = (enterprise) => {
+  if (!enterprise || !enterprise.isPremium) {
+    const error = new Error(
+      "Cette entreprise n'est pas premium. Accès refusé.",
+    );
+    error.statusCode = 403;
+    throw error;
+  }
+};
+
 exports.getAllReservations = async (req, res) => {
   try {
     const reservation = await Reservation.findAll({
@@ -223,6 +251,11 @@ exports.createReservation = async (req, res) => {
     if (!offer) {
       return res.status(404).json({ errors: "Pas d'offre trouvée" });
     }
+    if (!enterprise.isPremium) {
+      return res
+        .status(403)
+        .json({ errors: "Cette entreprise n'est pas premium." });
+    }
     if (!req.user) {
       return res.status(404).json({ errors: "Pas d'utilisateur trouvé" });
     }
@@ -239,6 +272,7 @@ exports.createReservation = async (req, res) => {
 
     const disponibilities = await enterprise.getDisponibilities();
     const indisponibilities = await enterprise.getIndisponibilities();
+    const manualBlocks = await enterprise.getManualBlocks();
     const reservations = await Reservation.findAll({
       where: {
         Offer_id: {
@@ -271,6 +305,24 @@ exports.createReservation = async (req, res) => {
         .json({ errors: "Le créneau horaire est déjà réservé" });
     }
 
+    const manualBlockConflict = manualBlocks.some((block) => {
+      const blockDate = moment(block.date).format("YYYY-MM-DD");
+      if (blockDate !== moment(date).format("YYYY-MM-DD")) {
+        return false;
+      }
+      const blockStart = moment(block.start_time, "HH:mm");
+      const blockEnd = moment(block.end_time, "HH:mm");
+      const startTime = moment(start_time, "HH:mm");
+      const endTime = moment(calculateEndTime(start_time, offer.duration), "HH:mm");
+      return startTime.isBefore(blockEnd) && endTime.isAfter(blockStart);
+    });
+
+    if (manualBlockConflict) {
+      return res
+        .status(400)
+        .json({ errors: "Ce créneau est verrouillé." });
+    }
+
     const newReservation = await Reservation.create({
       date,
       start_time,
@@ -278,6 +330,7 @@ exports.createReservation = async (req, res) => {
       status: "pending",
       Offer_id: id,
       User_id: req.user.id,
+      Enterprise_id: enterprise.id,
     });
     res.status(201).json({ message: "Réservation créée" });
   } catch (error) {
@@ -310,11 +363,6 @@ exports.updateReservation = async (req, res) => {
     const isReservationOfferOwner =
       reservation.offer.enterprise.User_id === req.user.id;
 
-    if (req.user.isAdmin) {
-      reservation.status = status || reservation.status;
-      reservation.date = date || reservation.date;
-      reservation.start_time = start_time || reservation.start_time;
-    }
     if (!isReservationOwner && !isReservationOfferOwner && !req.user.isAdmin) {
       return res
         .status(403)
@@ -327,6 +375,7 @@ exports.updateReservation = async (req, res) => {
         const enterprise = reservation.offer.enterprise;
         const disponibilities = await enterprise.getDisponibilities();
         const indisponibilities = await enterprise.getIndisponibilities();
+        const manualBlocks = await enterprise.getManualBlocks();
         const reservations = await Reservation.findAll({
           where: {
             Offer_id: {
@@ -370,6 +419,25 @@ exports.updateReservation = async (req, res) => {
             .json({ errors: "Le créneau horaire est déjà réservé" });
         }
 
+        const manualBlockConflict = manualBlocks.some((block) => {
+          const blockDate = moment(block.date).format("YYYY-MM-DD");
+          if (blockDate !== moment(date).format("YYYY-MM-DD")) {
+            return false;
+          }
+          const blockStart = moment(block.start_time, "HH:mm");
+          const blockEnd = moment(block.end_time, "HH:mm");
+          const startTime = moment(start_time, "HH:mm");
+          const endTime = calculateEndTime(start_time, reservation.offer.duration);
+          const endMoment = moment(endTime, "HH:mm");
+          return startTime.isBefore(blockEnd) && endMoment.isAfter(blockStart);
+        });
+
+        if (manualBlockConflict) {
+          return res
+            .status(400)
+            .json({ errors: "Ce créneau est verrouillé." });
+        }
+
         reservation.date = date;
         reservation.start_time = start_time;
         reservation.end_time = calculateEndTime(
@@ -377,14 +445,22 @@ exports.updateReservation = async (req, res) => {
           reservation.offer.duration,
         );
         reservation.status = reservation.status;
-      } else {
-        reservation.date = date || reservation.date;
-        reservation.start_time = start_time || reservation.start_time;
+      } else if (status === "cancelled") {
+        reservation.status = "cancelled";
+      }
+    } else if (isReservationOfferOwner || req.user.isAdmin) {
+      if (status) {
+        reservation.status = status;
+      }
+      if (date) {
+        reservation.date = date;
+      }
+      if (start_time) {
+        reservation.start_time = start_time;
         reservation.end_time = calculateEndTime(
-          start_time || reservation.start_time,
+          start_time,
           reservation.offer.duration,
         );
-        reservation.status = reservation.status;
       }
     }
     const timezone = "Europe/Paris";
@@ -392,6 +468,8 @@ exports.updateReservation = async (req, res) => {
       const now = moment.tz(timezone);
       if (status === "accepted" || status === "rejected") {
         reservation.status = status;
+      } else if (status === "cancelled") {
+        reservation.status = "cancelled";
       } else if (status === "done" && reservation.status === "accepted") {
         const reservationDate = new Date(reservation.date);
         const formattedDate = reservationDate.toISOString().split("T")[0];
@@ -423,13 +501,363 @@ exports.updateReservation = async (req, res) => {
 exports.deleteReservation = async (req, res) => {
   try {
     const { id } = req.params;
-    const reservation = await Reservation.findByPk(id);
+    const reservation = await Reservation.findByPk(id, {
+      include: [
+        {
+          model: Offer,
+          as: "offer",
+          include: [
+            {
+              model: Enterprise,
+              as: "enterprise",
+            },
+          ],
+        },
+      ],
+    });
     if (!reservation) {
       return res.status(404).json({ errors: "Pas de reservation trouvée" });
     }
+
+    const isReservationOwner = reservation.User_id === req.user.id;
+    const isReservationOfferOwner =
+      reservation.offer?.enterprise?.User_id === req.user.id;
+
+    if (!isReservationOwner && !isReservationOfferOwner && !req.user.isAdmin) {
+      return res
+        .status(403)
+        .json({ errors: "Vous n'êtes pas autorisé à effectuer cette action" });
+    }
+
     await reservation.destroy();
     res.status(200).json({ message: "reservation supprimée" });
   } catch (error) {
     res.status(500).json({ errors: error.errors });
+  }
+};
+
+exports.getEnterpriseReservationsForOwner = async (req, res) => {
+  try {
+    const enterprise = req.enterprise;
+    ensurePremiumEnterprise(enterprise);
+
+    const reservations = await Reservation.findAll({
+      where: {
+        Enterprise_id: enterprise.id,
+      },
+      include: [
+        {
+          model: Offer,
+          as: "offer",
+          attributes: ["id", "name", "duration", "price"],
+        },
+        {
+          model: sequelize.models.User,
+          as: "user",
+          attributes: [
+            "id",
+            "username",
+            "firstname",
+            "lastname",
+            "avatar",
+          ],
+        },
+      ],
+      order: [
+        ["date", "ASC"],
+        ["start_time", "ASC"],
+      ],
+    });
+
+    return res.status(200).json(reservations);
+  } catch (error) {
+    const status = error.statusCode || 500;
+    const message =
+      error.statusCode === 403
+        ? error.message
+        : "Erreur lors de la récupération des réservations.";
+    res.status(status).json({ error: message });
+  }
+};
+
+exports.getEnterpriseReservationsPublic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const enterprise = await Enterprise.findByPk(id, {
+      attributes: ["id", "isPremium"],
+    });
+
+    if (!enterprise) {
+      return res.status(404).json({ error: "Entreprise introuvable." });
+    }
+
+    ensurePremiumEnterprise(enterprise);
+
+    const reservations = await Reservation.findAll({
+      where: {
+        Enterprise_id: enterprise.id,
+        status: {
+          [Op.notIn]: ["cancelled", "rejected"],
+        },
+      },
+      attributes: [
+        "id",
+        "date",
+        "start_time",
+        "end_time",
+        "status",
+        "Offer_id",
+        "contact_phone",
+      ],
+      include: [
+        {
+          model: Offer,
+          as: "offer",
+          attributes: ["id", "name", "duration", "price"],
+        },
+      ],
+      order: [
+        ["date", "ASC"],
+        ["start_time", "ASC"],
+      ],
+    });
+
+    return res.status(200).json(reservations);
+  } catch (error) {
+    const status = error.statusCode || 500;
+    const message =
+      error.statusCode === 403
+        ? error.message
+        : "Erreur lors de la récupération des réservations.";
+    res.status(status).json({ error: message });
+  }
+};
+
+exports.createEnterpriseReservationByUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, start_time, offerId, phone } = req.body;
+
+    if (!date || !start_time || !offerId || !phone) {
+      return res.status(400).json({
+        error:
+          "La date, l'heure de début, la prestation et le numéro de téléphone sont obligatoires.",
+      });
+    }
+
+    const normalizedDate = normalizeDateInput(date);
+    if (!normalizedDate) {
+      return res
+        .status(400)
+        .json({ error: "La date fournie est invalide." });
+    }
+
+    const enterprise = await Enterprise.findByPk(id, {
+      include: [
+        {
+          model: Offer,
+          as: "offers",
+          attributes: ["id", "name", "duration", "price", "image"],
+        },
+        {
+          model: sequelize.models.Disponibility,
+          as: "disponibilities",
+          attributes: ["id", "day", "start_hour", "end_hour"],
+        },
+        {
+          model: sequelize.models.Indisponibility,
+          as: "indisponibilities",
+          attributes: [
+            "id",
+            "start_date",
+            "end_date",
+            "start_hour",
+            "end_hour",
+          ],
+        },
+        {
+          model: sequelize.models.ManualBlock,
+          as: "manualBlocks",
+          attributes: ["id", "date", "start_time", "end_time"],
+        },
+      ],
+    });
+
+    if (!enterprise || !enterprise.isValidate) {
+      return res.status(404).json({ error: "Entreprise introuvable." });
+    }
+
+    ensurePremiumEnterprise(enterprise);
+
+    const offer = enterprise.offers.find(
+      (item) => Number(item.id) === Number(offerId),
+    );
+
+    if (!offer) {
+      return res
+        .status(404)
+        .json({ error: "Prestation introuvable pour cette entreprise." });
+    }
+
+    const duration = parseInt(offer.duration, 10);
+    if (Number.isNaN(duration) || duration <= 0) {
+      return res.status(400).json({
+        error: "La prestation sélectionnée ne possède pas de durée valide.",
+      });
+    }
+
+    const sanitizedPhone = String(phone).replace(/[\s.-]/g, "").trim();
+    if (!/^\+?[0-9]{6,15}$/.test(sanitizedPhone)) {
+      return res
+        .status(400)
+        .json({ error: "Numéro de téléphone invalide." });
+    }
+
+    const requestedDate = moment(normalizedDate, "YYYY-MM-DD");
+    const now = moment().startOf("day");
+    if (requestedDate.isBefore(now)) {
+      return res
+        .status(400)
+        .json({ error: "La date doit être postérieure à aujourd'hui." });
+    }
+
+    const dayLabel = FRENCH_DAYS[requestedDate.day()];
+    const matchingDisponibilities = enterprise.disponibilities.filter(
+      (disponibility) => disponibility.day === dayLabel,
+    );
+
+    if (matchingDisponibilities.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Aucun créneau disponible pour ce jour." });
+    }
+
+    const startMoment = moment(start_time, "HH:mm");
+    if (!startMoment.isValid()) {
+      return res
+        .status(400)
+        .json({ error: "L'heure de début est invalide." });
+    }
+
+    const endMoment = startMoment.clone().add(duration, "minutes");
+    const end_time = endMoment.format("HH:mm");
+
+    const fitsInAvailability = matchingDisponibilities.some((disponibility) => {
+      const dispoStart = moment(disponibility.start_hour, "HH:mm");
+      const dispoEnd = moment(disponibility.end_hour, "HH:mm");
+      return (
+        startMoment.isSameOrAfter(dispoStart) &&
+        endMoment.isSameOrBefore(dispoEnd)
+      );
+    });
+
+    if (!fitsInAvailability) {
+      return res
+        .status(400)
+        .json({ error: "Ce créneau ne correspond à aucune disponibilité." });
+    }
+
+    const overlapsReservation = await Reservation.findOne({
+      where: {
+        Enterprise_id: enterprise.id,
+        date: normalizedDate,
+        status: {
+          [Op.notIn]: ["cancelled", "rejected"],
+        },
+        [Op.or]: [
+          {
+            start_time: {
+              [Op.between]: [
+                startMoment.format("HH:mm"),
+                endMoment.format("HH:mm"),
+              ],
+            },
+          },
+          {
+            end_time: {
+              [Op.between]: [
+                startMoment.format("HH:mm"),
+                endMoment.format("HH:mm"),
+              ],
+            },
+          },
+          {
+            [Op.and]: [
+              {
+                start_time: {
+                  [Op.lte]: startMoment.format("HH:mm"),
+                },
+              },
+              {
+                end_time: {
+                  [Op.gte]: endMoment.format("HH:mm"),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (overlapsReservation) {
+      return res.status(409).json({ error: "Ce créneau est déjà réservé." });
+    }
+
+    const overlapsManualBlock = enterprise.manualBlocks?.some((block) => {
+      if (
+        !moment(block.date, "YYYY-MM-DD").isSame(requestedDate, "day")
+      ) {
+        return false;
+      }
+      const blockStart = moment(block.start_time, "HH:mm");
+      const blockEnd = moment(block.end_time, "HH:mm");
+      return startMoment.isBefore(blockEnd) && endMoment.isAfter(blockStart);
+    });
+
+    if (overlapsManualBlock) {
+      return res.status(400).json({ error: "Ce créneau est fermé." });
+    }
+
+    const isWithinIndisponibility = enterprise.indisponibilities.some(
+      (indisponibility) => {
+        const startDate = moment(indisponibility.start_date, "YYYY-MM-DD");
+        const endDate = moment(indisponibility.end_date, "YYYY-MM-DD");
+        if (!requestedDate.isBetween(startDate, endDate, undefined, "[]")) {
+          return false;
+        }
+        const indispoStart = moment(indisponibility.start_hour, "HH:mm");
+        const indispoEnd = moment(indisponibility.end_hour, "HH:mm");
+        return (
+          startMoment.isBefore(indispoEnd) && endMoment.isAfter(indispoStart)
+        );
+      },
+    );
+
+    if (isWithinIndisponibility) {
+      return res.status(400).json({ error: "Ce créneau est indisponible." });
+    }
+
+    const newReservation = await Reservation.create({
+      date: normalizedDate,
+      start_time: startMoment.format("HH:mm"),
+      end_time,
+      status: "pending",
+      Enterprise_id: enterprise.id,
+      Offer_id: offer.id,
+      User_id: req.user.id,
+      contact_phone: sanitizedPhone,
+    });
+
+    return res.status(201).json({
+      message: "Réservation enregistrée. Elle est en attente de confirmation.",
+      reservation: newReservation,
+    });
+  } catch (error) {
+    const status = error.statusCode || 500;
+    const message =
+      error.statusCode === 403
+        ? error.message
+        : "Erreur lors de la création de la réservation.";
+    res.status(status).json({ error: message });
   }
 };

@@ -1,45 +1,78 @@
 /* eslint-disable react/no-unescaped-entities */
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BsInstagram, BsFacebook, BsTwitterX, BsLinkedin } from 'react-icons/bs';
-import "./footer.css";
-import Logo from '../../assets/image.png'
+import Logo from '/assets/img/logo.png';
 
 const Footer = () => {
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-
-  useEffect(() => {
-    setCurrentYear(new Date().getFullYear());
-  }, []);
-
   return (
-    <footer className="text-white bg-footer h-72 border-t border-neutral-700 border-neutral-400 flex justify-between items-center p-4 w-full">
-      <div className="flex-1 flex justify-center">
-        <img src={Logo} className='h-56' alt="Logo de Ma Petite Entreprise" />
-      </div>
-      <div className="flex-1 flex flex-col items-center">
-        <Link to="/contact" className="footer-link hover:text-orange-500 font-semibold mb-2">Nous Contacter</Link>
-        <Link to="/usage-policies" className="font-semibold hover:text-orange-500 mb-2">Conditions générales d'utilisation</Link>
-        <Link to="condifentiality-policies" className="font-semibold hover:text-orange-500 mb-2">Politique de confidentialité</Link>
-        <Link to="/legal-notices" className="font-semibold hover:text-orange-500">Mentions légales</Link>
-        <p className="font-semibold mt-6">© {currentYear} Ma Petite Entreprise. Tous droits réservés.</p>
-      </div>
-      <div className="flex-1 flex flex-col items-center">
-        <p className="mr-3 text-xl font-semibold mb-4">Suivez-nous sur les réseaux</p>
-        <div className="flex space-x-4">
-          <a href="https://www.instagram.com" className="footer-icon hover:text-orange-500 mb-2" aria-label="Suivez-nous sur Instagram">
-            <BsInstagram size={32} />
-          </a>
-          <a href="https://www.facebook.com" className="footer-icon hover:text-orange-500" aria-label="Suivez-nous sur Facebook">
-            <BsFacebook size={32} />
-          </a>
-          <a href="https://twitter.com" className="footer-icon hover:text-orange-500" aria-label="Suivez-nous sur Twitter">
-            <BsTwitterX size={32} />
-          </a>
-          <a href="mailto:contact@example.com" className="footer-icon hover:text-orange-500" aria-label="Envoyez-nous un email">
-            <BsLinkedin size={32} />
-          </a>
+    <footer className="bg-[#0B1713] text-white w-full relative overflow-hidden">
+      {/* Grid overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+      {/* Radial fade at center */}
+      <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,black_40%,transparent_100%)] bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-60" />
+      <div className="px-4 sm:px-8 lg:px-16 2xl:px-24 pt-16 pb-8 relative z-10">
+
+        {/* Top section */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-16 pb-12 border-b border-white/10">
+
+          {/* Brand */}
+          <div className="lg:col-span-1 flex flex-col items-center gap-5">
+            <img src={Logo} className="h-20 object-contain" alt="Logo Proxilio" />
+            <p className="text-[#879f98] text-sm leading-relaxed font-light tracking-tight text-center max-w-xs">
+              La plateforme qui connecte les particuliers aux meilleurs professionnels locaux.
+            </p>
+          </div>
+
+          {/* Nav columns */}
+          <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-8 lg:pl-8">
+            <div className="flex flex-col items-center">
+              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Plateforme</p>
+              <div className="flex flex-col items-center gap-3">
+                <Link to="/searchentreprise" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Rechercher un pro</Link>
+                <Link to="/FAQ" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">FAQ</Link>
+                <Link to="/" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Accueil</Link>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Entreprise</p>
+              <div className="flex flex-col items-center gap-3">
+                <Link to="/pricing" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Tarifs</Link>
+                <Link to="/contact" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Contact</Link>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Légal</p>
+              <div className="flex flex-col items-center gap-3">
+                <Link to="/usage-policies" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">CGU</Link>
+                <Link to="/condifentiality-policies" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Confidentialité</Link>
+                <Link to="/legal-notices" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Mentions légales</Link>
+                <Link to="/cookie-policies" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Cookies</Link>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Bottom bar */}
+        <div className="pt-6 flex flex-col items-center gap-4">
+          <span className="text-[#879f98] text-xs font-light tracking-tight">
+            © {new Date().getFullYear()} Proxilio. Tous droits réservés.
+          </span>
+            <div className="flex items-center gap-4 mt-1">
+              <a href="https://www.instagram.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="Instagram">
+                <BsInstagram size={17} />
+              </a>
+              <a href="https://www.facebook.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="Facebook">
+                <BsFacebook size={17} />
+              </a>
+              <a href="https://twitter.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="X / Twitter">
+                <BsTwitterX size={17} />
+              </a>
+              <a href="https://www.linkedin.com" className="text-[#879f98] hover:text-white transition-colors duration-200" aria-label="LinkedIn">
+                <BsLinkedin size={17} />
+              </a>
+            </div>
+        </div>
+
       </div>
     </footer>
   );

@@ -47,12 +47,17 @@ export function formatReservations(reservations) {
       .minute(parseInt(reservation.end_time.split(":")[1]))
       .second(0);
 
+    const label =
+      reservation?.offer?.name || reservation?.title || "Réservation";
+
     return {
-      title: `${reservation.offer.name} - ${startDateTime.format("HH:mm")} � ${endDateTime.format("HH:mm")}`,
+      id: reservation.id,
+      title: `${label} — ${startDateTime.format("HH:mm")} à ${endDateTime.format("HH:mm")}`,
       start: startDateTime.toDate(),
       end: endDateTime.toDate(),
       type: "reservation",
       status: reservation.status,
+      rawData: reservation,
     };
   });
 }
@@ -77,6 +82,28 @@ export function formatIndisponibility(indisponibility) {
       data: {
         user: date.user,
       },
+    };
+  });
+}
+
+export function formatManualBlocks(blocks) {
+  if (!blocks) return [];
+  return blocks.map((block) => {
+    const startDateTime = dayjs(block.date)
+      .hour(parseInt(block.start_time.split(":")[0]))
+      .minute(parseInt(block.start_time.split(":")[1]))
+      .second(0);
+    const endDateTime = dayjs(block.date)
+      .hour(parseInt(block.end_time.split(":")[0]))
+      .minute(parseInt(block.end_time.split(":")[1]))
+      .second(0);
+
+    return {
+      id: block.id,
+      title: block.reason ? `Fermé - ${block.reason}` : "Fermé",
+      start: startDateTime.toDate(),
+      end: endDateTime.toDate(),
+      type: "manual-block",
     };
   });
 }

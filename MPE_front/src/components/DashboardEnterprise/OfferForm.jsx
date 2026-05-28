@@ -75,10 +75,6 @@ const OfferForm = ({ offer, onClose = () => {} }) => {
         response = await postData(`/enterprise/${id}/offer`, formDataToSend);
       }
   
-      // Inspectez la réponse complète
-      console.log("Réponse brute du serveur:", response);
-      console.log("Réponse JSON du serveur:", await response.json());
-  
       if (response.message === 'Offre créée') {
         alert("Offre créée avec succès !");
       } else if (response.message === 'Offre modifiée') {
@@ -94,67 +90,72 @@ const OfferForm = ({ offer, onClose = () => {} }) => {
     }
   };
 
+  const inputCls = "w-full p-2.5 rounded-xl bg-[#f5f7f6] border border-black/5 text-[#132A24] placeholder:text-[#879f98] font-light focus:outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 text-sm transition";
+  const labelCls = "block text-[10px] font-light uppercase tracking-widest text-[#879f98] mb-1";
+
   return (
-    <div className="bg-neutral-900 text-white w-full p-8">
-      <div className="mb-4 text-center">
-        <h2 className="text-2xl font-semibold">
+    <div className="w-full p-6">
+      <div className="mb-4">
+        <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-0.5">Service</p>
+        <h2 className="text-base font-light text-[#132A24]">
           {offer ? "Modifier l'offre" : "Créer une nouvelle offre"}
         </h2>
       </div>
-      <form onSubmit={handleSubmit}>
-        {['name', 'description', 'duration', 'price'].map((field) => (
-          <div key={field} className="mb-4">
-            <label htmlFor={field} className="block text-sm font-medium">
-              {field.charAt(0).toUpperCase() + field.slice(1)}
-            </label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {[
+          { id: "name",        label: "Nom du service",    type: "text",   placeholder: "ex. Coupe homme" },
+          { id: "description", label: "Description",       type: "text",   placeholder: "Décrivez votre service…" },
+          { id: "duration",    label: "Durée (minutes)",   type: "number", placeholder: "ex. 60" },
+          { id: "price",       label: "Prix (€)",          type: "number", placeholder: "ex. 25" },
+        ].map(({ id, label, type, placeholder }) => (
+          <div key={id}>
+            <label htmlFor={id} className={labelCls}>{label}</label>
             <input
-              type={field === "duration" || field === "price" ? "number" : "text"}
-              id={field}
-              value={formData[field]}
+              type={type}
+              id={id}
+              value={formData[id]}
               onChange={handleChange}
-              className="w-full mt-1 p-2 rounded bg-neutral-800 border border-neutral-700 text-white"
-              placeholder={`${field}`}
+              className={inputCls}
+              placeholder={placeholder}
               required
             />
           </div>
         ))}
-        <div className="mb-4 flex items-center">
+        <div className="flex items-center gap-3 pt-1">
           <input
             type="checkbox"
             id="estimate"
             checked={formData.estimate}
             onChange={handleChange}
-            className="mr-2"
+            className="w-4 h-4 accent-[#132A24]"
           />
-          <label htmlFor="estimate" className="text-sm font-medium">
-            Estimation seulement
+          <label htmlFor="estimate" className="text-sm text-[#4b615a] font-light">
+            Prix indicatif (estimation uniquement)
           </label>
         </div>
-        <div className="mb-4">
-          <label htmlFor="image" className="block text-sm font-medium">
-            Image
-          </label>
+        <div>
+          <label htmlFor="image" className={labelCls}>Image du service</label>
           <input
             type="file"
             id="image"
             accept="image/*"
             onChange={handleChange}
-            className="w-full mt-1 p-2 rounded bg-neutral-800 border border-neutral-700 text-white"
+            className="w-full p-2 rounded-xl bg-[#f5f7f6] border border-black/5 text-[#879f98] text-sm font-light file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-[#eef5f1] file:text-[#132A24] file:text-xs file:font-light file:cursor-pointer"
           />
         </div>
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end gap-3 pt-2">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 mr-4"
+            className="px-4 py-2 rounded-xl border border-black/10 text-[#4b615a] font-light hover:bg-[#f5f7f6] text-sm transition"
           >
             Annuler
           </button>
           <button
             type="submit"
-            className="bg-gradient-to-r from-white to-[#67FFCC] text-transparent bg-clip-text font-semibold py-2 px-6 rounded-xl shadow-lg transform border border-white hover:scale-105 transition duration-300 ease-in-out"
+            className="px-4 py-2 rounded-xl bg-[#132A24] hover:bg-[#1b3b33] text-white font-light text-sm transition active:scale-95"
           >
-            {offer ? "Modifier l'offre" : "Créer Offre"}
+            {offer ? "Enregistrer les modifications" : "Créer le service"}
           </button>
         </div>
       </form>

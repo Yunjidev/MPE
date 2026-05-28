@@ -1,0 +1,17 @@
+Dossier reçu, en cours de vérification — Proxilio
+
+Bonjour {user},
+
+Nous avons bien reçu votre fiche pour l'entreprise "{enterprise}".
+
+Notre équipe va examiner votre dossier dans les 24 à 48 heures ouvrées. Vous recevrez un email dès que votre entreprise sera validée.
+
+Étapes :
+✓ Dossier soumis
+● Vérification en cours (24–48h)
+○ Publication sur Proxilio
+
+Des questions ? Écrivez-nous à contact@proxilio.fr
+
+---
+© 2025 Proxilio — Tous droits réservés

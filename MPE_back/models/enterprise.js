@@ -41,6 +41,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "Enterprise_id",
         as: "likes",
       });
+      Enterprise.hasMany(models.Reservation, {
+        foreignKey: "Enterprise_id",
+        as: "reservations",
+      });
+      Enterprise.hasMany(models.ManualBlock, {
+        foreignKey: "Enterprise_id",
+        as: "manualBlocks",
+      });
     }
   }
   Enterprise.init(
@@ -139,6 +147,26 @@ module.exports = (sequelize, DataTypes) => {
       isValidate: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
+      },
+      isPremium: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      premiumManualStart: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      premiumManualEnd: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      latitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+      },
+      longitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
       },
       User_id: {
         type: DataTypes.INTEGER,

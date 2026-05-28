@@ -19,7 +19,7 @@ const sendEmail = (email, subject, templateName, data) => {
   const text = generateTemplate(templateName, data, "txt");
 
   transporter.sendMail({
-    from: process.env.EMAIL,
+    from: `"Proxilio" <${process.env.EMAIL || "contact@proxilio.fr"}>`,
     to: email,
     subject,
     html,

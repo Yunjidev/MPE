@@ -5,7 +5,7 @@ const UsagePolicies = () => {
             <h1 className="text-orange-800 text-3xl font-bold mb-6">Conditions Générales d'Utilisation</h1>
 
             <p className="text-white  mb-4">
-                Les présentes conditions générales d'utilisation (ci-après les « CGU ») régissent l'accès et l'utilisation du site internet Ma Petite Entreprise (ci-après le « Site »). En accédant ou en utilisant ce site, vous acceptez d'être lié par ces CGU.
+                Les présentes conditions générales d'utilisation (ci-après les « CGU ») régissent l'accès et l'utilisation du site internet Proxilio (ci-après le « Site »). En accédant ou en utilisant ce site, vous acceptez d'être lié par ces CGU.
             </p>
 
             <h2 className="text-orange-800 text-xl font-semibold mt-6">1. Objet</h2>
@@ -30,20 +30,20 @@ const UsagePolicies = () => {
 
             <h2 className="text-orange-800 text-xl font-semibold mt-6">5. Contenu publié par les utilisateurs</h2>
             <p className="text-white  mb-4">
-                En publiant du contenu sur le site, vous garantissez que vous disposez de tous les droits nécessaires pour le faire et que ce contenu n'enfreint aucune loi ou règlement en vigueur. Vous accordez à Ma Petite Entreprise une licence non exclusive, gratuite, mondiale et perpétuelle pour utiliser, reproduire, distribuer et afficher le contenu que vous publiez sur le site.
+                En publiant du contenu sur le site, vous garantissez que vous disposez de tous les droits nécessaires pour le faire et que ce contenu n'enfreint aucune loi ou règlement en vigueur. Vous accordez à Proxilio une licence non exclusive, gratuite, mondiale et perpétuelle pour utiliser, reproduire, distribuer et afficher le contenu que vous publiez sur le site.
             </p>
 
             <h2 className="text-orange-800 text-xl font-semibold mt-6">6. Responsabilité</h2>
             <p className="text-white  mb-4">
-                Ma Petite Entreprise décline toute responsabilité en cas de dommage direct ou indirect résultant de l'utilisation ou de l'impossibilité d'utiliser le Site, y compris les virus qui pourraient contaminer l'équipement informatique de l'utilisateur.
+                Proxilio décline toute responsabilité en cas de dommage direct ou indirect résultant de l'utilisation ou de l'impossibilité d'utiliser le Site, y compris les virus qui pourraient contaminer l'équipement informatique de l'utilisateur.
             </p>
             <p className="text-white  mb-4">
-                Le site peut contenir des liens vers d'autres sites internet qui ne sont pas sous le contrôle de Ma Petite Entreprise. Nous ne sommes pas responsables du contenu de ces sites externes.
+                Le site peut contenir des liens vers d'autres sites internet qui ne sont pas sous le contrôle de Proxilio. Nous ne sommes pas responsables du contenu de ces sites externes.
             </p>
 
             <h2 className="text-orange-800 text-xl font-semibold mt-6">7. Modification des CGU</h2>
             <p className="text-white  mb-4">
-                Ma Petite Entreprise se réserve le droit de modifier à tout moment les présentes CGU. Les utilisateurs seront informés de ces modifications par tout moyen jugé opportun par Ma Petite Entreprise. En continuant à utiliser le Site après la mise en ligne des nouvelles CGU, vous acceptez d'être lié par celles-ci.
+                Proxilio se réserve le droit de modifier à tout moment les présentes CGU. Les utilisateurs seront informés de ces modifications par tout moyen jugé opportun par Proxilio. En continuant à utiliser le Site après la mise en ligne des nouvelles CGU, vous acceptez d'être lié par celles-ci.
             </p>
 
             <h2 className="text-orange-800 text-xl font-semibold mt-6">8. Droit applicable et juridiction compétente</h2>

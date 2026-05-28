@@ -1,21 +1,51 @@
-import AsyncSelect from 'react-select/async';
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
+import AsyncSelect from "react-select/async";
+import { selectClassNames } from "./selectTw";
 
+const fetchRegions = async (q) => {
+  const url = q && q.trim()
+    ? `https://geo.api.gouv.fr/regions?nom=${encodeURIComponent(q)}`
+    : `https://geo.api.gouv.fr/regions`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`geo.api.gouv.fr regions ${res.status}`);
+  return res.json();
+};
 
-const CountrySelect = ({ selectedCountries, setSelectedCountries, loadOptions }) => {
-    return (
-      <AsyncSelect
-        isMulti
-        cacheOptions
-        loadOptions={(inputValue) => loadOptions(inputValue, 'country')}
-        onChange={setSelectedCountries}
-        defaultOptions
-        value={selectedCountries}
-        classNamePrefix="react-select-container"
-        className="react-select-container"
-        placeholder="Région"
-        noOptionsMessage={() => "Aucune région trouvée"}
-        loadingMessage={() => "Chargement ..."}
-      />
-    );
+export default function CountrySelect({
+  selectedCountries,
+  setSelectedCountries,
+}) {
+  const [defaults, setDefaults] = useState([]);
+
+  useEffect(() => {
+    fetchRegions("")
+      .then((data) =>
+        setDefaults((data || []).map((r) => ({ label: r.nom, value: r.code })))
+      )
+      .catch(() => setDefaults([]));
+  }, []);
+
+  const loadOptions = async (inputValue) => {
+    const data = await fetchRegions(inputValue || "");
+    return (data || []).map((r) => ({ label: r.nom, value: r.code }));
   };
-export default CountrySelect;
+
+  return (
+    <AsyncSelect
+      isMulti
+      cacheOptions
+      defaultOptions={defaults}
+      loadOptions={loadOptions}
+      placeholder="Région"
+      value={selectedCountries}
+      onChange={(vals) => setSelectedCountries(vals || [])}
+      noOptionsMessage={() => "Aucune région"}
+      classNames={selectClassNames}
+      unstyled
+      menuPortalTarget={document.body}
+      menuPosition="fixed"
+      styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+    />
+  );
+}

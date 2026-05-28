@@ -5,7 +5,11 @@ export default function Button({ type = "button", onClick, children }) {
     <button
       type={type}
       onClick={onClick}
-      className="w-full mt-5 h-12 bg-gray-800 hover:bg-gradient-to-r hover:from-violet-400 hover:via-orange-400 hover:to-green-300 hover:text-black text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-white font-bold py-3 px-6 rounded-xl shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+      className="w-full mt-5 h-12 rounded-xl font-light tracking-tight
+                 bg-[#132A24] text-white
+                 hover:bg-[#1b3b33]
+                 active:scale-[0.98]
+                 transition-all duration-200 ease-in-out"
     >
       {children}
     </button>

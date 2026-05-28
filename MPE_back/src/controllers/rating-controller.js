@@ -1,5 +1,6 @@
 const { sequelize } = require("../../models/index");
 const Rating = sequelize.models.Rating;
+const Reservation = sequelize.models.Reservation;
 
 exports.getAllRatings = async (req, res) => {
   try {
@@ -152,6 +153,34 @@ exports.createRating = async (req, res) => {
     if (!req.user) {
       return res.status(404).json({ errors: "Pas d'utilisateur trouvé" });
     }
+    const completedReservation = await Reservation.findOne({
+      where: {
+        Offer_id: offer.id,
+        User_id: req.user.id,
+        status: "done",
+      },
+    });
+
+    if (!completedReservation) {
+      return res.status(403).json({
+        errors:
+          "Vous devez avoir terminé cette prestation avant de laisser un avis.",
+      });
+    }
+
+    const existingRating = await Rating.findOne({
+      where: {
+        Offer_id: offer.id,
+        User_id: req.user.id,
+      },
+    });
+
+    if (existingRating) {
+      return res
+        .status(400)
+        .json({ errors: "Vous avez déjà laissé un avis pour cette prestation." });
+    }
+
     const newRating = await Rating.create({
       note,
       comment,

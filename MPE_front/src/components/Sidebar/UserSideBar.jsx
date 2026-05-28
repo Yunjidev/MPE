@@ -1,102 +1,56 @@
 import PropTypes from "prop-types";
 import NavLink from "../Utils/Link";
 import Dropdown from "./Dropdown";
-import {
-  FaTachometerAlt,
-  FaBuilding,
-  FaCog,
-  FaUnlockAlt,
-  FaTrashAlt,
-} from "react-icons/fa";
+import { FaTachometerAlt, FaBuilding, FaCog, FaUnlockAlt, FaTrashAlt } from "react-icons/fa";
 
-export default function UserSideBar({
-  user,
-  colorStyle,
-  iconstyle,
-  linkstyle,
-  onClick,
-}) {
-  // Nav Items
+export default function UserSideBar({ user, iconstyle, linkstyle, onClick }) {
   const navItems = [
-    {
-      to: "/dashboard/user-db",
-      icon: <FaTachometerAlt className={iconstyle} />,
-      label: "Mon profil",
-    },
-    {
-      to: "/dashboard/register-company",
-      icon: <FaBuilding className={iconstyle} />,
-      label: "Création Entreprise",
-    },
+    { to: "/dashboard/user-db", icon: <FaTachometerAlt className={iconstyle} />, label: "Mon profil" },
+    { to: "/dashboard/register-company", icon: <FaBuilding className={iconstyle} />, label: "Création Entreprise" },
     {
       type: "dropdown",
       icon: <FaCog className={iconstyle} />,
       label: "Sécurité Compte",
       dropdownItems: [
-        {
-          to: "/dashboard/update-password",
-          icon: <FaUnlockAlt className={iconstyle} />,
-          label: "Modification Mot de passe",
-        },
-        {
-          to: "/dashboard/deleteAccount",
-          icon: <FaTrashAlt className={iconstyle} />,
-          label: "Suppression du compte",
-        },
+        { to: "/dashboard/update-password", icon: <FaUnlockAlt className={iconstyle} />, label: "Mot de passe" },
+        { to: "/dashboard/deleteAccount", icon: <FaTrashAlt className={iconstyle} />, label: "Supprimer le compte" },
       ],
     },
   ];
 
   return (
-    <div className="flex flex-col flex-grow space-y-4">
-      <div className="flex items-center p-2 space-x-4 ">
+    <div className="flex flex-col">
+      <div className="flex items-center px-3 py-2.5 gap-3">
         <img
-          src={
-            user?.avatar ||
-            "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-          }
+          src={user?.avatar || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
           alt="Profile"
-          className="w-12 h-12 rounded-full bg-gray-500"
+          className="w-8 h-8 rounded-full object-cover border border-black/5"
         />
-        <div>
-          <h2 className={`lg:text-2xl text-4xl font-bold ${colorStyle}`}>
-            {user ? user.username : "Guest"}
-          </h2>
+        <div className="min-w-0">
+          <p className="text-sm font-light text-[#132A24] truncate">{user ? user.username : "Guest"}</p>
+          {user?.email && <p className="text-[11px] text-[#879f98] truncate">{user.email}</p>}
         </div>
       </div>
 
-      <div className="border-t border-white my-4 mx-2"></div>
-      <ul className="pt-2 pb-4 space-y-1 lg:text-sm text-2xl">
-        {navItems.map((item, index) =>
+      <div className="mx-3 border-t border-black/5 my-1" />
+
+      <ul className="space-y-0.5">
+        {navItems.map((item, i) =>
           item.type === "dropdown" ? (
-            <Dropdown
-              key={index}
-              {...item}
-              colorStyle={colorStyle}
-              iconstyle={iconstyle}
-              linkstyle={linkstyle}
-              onClick={onClick}
-              option={<></>}
-            />
+            <Dropdown key={i} {...item} iconStyle={iconstyle} linkstyle={linkstyle} onClick={onClick} />
           ) : (
-            <NavLink
-              key={index}
-              {...item}
-              colorStyle={colorStyle}
-              linkstyle={linkstyle}
-              onClick={onClick}
-            />
-          ),
+            <NavLink key={i} {...item} linkstyle={linkstyle} onClick={onClick} />
+          )
         )}
       </ul>
-      <div className="border-t border-white my-4 mx-2"></div>
+
+      <div className="mx-3 border-t border-black/5 my-1" />
     </div>
   );
 }
 
 UserSideBar.propTypes = {
   user: PropTypes.object,
-  colorStyle: PropTypes.string,
   iconstyle: PropTypes.string,
   linkstyle: PropTypes.string,
   onClick: PropTypes.func,

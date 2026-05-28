@@ -91,6 +91,11 @@ exports.createDisponibility = async (req, res) => {
     if (!req.enterprise.isValidate) {
       return res.status(400).json({ errors: "L'entreprise n'est pas validée" });
     }
+    if (!req.enterprise.isPremium) {
+      return res
+        .status(403)
+        .json({ errors: "Cette entreprise n'est pas premium." });
+    }
     const overlapping = await Promise.all(
       day.map(async (day) => {
         return await Disponibility.isOverlapping(
@@ -122,6 +127,11 @@ exports.createDisponibility = async (req, res) => {
 
 exports.updateDisponibility = async (req, res) => {
   try {
+    if (!req.enterprise.isPremium) {
+      return res
+        .status(403)
+        .json({ errors: "Cette entreprise n'est pas premium." });
+    }
     const { id } = req.params;
     const { day, start_hour, end_hour } = req.body;
     const disponibility = await Disponibility.findByPk(id);
@@ -151,6 +161,11 @@ exports.updateDisponibility = async (req, res) => {
 
 exports.deleteDisponibility = async (req, res) => {
   try {
+    if (!req.enterprise.isPremium) {
+      return res
+        .status(403)
+        .json({ errors: "Cette entreprise n'est pas premium." });
+    }
     const { id } = req.params;
     const disponibility = await Disponibility.findByPk(id);
     if (!disponibility) {

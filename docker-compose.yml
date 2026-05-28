@@ -1,0 +1,99 @@
+version: "3.9"
+
+networks:
+  proxilio-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  uploads:
+  certbot-conf:
+  certbot-www:
+  logs:
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: proxilio-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - proxilio-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend Node.js ─────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./MPE_back
+      dockerfile: Dockerfile
+    container_name: proxilio-backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+    volumes:
+      - uploads:/app/uploads
+      - logs:/app/logs
+    networks:
+      - proxilio-net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ── Frontend React (nginx:alpine) ───────────────────────────────────────────
+  frontend:
+    build:
+      context: ./MPE_front
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_STRIPE_PUBLISHABLE_KEY: ${VITE_STRIPE_PUBLISHABLE_KEY}
+    container_name: proxilio-frontend
+    restart: unless-stopped
+    networks:
+      - proxilio-net
+
+  # ── Nginx reverse proxy (SSL termination) ───────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: proxilio-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot-conf:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
+      - uploads:/app/uploads:ro
+      - logs:/var/log/nginx
+    networks:
+      - proxilio-net
+    depends_on:
+      - frontend
+      - backend
+
+  # ── Certbot (Let's Encrypt) ─────────────────────────────────────────────────
+  certbot:
+    image: certbot/certbot:latest
+    container_name: proxilio-certbot
+    volumes:
+      - certbot-conf:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c "trap exit TERM; while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet;
+        sleep 12h & wait $${!};
+      done"

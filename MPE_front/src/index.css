@@ -2,15 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: #f5f7f6;
+}
+
 ::-webkit-scrollbar {
   width: 2px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #fda062;
+  background-color: #879f98;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #262626;
+  background-color: #f5f7f6;
+}
+
+@layer base {
+  .theme {
+    --animate-marquee: marquee var(--duration) infinite linear;
+    --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  }
+}
+
+@theme inline {
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
 }

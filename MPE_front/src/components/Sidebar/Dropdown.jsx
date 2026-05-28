@@ -7,53 +7,41 @@ export default function Dropdown({
   dropdownItems,
   label,
   icon,
-  colorStyle = "",
   iconStyle = "",
   linkstyle = "",
-  option = <></>,
+  option = null,
   isDisabled = false,
   onClick,
 }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleDropdown = () => !isDisabled && setIsOpen((s) => !s);
 
   return (
-    <>
+    <div className={`rounded-lg ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}`}>
       <button
-        className="flex items-center justify-between w-full p-2 space-x-3 rounded-md hover:bg-gray-700"
+        className={`flex items-center justify-between w-full ${linkstyle}`}
         onClick={toggleDropdown}
         disabled={isDisabled}
+        type="button"
       >
-        <div className="flex items-center space-x-3">
-          {icon}
-          <span className={`font-semibold ${colorStyle}`}>{label}</span>
-          {option}
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="shrink-0">{icon}</span>
+          <span className="font-light truncate text-[#132A24]">{label}</span>
+          {option && <span className="shrink-0">{option}</span>}
         </div>
-        <div>
-          {!isOpen ? (
-            <FaChevronDown className={iconStyle} />
-          ) : (
-            <FaChevronUp className={iconStyle} />
-          )}
+        <div className="shrink-0 text-[#879f98]">
+          {!isOpen ? <FaChevronDown className="w-3 h-3" /> : <FaChevronUp className="w-3 h-3" />}
         </div>
       </button>
-      {isOpen && (
-        <ul className="pl-3 mt-2 space-y-1 lg:text-sm text-2xl">
+
+      {isOpen && !isDisabled && (
+        <ul className="pl-3 mt-0.5 space-y-0.5">
           {dropdownItems.map((item, index) => (
-            <NavLink
-              key={index}
-              {...item}
-              colorStyle={colorStyle}
-              linkstyle={linkstyle}
-              onClick={onClick}
-            />
+            <NavLink key={index} {...item} linkstyle={linkstyle} onClick={onClick} />
           ))}
         </ul>
       )}
-    </>
+    </div>
   );
 }
 
@@ -61,7 +49,6 @@ Dropdown.propTypes = {
   dropdownItems: PropTypes.array.isRequired,
   label: PropTypes.string.isRequired,
   icon: PropTypes.element.isRequired,
-  colorStyle: PropTypes.string,
   iconStyle: PropTypes.string,
   linkstyle: PropTypes.string,
   option: PropTypes.element,

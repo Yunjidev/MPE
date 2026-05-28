@@ -2,11 +2,13 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+const SAFE_FIELDNAME = /^[a-zA-Z0-9_-]+$/;
+
 const storage = (folder) =>
   multer.diskStorage({
     destination: (req, file, cb) => {
       let uploadPath = path.join(__dirname, `../../uploads/${folder}`);
-      if (file.fieldname) {
+      if (file.fieldname && SAFE_FIELDNAME.test(file.fieldname)) {
         uploadPath = path.join(uploadPath, file.fieldname);
       }
       fs.mkdirSync(uploadPath, { recursive: true });

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAtom } from "jotai";
 import { getData } from "../../services/data-fetch";
+import { enterprisesAtom } from "../../store/enterprises";
 import EditEnterpriseModal from "@/components/Enterprise/ComponentsForEnterprise/EditEnterpriseModal";
-import OffersListModal from "@/components/Enterprise/ComponentsForEnterprise/OffersListModal";
 import ReservationSummary from "@/components/Enterprise/ComponentsForEnterprise/ReservationSummary";
 import StatsSummary from "@/components/Enterprise/ComponentsForStats/StatsSummary";
 
@@ -10,8 +11,8 @@ export default function StatsEnterprises() {
   const { id } = useParams();
   const [enterprise, setEnterprise] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
-  const [isOffersListOpen, setIsOffersListOpen] = useState(false);
   const navigate = useNavigate();
+  const [, setEnterprises] = useAtom(enterprisesAtom);
 
   useEffect(() => {
     const fetchEnterprise = async () => {
@@ -22,78 +23,57 @@ export default function StatsEnterprises() {
         console.error("Error fetching enterprise:", error);
       }
     };
-
     fetchEnterprise();
   }, [id]);
 
-  // Ouvre le modal de modification
-  const handleEditClick = () => {
-    setIsEditFormOpen(true);
-  };
+  const handleEditClick = () => setIsEditFormOpen(true);
+  const handleCloseEditForm = () => setIsEditFormOpen(false);
 
-  // Ferme le modal de modification
-  const handleCloseEditForm = () => {
-    setIsEditFormOpen(false);
-  };
-
-  // Sauvegarde les changements et ferme le modal
   const handleSave = (updatedCompany) => {
     setEnterprise(updatedCompany);
     handleCloseEditForm();
   };
 
-  // Redirige vers la page de l'entreprise
   const handleViewClick = () => {
-    if (enterprise) {
-      navigate(`/enterprise/${enterprise.id}`);
-    }
+    if (enterprise) navigate(`/enterprise/${enterprise.id}`);
   };
 
-  // Ouvre le modal de la liste des offres
-  const handleOffersListClick = () => {
-    setIsOffersListOpen(true);
-  };
-
-  // Ferme le modal de la liste des offres
-  const handleCloseOffersList = () => {
-    setIsOffersListOpen(false);
+  const handlePremiumRevoked = () => {
+    setEnterprise((prev) => prev ? { ...prev, isPremium: false } : prev);
+    setEnterprises((prev) =>
+      Array.isArray(prev)
+        ? prev.map((e) => (String(e.id) === String(id) ? { ...e, isPremium: false } : e))
+        : prev
+    );
   };
 
   return (
-    <div className="bg-neutral-900 text-white p-4 sm:p-6 rounded-lg max-w-full sm:max-w-8xl mt-8 sm:mt-6  sm:mb-8">
+    <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 lg:p-6 mt-6 mb-8">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex flex-row items-center">
-          <h2 className="text-xl sm:text-2xl mr-20 font-semibold text-[#67FFCC]">Tableau de Bord</h2>
-          <h3 className="text-lg sm:text-xl font-medium text-[#67FFCC]">
-            {enterprise ? enterprise.name : "Chargement..."}
-          </h3>
+        <div>
+          <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-0.5">Entreprise</p>
+          <h2 className="text-xl font-light text-[#132A24] tracking-tight">
+            {enterprise ? enterprise.name : "Chargement…"}
+          </h2>
         </div>
       </div>
-      <hr className="mb-4" />
-      
-      {/* Résumé des réservations avec actions */}
+
       <ReservationSummary
         enterprise={enterprise}
         onEdit={handleEditClick}
         onView={handleViewClick}
-        onOffersList={handleOffersListClick}
       />
 
-      {/* Résumé des statistiques */}
-      <StatsSummary />
+      <div className="mt-6">
+        <StatsSummary enterprise={enterprise} onPremiumRevoked={handlePremiumRevoked} />
+      </div>
 
-      {/* Modal de modification de l'entreprise */}
       {isEditFormOpen && (
         <EditEnterpriseModal
           enterpriseId={id}
           onSave={handleSave}
           onClose={handleCloseEditForm}
         />
-      )}
-
-      {/* Modal de la liste des offres */}
-      {isOffersListOpen && (
-        <OffersListModal onClose={handleCloseOffersList} />
       )}
     </div>
   );

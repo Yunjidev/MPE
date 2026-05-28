@@ -5,6 +5,9 @@ const router = express.Router();
 const enterpriseController = require("../../controllers/enterprises/enterprises-controller");
 const enterpriseValidateController = require("../../controllers/enterprises/enterprises-validate-controller");
 const enterprisePremiumController = require("../../controllers/enterprises/enterprise-premium-controller");
+const nearbyController = require("../../controllers/enterprises/nearby-controller");
+const enterprisePremiumCalendarController = require("../../controllers/enterprises/premium-calendar-controller");
+const reservationController = require("../../controllers/reservation-controller");
 // static
 const conditionController = require("../../controllers/static/conditions-controller");
 const faqController = require("../../controllers/static/faq-controller");
@@ -16,6 +19,7 @@ const searchController = require("../../controllers/static/search-controller");
 const statsController = require("../../controllers/stats-controller");
 
 // Enterprise routes
+router.get("/enterprises/nearby", nearbyController.getNearbyEnterprises);
 router.get(
   "/enterprises/validate",
   enterpriseValidateController.getAllEnterprisesValidate,
@@ -27,6 +31,14 @@ router.get(
 router.get(
   "/enterprise/:id",
   enterpriseValidateController.getEnterpriseByIdValidate,
+);
+router.get(
+  "/enterprises/:id/disponibilites",
+  enterprisePremiumCalendarController.listPublic,
+);
+router.get(
+  "/enterprises/:id/reservations/public",
+  reservationController.getEnterpriseReservationsPublic,
 );
 
 // Pricing routes
