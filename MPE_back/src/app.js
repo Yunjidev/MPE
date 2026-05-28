@@ -14,6 +14,7 @@ const authenticatedRoutes = require("./routes/authenticated/authenticated-routes
 const adminRoutes = require("./routes/admin/admin-routes");
 const stripeController = require("./controllers/stripe-controller");
 
+app.set("trust proxy", 1);
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
 const allowedOrigins = process.env.CLIENT_URL
