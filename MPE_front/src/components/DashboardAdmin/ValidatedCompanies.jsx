@@ -286,6 +286,11 @@ const ValidatedCompanies = () => {
                         <span className={`text-xs font-light ${company.isPremium ? "text-[#4b8a74]" : "text-[#879f98]"}`}>
                           {company.isPremium ? "Actif" : "Inactif"}
                         </span>
+                        {company.hasActiveSubscription && company.activeSubscriptionType && (
+                          <span className="text-[10px] font-light px-2 py-0.5 rounded-full border border-[#4b8a74]/30 text-[#4b8a74] bg-[#eef5f1]">
+                            {{ monthly: "Mensuel", yearly: "Annuel", forever: "À vie" }[company.activeSubscriptionType] || company.activeSubscriptionType}
+                          </span>
+                        )}
                         {updatingPremiumId === company.id && (
                           <span className="text-xs text-[#879f98] font-light">Mise à jour…</span>
                         )}

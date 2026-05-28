@@ -109,7 +109,7 @@ exports.getAllEnterprisesValidate = async (req, res) => {
         {
           model: sequelize.models.Subscription,
           as: "subscriptions",
-          attributes: ["id"],
+          attributes: ["id", "subscription_type"],
           where: { status: "active" },
           required: false,
           separate: true,
@@ -121,6 +121,10 @@ exports.getAllEnterprisesValidate = async (req, res) => {
         const hasActiveSubscription =
           Array.isArray(enterprise.subscriptions) &&
           enterprise.subscriptions.length > 0;
+
+        const activeSubscriptionType = hasActiveSubscription
+          ? enterprise.subscriptions[0].subscription_type
+          : null;
 
         const { shouldBePremium } = await normalizeEnterprisePremiumState(
           enterprise,
@@ -159,6 +163,7 @@ exports.getAllEnterprisesValidate = async (req, res) => {
         });
         enterpriseData.isPremium = shouldBePremium;
         enterpriseData.hasActiveSubscription = hasActiveSubscription;
+        enterpriseData.activeSubscriptionType = activeSubscriptionType;
         delete enterpriseData.subscriptions;
         return enterpriseData;
       })
