@@ -1,7 +1,9 @@
 const { sequelize } = require("../../models/index");
 const Subscription = sequelize.models.Subscription;
 const Enterprise = sequelize.models.Enterprise;
+const { User } = require("../../models/index");
 const { normalizeEnterprisePremiumState } = require("../utils/premium");
+const sendEmail = require("../mailers/email-service");
 
 const getStripe = () => {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -109,6 +111,22 @@ exports.verifySession = async (req, res) => {
     await enterprise.save();
 
     res.json({ message: "Abonnement premium activé avec succès.", enterprise_id: enterpriseId });
+
+    const owner = await User.findByPk(enterprise.User_id);
+    if (owner) {
+      const planLabels = { monthly: "Mensuel — 30 €/mois", yearly: "Annuel — 300 €/an" };
+      sendEmail(
+        owner.email,
+        "Votre abonnement Premium est actif — Proxilio",
+        "subscription-confirmed",
+        {
+          user: owner.username || owner.firstname || owner.email,
+          enterprise: enterprise.name,
+          plan_label: planLabels[plan] || plan,
+          url: `${process.env.CLIENT_URL}/dashboard/user-db`,
+        }
+      ).catch((err) => console.error("sendEmail subscription-confirmed:", err));
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
