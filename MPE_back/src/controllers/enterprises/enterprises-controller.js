@@ -80,18 +80,22 @@ exports.createEnterprise = async (req, res) => {
         newEnterprise.logo,
       );
     }
+    res
+      .status(201)
+      .json({ enterprise: enterpriseData, message: "Entreprise créée" });
+
     sendEmail(
       req.user.email,
       "Votre entreprise est en cours de validation — Proxilio",
       "enterprise-pending",
       { user: req.user.username, enterprise: newEnterprise.name },
-    );
-
-    res
-      .status(201)
-      .json({ enterprise: enterpriseData, message: "Entreprise créée" });
+    ).catch((err) => console.error("sendEmail enterprise-pending:", err));
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    console.error("createEnterprise error:", error);
+    const msg = error.errors
+      ? error.errors.map((e) => e.message || e).join(", ")
+      : error.message || "Erreur serveur";
+    res.status(500).json({ errors: msg });
   }
 };
 
