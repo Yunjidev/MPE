@@ -24,7 +24,7 @@ export default function StatsEnterprises() {
       }
     };
     fetchEnterprise();
-  }, [id]);
+  }, [slug]);
 
   const handleEditClick = () => setIsEditFormOpen(true);
   const handleCloseEditForm = () => setIsEditFormOpen(false);
