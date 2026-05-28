@@ -70,7 +70,13 @@ app.use("/api/stripe", require("./routes/stripe-routes"));
 app.use((err, req, res, next) => {
   console.error("❌ ERREUR SERVER :", err);
   const isProd = process.env.NODE_ENV === "production";
-  res.status(500).json({ message: "Erreur serveur", error: isProd ? undefined : err.message });
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({ errors: "Trop de fichiers envoyés ou champ non autorisé." });
+  }
+  if (err.code && err.code.startsWith("LIMIT_")) {
+    return res.status(400).json({ errors: err.message });
+  }
+  res.status(500).json({ errors: isProd ? "Erreur serveur" : err.message });
 });
 
 require("./scheduler");

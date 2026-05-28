@@ -22,7 +22,7 @@ const likeController = require("../../controllers/like-controller");
 
 // Route Enterprise
 const uploadFiles = files.upload("enterprises").fields([
-  { name: "photos", maxCount: 3, folder: "photos" },
+  { name: "photos", maxCount: 4, folder: "photos" },
   { name: "logo", maxCount: 1, folder: "logo" },
 ]);
 
