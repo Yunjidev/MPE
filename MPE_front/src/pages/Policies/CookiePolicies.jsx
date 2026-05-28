@@ -1,98 +1,99 @@
-/* eslint-disable react/no-unescaped-entities */
-const CookiePolicies = () => {
-  return (
-    <div className="max-w-2xl mx-auto p-4 mt-8">
-      <h1 className="text-orange-800 text-3xl font-bold mb-6">Politique de Cookies</h1>
-      
-      <p className="text-white  mb-4">
-        Cette politique de cookies explique ce que sont les cookies, comment et pourquoi nous les utilisons, ainsi que vos droits à gérer vos préférences. En utilisant notre site Web, vous acceptez l'utilisation de cookies conformément à cette politique.
-      </p>
-      
-      <h2 className="text-orange-800 text-xl font-semibold mt-6">Que sont les cookies ?</h2>
-      <p className="text-white  mb-4">
-        Les cookies sont de petits fichiers texte stockés sur votre appareil (ordinateur, tablette, smartphone) lorsque vous visitez un site Web. Ils sont largement utilisés pour permettre aux sites Web de fonctionner efficacement, améliorer l'expérience utilisateur et fournir des informations aux propriétaires du site.
-      </p>
-      
-      <h2 className="text-orange-800 text-xl font-semibold mt-6">Quels types de cookies utilisons-nous ?</h2>
-      <p className="text-white  mb-4">
-        Nous utilisons différents types de cookies pour diverses raisons sur notre site Web. Voici une description des principaux types de cookies que nous utilisons :
-      </p>
-      
-      <ul className="list-disc pl-6 mb-4">
-        <li className="text-white  mb-2">
-          <strong>Cookies essentiels :</strong> Ces cookies sont nécessaires pour que notre site fonctionne correctement. Ils permettent des fonctionnalités de base comme la navigation de page et l'accès aux zones sécurisées du site. Sans ces cookies, le site ne peut pas fonctionner correctement.
-        </li>
-        <li className="text-white  mb-2">
-          <strong>Cookies de performance :</strong> Ces cookies collectent des informations sur la manière dont les visiteurs utilisent notre site, comme les pages les plus souvent visitées et les messages d'erreur éventuels. Ces cookies ne collectent pas d'informations qui identifient un visiteur spécifique. Toutes les informations recueillies par ces cookies sont agrégées et donc anonymes.
-        </li>
-        <li className="text-white  mb-2">
-          <strong>Cookies de fonctionnalité :</strong> Ces cookies permettent à notre site de se souvenir des choix que vous faites (comme votre langue préférée ou la région dans laquelle vous vous trouvez) et de fournir des fonctionnalités améliorées et plus personnelles. Les informations collectées par ces cookies peuvent être anonymisées et ne peuvent pas suivre vos activités de navigation sur d'autres sites Web.
-        </li>
-        <li className="text-white  mb-2">
-          <strong>Cookies de ciblage/publicité :</strong> Ces cookies sont utilisés pour diffuser des publicités qui sont pertinentes pour vous et vos centres d'intérêt. Ils sont également utilisés pour limiter le nombre de fois que vous voyez une publicité et pour aider à mesurer l'efficacité des campagnes publicitaires. Ils sont généralement placés par des réseaux publicitaires avec la permission de l'opérateur du site Web.
-        </li>
-      </ul>
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
-      <h2 className="text-orange-800 text-xl font-semibold mt-6">Comment utilisons-nous les cookies ?</h2>
-      <p className="text-white  mb-4">
-        Nous utilisons les cookies pour améliorer l'expérience utilisateur sur notre site, en personnalisant le contenu et les publicités, en offrant des fonctionnalités de réseaux sociaux, et en analysant notre trafic. Les cookies nous aident également à comprendre comment notre site est utilisé, ce qui nous permet d'améliorer continuellement nos services.
-      </p>
-      <p className="text-white  mb-4">
-        Les cookies tiers que nous utilisons proviennent de partenaires avec lesquels nous travaillons pour vous offrir une meilleure expérience utilisateur, comme les services d'analyse, les plateformes publicitaires et les intégrations de réseaux sociaux. Ces tiers peuvent combiner les informations qu'ils collectent avec d'autres données que vous avez fournies ou qu'ils ont recueillies lorsque vous utilisez leurs services.
-      </p>
+const Section = ({ title, children }) => (
+  <div className="mb-8">
+    <h2 className="text-sm font-light uppercase tracking-widest text-[#879f98] mb-3">{title}</h2>
+    <div className="text-sm font-light text-[#132A24] leading-relaxed space-y-2">{children}</div>
+  </div>
+);
 
-      <h2 className="text-orange-800 text-xl font-semibold mt-6">Gestion des cookies et consentement</h2>
-      <p className="text-white  mb-4">
-        Vous avez le droit de décider si vous acceptez ou refusez les cookies. Vous pouvez modifier vos préférences en matière de cookies à tout moment en ajustant les paramètres de votre navigateur. Veuillez noter que si vous choisissez de bloquer certains cookies, cela peut affecter votre expérience sur notre site et certains services peuvent ne pas fonctionner correctement.
-      </p>
-      
-      <h2 className="text-orange-800 text-xl font-semibold mt-6">Cookies utilisés sur notre site</h2>
-      <p className="text-white  mb-4">
-        Voici une liste des cookies spécifiques que nous utilisons sur notre site, avec des informations sur leur durée de vie et leur objectif. Cette liste peut être mise à jour régulièrement :
-      </p>
+const CookiePolicies = () => (
+  <>
+    <Helmet>
+      <title>Politique de cookies | Proxilio</title>
+      <meta name="robots" content="noindex" />
+    </Helmet>
+    <div className="max-w-2xl mx-auto px-4 py-16">
+      <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-4">Juridique</p>
+      <h1 className="text-3xl font-light text-[#132A24] tracking-tight mb-2">Politique de cookies</h1>
+      <p className="text-sm text-[#879f98] font-light mb-10">Dernière mise à jour : mai 2025</p>
 
-      <table className="text-white table-auto w-full text-left border-collapse border border-gray-300 mb-6">
-        <thead>
-          <tr>
-            <th className="border border-gray-300 px-4 py-2">Nom du Cookie</th>
-            <th className="border border-gray-300 px-4 py-2">Type</th>
-            <th className="border border-gray-300 px-4 py-2">Durée</th>
-            <th className="border border-gray-300 px-4 py-2">Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className="border border-gray-300 px-4 py-2">session_id</td>
-            <td className="border border-gray-300 px-4 py-2">Essentiel</td>
-            <td className="border border-gray-300 px-4 py-2">Session</td>
-            <td className="border border-gray-300 px-4 py-2">Utilisé pour gérer la session utilisateur sur le site.</td>
-          </tr>
-          <tr>
-            <td className="border border-gray-300 px-4 py-2">analytics_cookie</td>
-            <td className="border border-gray-300 px-4 py-2">Performance</td>
-            <td className="border border-gray-300 px-4 py-2">2 ans</td>
-            <td className="border border-gray-300 px-4 py-2">Utilisé pour collecter des informations anonymes sur les visites de notre site.</td>
-          </tr>
-          <tr>
-            <td className="border border-gray-300 px-4 py-2">advertising_cookie</td>
-            <td className="border border-gray-300 px-4 py-2">Ciblage/Publicité</td>
-            <td className="border border-gray-300 px-4 py-2">1 an</td>
-            <td className="border border-gray-300 px-4 py-2">Utilisé pour diffuser des publicités personnalisées basées sur vos intérêts.</td>
-          </tr>
-        </tbody>
-      </table>
+      <Section title="1. Qu'est-ce qu'un cookie ?">
+        <p>
+          Un cookie est un petit fichier texte déposé sur votre appareil (ordinateur, smartphone, tablette) lors de votre navigation sur un site web. Il permet au site de mémoriser vos préférences et d'assurer certaines fonctionnalités.
+        </p>
+      </Section>
 
-      <h2 className="text-orange-800 text-xl font-semibold mt-6">Modifications de cette politique</h2>
-      <p className="text-white  mb-4">
-        Nous pouvons mettre à jour cette politique de cookies de temps en temps afin de refléter, par exemple, les modifications apportées aux cookies que nous utilisons ou pour d'autres raisons opérationnelles, légales ou réglementaires. Veuillez donc la consulter régulièrement pour rester informé de notre utilisation des cookies et des technologies connexes.
-      </p>
+      <Section title="2. Cookies utilisés par Proxilio">
+        <p>Proxilio utilise exclusivement des cookies strictement nécessaires au fonctionnement du service :</p>
 
-      <h2 className="text-orange-800 text-xl font-semibold mt-6">Contact</h2>
-      <p className="text-white  mb-4">
-        Si vous avez des questions concernant cette politique de cookies ou notre utilisation des cookies, veuillez nous contacter à l'adresse suivante : <a href="mailto:contact@votresite.com" className="text-blue-500 hover:underline">contact@votresite.com</a>.
-      </p>
+        <div className="rounded-xl border border-black/5 overflow-hidden mt-3">
+          <table className="w-full text-xs font-light">
+            <thead className="bg-[#f5f7f6]">
+              <tr>
+                <th className="text-left px-4 py-2.5 text-[#879f98] font-light uppercase tracking-widest text-[10px]">Cookie</th>
+                <th className="text-left px-4 py-2.5 text-[#879f98] font-light uppercase tracking-widest text-[10px]">Finalité</th>
+                <th className="text-left px-4 py-2.5 text-[#879f98] font-light uppercase tracking-widest text-[10px]">Durée</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black/5">
+              <tr>
+                <td className="px-4 py-3 text-[#132A24]"><code className="bg-[#f5f7f6] px-1.5 py-0.5 rounded text-[11px]">mpe-auth</code></td>
+                <td className="px-4 py-3 text-[#879f98]">Token d'accès (authentification)</td>
+                <td className="px-4 py-3 text-[#879f98]">Session (15 min)</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-[#132A24]"><code className="bg-[#f5f7f6] px-1.5 py-0.5 rounded text-[11px]">mpe-refresh</code></td>
+                <td className="px-4 py-3 text-[#879f98]">Token de renouvellement de session</td>
+                <td className="px-4 py-3 text-[#879f98]">7 jours</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-[#132A24]"><code className="bg-[#f5f7f6] px-1.5 py-0.5 rounded text-[11px]">cookie_consent</code></td>
+                <td className="px-4 py-3 text-[#879f98]">Mémorisation de votre choix de consentement</td>
+                <td className="px-4 py-3 text-[#879f98]">365 jours</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p className="mt-3">
+          Proxilio <strong className="font-normal">n'utilise pas</strong> de cookies publicitaires, de traceurs tiers ou d'outils d'analyse comportementale.
+        </p>
+      </Section>
+
+      <Section title="3. Cookies tiers">
+        <p>
+          Dans le cadre de l'abonnement Premium, Proxilio intègre <strong className="font-normal">Stripe</strong> pour le traitement des paiements. Stripe peut déposer ses propres cookies lors du processus de paiement. Consultez la <a href="https://stripe.com/fr/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">politique de confidentialité de Stripe</a> pour plus d'informations.
+        </p>
+      </Section>
+
+      <Section title="4. Gestion des cookies">
+        <p>
+          Vous pouvez configurer votre navigateur pour refuser ou supprimer les cookies à tout moment. Notez que la désactivation des cookies techniques nécessaires peut empêcher l'accès à certaines fonctionnalités de Proxilio (connexion, réservations).
+        </p>
+        <p>Guides selon votre navigateur :</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">Google Chrome</a></li>
+          <li><a href="https://support.mozilla.org/fr/kb/cookies-informations-sites-enregistrent" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">Mozilla Firefox</a></li>
+          <li><a href="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">Safari</a></li>
+          <li><a href="https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">Microsoft Edge</a></li>
+        </ul>
+      </Section>
+
+      <Section title="5. Contact">
+        <p>
+          Pour toute question relative aux cookies : <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a>
+        </p>
+      </Section>
+
+      <div className="mt-12 pt-8 border-t border-black/5 flex flex-wrap gap-4 text-xs font-light text-[#879f98]">
+        <Link to="/legal-notices" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Mentions légales</Link>
+        <Link to="/condifentiality-policies" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Politique de confidentialité</Link>
+        <Link to="/usage-policies" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Conditions d'utilisation</Link>
+      </div>
     </div>
-  );
-};
+  </>
+);
 
 export default CookiePolicies;

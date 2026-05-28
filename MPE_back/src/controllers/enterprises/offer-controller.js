@@ -97,25 +97,27 @@ exports.getOfferByEnterpriseId = async (req, res) => {
 exports.createOffer = async (req, res) => {
   try {
     const enterpriseId = req.enterprise.id;
-    const { name, description, estimate, duration } = req.body;
-    const estimateBoolean = req.body.estimate === "true";
-    const price = estimateBoolean ? null : parseFloat(req.body.price);
+    const { name, description, duration } = req.body;
+    const estimate = req.body.estimate === "true";
+    const price = estimate ? null : parseFloat(req.body.price);
     const image = req.file ? req.file.path : null;
+
     if (!req.enterprise.isValidate) {
-      return res(400).json({ errors: "L'entreprise n'est pas validée" });
+      return res.status(400).json({ errors: "L'entreprise n'est pas validée" });
     }
-    const newOffer = await Offer.create({
+
+    await Offer.create({
       name,
       description,
       price,
-      estimateBoolean,
+      estimate,
       image,
       duration,
       Enterprise_id: enterpriseId,
     });
     res.status(201).json({ message: "Offre créée" });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    res.status(500).json({ errors: error.message });
   }
 };
 

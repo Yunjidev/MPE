@@ -1,116 +1,100 @@
-/* eslint-disable react/no-unescaped-entities */
-const ConfidentialityPolicies = () => {
-    return (
-        <div className="max-w-2xl mx-auto p-4 mt-8">
-            <h1 className="text-orange-800 text-3xl font-bold mb-6">Politique de Confidentialité</h1>
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
-            <p className="text-white  mb-4">
-                La présente politique de confidentialité a pour but de vous informer sur la manière dont nous collectons, utilisons et protégeons vos données personnelles lorsque vous utilisez notre site internet MPE.
-            </p>
+const Section = ({ title, children }) => (
+  <div className="mb-8">
+    <h2 className="text-sm font-light uppercase tracking-widest text-[#879f98] mb-3">{title}</h2>
+    <div className="text-sm font-light text-[#132A24] leading-relaxed space-y-2">{children}</div>
+  </div>
+);
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">1. Données collectées</h2>
-            <p className="text-white  mb-4">
-                Nous collectons différentes catégories de données personnelles lorsque vous utilisez notre site, notamment :
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-                <li className="text-white  mb-2">
-                    <strong>Données d'identité :</strong> comme votre nom, prénom, adresse email, numéro de téléphone.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Données de contact :</strong> comme votre adresse postale et vos coordonnées professionnelles.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Données de navigation :</strong> comme les cookies, l'adresse IP, les données de connexion et de navigation sur notre site.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Données professionnelles :</strong> comme les informations sur votre entreprise si vous utilisez nos services pour promouvoir votre activité.
-                </li>
-            </ul>
+const ConfidentialityPolicies = () => (
+  <>
+    <Helmet>
+      <title>Politique de confidentialité | Proxilio</title>
+      <meta name="robots" content="noindex" />
+    </Helmet>
+    <div className="max-w-2xl mx-auto px-4 py-16">
+      <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-4">Juridique</p>
+      <h1 className="text-3xl font-light text-[#132A24] tracking-tight mb-2">Politique de confidentialité</h1>
+      <p className="text-sm text-[#879f98] font-light mb-10">Dernière mise à jour : mai 2025</p>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">2. Utilisation des données</h2>
-            <p className="text-white  mb-4">
-                Nous utilisons vos données personnelles pour les finalités suivantes :
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-                <li className="text-white  mb-2">
-                    Fournir et gérer nos services, y compris la création de comptes et la gestion des rendez-vous.
-                </li>
-                <li className="text-white  mb-2">
-                    Communiquer avec vous concernant votre utilisation de nos services ou pour des questions de support.
-                </li>
-                <li className="text-white  mb-2">
-                    Améliorer notre site et nos services grâce à des analyses de l'utilisation et du comportement des utilisateurs.
-                </li>
-                <li className="text-white  mb-2">
-                    Respecter nos obligations légales, résoudre les litiges et faire appliquer nos accords.
-                </li>
-            </ul>
+      <Section title="1. Responsable du traitement">
+        <p>Le responsable du traitement des données personnelles collectées sur <strong className="font-normal">www.proxilio.fr</strong> est :</p>
+        <p><strong className="font-normal">Proxilio</strong> — représenté par Florian Van Camp</p>
+        <p>Contact : <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a></p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">3. Partage des données</h2>
-            <p className="text-white  mb-4">
-                Vos données personnelles peuvent être partagées avec des tiers dans les situations suivantes :
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-                <li className="text-white  mb-2">
-                    Avec des prestataires de services tiers qui agissent en notre nom, tels que des hébergeurs ou des services de marketing.
-                </li>
-                <li className="text-white  mb-2">
-                    Pour se conformer à des obligations légales, réglementaires ou judiciaires.
-                </li>
-                <li className="text-white  mb-2">
-                    Dans le cadre d'une fusion, acquisition ou vente de la totalité ou d'une partie de nos actifs.
-                </li>
-            </ul>
+      <Section title="2. Données collectées">
+        <p>Proxilio collecte les données suivantes :</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Nom d'utilisateur, prénom, nom et adresse e-mail (inscription)</li>
+          <li>Photo de profil (optionnel)</li>
+          <li>Informations d'entreprise (nom, adresse, description, logo, photos) pour les professionnels</li>
+          <li>Historique des réservations</li>
+          <li>Données de navigation (voir <Link to="/cookie-policies" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">politique de cookies</Link>)</li>
+        </ul>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">4. Sécurité des données</h2>
-            <p className="text-white  mb-4">
-                Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles appropriées pour protéger vos données personnelles contre toute destruction, perte, altération, divulgation ou accès non autorisé.
-            </p>
+      <Section title="3. Finalités du traitement">
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Gestion du compte et accès à la plateforme</li>
+          <li>Mise en relation entre particuliers et professionnels</li>
+          <li>Gestion des réservations et notifications associées</li>
+          <li>Envoi d'e-mails transactionnels (confirmation, réinitialisation de mot de passe)</li>
+          <li>Amélioration continue du service</li>
+        </ul>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">5. Vos droits</h2>
-            <p className="text-white  mb-4">
-                Conformément au RGPD et aux lois françaises sur la protection des données, vous disposez des droits suivants :
-            </p>
-            <ul className="list-disc pl-6 mb-4">
-                <li className="text-white  mb-2">
-                    <strong>Droit d'accès :</strong> Vous avez le droit d'obtenir la confirmation que des données personnelles vous concernant sont ou ne sont pas traitées et, lorsqu'elles le sont, l'accès auxdites données.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Droit de rectification :</strong> Vous avez le droit de demander la rectification des données personnelles inexactes vous concernant.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Droit d'effacement :</strong> Vous avez le droit de demander l'effacement de vos données personnelles, sous réserve des exceptions prévues par la loi.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Droit de limitation :</strong> Vous pouvez demander la limitation du traitement de vos données personnelles dans certains cas prévus par la loi.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Droit d'opposition :</strong> Vous pouvez vous opposer au traitement de vos données personnelles pour des raisons tenant à votre situation particulière.
-                </li>
-                <li className="text-white  mb-2">
-                    <strong>Droit à la portabilité :</strong> Vous avez le droit de recevoir les données personnelles vous concernant dans un format structuré, couramment utilisé et lisible par machine.
-                </li>
-            </ul>
-            <p className="text-white  mb-4">
-                Pour exercer ces droits, vous pouvez nous contacter à l'adresse suivante : mpe@mail.com.
-            </p>
+      <Section title="4. Base légale">
+        <p>
+          Le traitement repose sur votre consentement (inscription volontaire) et sur l'exécution du contrat de mise en relation.
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">6. Durée de conservation des données</h2>
-            <p className="text-white  mb-4">
-                Nous conservons vos données personnelles uniquement le temps nécessaire pour les finalités pour lesquelles elles ont été collectées, conformément aux lois en vigueur.
-            </p>
+      <Section title="5. Durée de conservation">
+        <p>
+          Vos données sont conservées pendant la durée d'activité de votre compte. En cas de suppression, elles sont effacées sous 30 jours, sauf obligation légale contraire.
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">7. Modifications de la politique de confidentialité</h2>
-            <p className="text-white  mb-4">
-                Nous pouvons mettre à jour cette politique de confidentialité de temps en temps. Nous vous encourageons à consulter cette page régulièrement pour rester informé de nos pratiques en matière de confidentialité.
-            </p>
+      <Section title="6. Partage des données">
+        <p>Proxilio ne vend ni ne loue vos données. Elles peuvent être transmises aux prestataires suivants dans le strict cadre du service :</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li><strong className="font-normal">IONOS SE</strong> — hébergement des serveurs</li>
+          <li><strong className="font-normal">Stripe</strong> — traitement sécurisé des paiements (abonnement Premium)</li>
+        </ul>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">8. Contact</h2>
-            <p className="text-white  mb-4">
-                Si vous avez des questions ou des préoccupations concernant cette politique de confidentialité ou notre traitement de vos données personnelles, veuillez nous contacter à l'adresse suivante : <a href="mailto:mpe@mail.com" className="text-blue-500 hover:underline">mpe@mail.com</a>.
-            </p>
-        </div>
-    );
-};
+      <Section title="7. Vos droits (RGPD)">
+        <p>Vous disposez des droits suivants sur vos données :</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Accès, rectification et effacement</li>
+          <li>Portabilité et opposition au traitement</li>
+          <li>Retrait du consentement à tout moment</li>
+        </ul>
+        <p>Pour exercer vos droits : <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a></p>
+      </Section>
+
+      <Section title="8. Sécurité">
+        <p>
+          Proxilio met en œuvre des mesures techniques adaptées : chiffrement HTTPS, hachage des mots de passe, tokens JWT à durée limitée (15 minutes pour l'accès, 7 jours pour le renouvellement).
+        </p>
+      </Section>
+
+      <Section title="9. Réclamations">
+        <p>
+          Vous pouvez adresser une réclamation à la <strong className="font-normal">CNIL</strong> : <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">www.cnil.fr</a>
+        </p>
+      </Section>
+
+      <div className="mt-12 pt-8 border-t border-black/5 flex flex-wrap gap-4 text-xs font-light text-[#879f98]">
+        <Link to="/legal-notices" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Mentions légales</Link>
+        <Link to="/cookie-policies" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Politique de cookies</Link>
+        <Link to="/usage-policies" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Conditions d'utilisation</Link>
+      </div>
+    </div>
+  </>
+);
 
 export default ConfidentialityPolicies;

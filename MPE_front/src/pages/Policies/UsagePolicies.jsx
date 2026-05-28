@@ -1,62 +1,123 @@
-/* eslint-disable react/no-unescaped-entities */
-const UsagePolicies = () => {
-    return (
-        <div className="max-w-2xl mx-auto p-4 mt-8">
-            <h1 className="text-orange-800 text-3xl font-bold mb-6">Conditions Générales d'Utilisation</h1>
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
-            <p className="text-white  mb-4">
-                Les présentes conditions générales d'utilisation (ci-après les « CGU ») régissent l'accès et l'utilisation du site internet Proxilio (ci-après le « Site »). En accédant ou en utilisant ce site, vous acceptez d'être lié par ces CGU.
-            </p>
+const Section = ({ title, children }) => (
+  <div className="mb-8">
+    <h2 className="text-sm font-light uppercase tracking-widest text-[#879f98] mb-3">{title}</h2>
+    <div className="text-sm font-light text-[#132A24] leading-relaxed space-y-2">{children}</div>
+  </div>
+);
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">1. Objet</h2>
-            <p className="text-white  mb-4">
-                Ce site a pour objet de promouvoir les petites entreprises en leur permettant de publier des photos, de lister leurs services, et de permettre aux utilisateurs de prendre contact avec elles pour prendre rendez-vous.
-            </p>
+const UsagePolicies = () => (
+  <>
+    <Helmet>
+      <title>Conditions d'utilisation | Proxilio</title>
+      <meta name="robots" content="noindex" />
+    </Helmet>
+    <div className="max-w-2xl mx-auto px-4 py-16">
+      <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-4">Juridique</p>
+      <h1 className="text-3xl font-light text-[#132A24] tracking-tight mb-2">{"Conditions générales d'utilisation"}</h1>
+      <p className="text-sm text-[#879f98] font-light mb-10">Dernière mise à jour : mai 2025</p>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">2. Accès au Site</h2>
-            <p className="text-white  mb-4">
-                L'accès au site est gratuit. Tous les coûts relatifs à l'accès au site, que ce soit les frais matériels, logiciels ou d'accès à Internet, sont exclusivement à la charge de l'utilisateur. Vous êtes responsable de votre équipement informatique et de votre accès à Internet.
-            </p>
+      <Section title="1. Présentation de Proxilio">
+        <p>
+          Proxilio est une plateforme de mise en relation entre des particuliers et des professionnels locaux. Elle permet aux utilisateurs de trouver, contacter et réserver les services de professionnels vérifiés dans leur zone géographique.
+        </p>
+        <p>
+          Éditeur : Proxilio, représenté par Florian Van Camp — <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a>
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">3. Inscription et compte utilisateur</h2>
-            <p className="text-white  mb-4">
-                Pour utiliser certains services du site, vous devez créer un compte en fournissant des informations exactes et à jour. Vous êtes responsable de la confidentialité de votre compte et de votre mot de passe et de toutes les activités qui se produisent sous votre compte.
-            </p>
+      <Section title="2. Accès et inscription">
+        <p>
+          L'accès à la plateforme est gratuit pour les particuliers. La création d'un compte est nécessaire pour effectuer une réservation ou créer un profil professionnel.
+        </p>
+        <p>
+          L'utilisateur s'engage à fournir des informations exactes et à tenir son profil à jour. Tout compte créé avec de fausses informations pourra être suspendu.
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">4. Utilisation du Site</h2>
-            <p className="text-white  mb-4">
-                Vous vous engagez à utiliser le site de manière conforme à la loi, aux règlements en vigueur et aux présentes CGU. Vous vous engagez notamment à ne pas utiliser le site à des fins illicites ou non autorisées.
-            </p>
+      <Section title="3. Comptes professionnels">
+        <p>
+          Les professionnels souhaitant référencer leur entreprise doivent soumettre un dossier. Proxilio se réserve le droit de valider ou refuser toute demande d'inscription, notamment en cas d'activité illégale, trompeuse ou contraire aux présentes CGU.
+        </p>
+        <p>
+          L'offre <strong className="font-normal">Premium</strong> (30 €/mois ou 270 €/an) donne accès à des fonctionnalités avancées : gestion du calendrier, prise de rendez-vous en ligne, statistiques. L'abonnement est souscrit via Stripe et renouvelé automatiquement jusqu'à résiliation.
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">5. Contenu publié par les utilisateurs</h2>
-            <p className="text-white  mb-4">
-                En publiant du contenu sur le site, vous garantissez que vous disposez de tous les droits nécessaires pour le faire et que ce contenu n'enfreint aucune loi ou règlement en vigueur. Vous accordez à Proxilio une licence non exclusive, gratuite, mondiale et perpétuelle pour utiliser, reproduire, distribuer et afficher le contenu que vous publiez sur le site.
-            </p>
+      <Section title="4. Comportement des utilisateurs">
+        <p>Il est interdit sur Proxilio de :</p>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Publier des contenus faux, trompeurs, offensants ou illégaux</li>
+          <li>Usurper l'identité d'un tiers</li>
+          <li>Tenter de contourner les systèmes de sécurité</li>
+          <li>Utiliser la plateforme à des fins de spam ou de démarchage abusif</li>
+          <li>Contacter des professionnels en dehors de la plateforme à des fins de fraude</li>
+        </ul>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">6. Responsabilité</h2>
-            <p className="text-white  mb-4">
-                Proxilio décline toute responsabilité en cas de dommage direct ou indirect résultant de l'utilisation ou de l'impossibilité d'utiliser le Site, y compris les virus qui pourraient contaminer l'équipement informatique de l'utilisateur.
-            </p>
-            <p className="text-white  mb-4">
-                Le site peut contenir des liens vers d'autres sites internet qui ne sont pas sous le contrôle de Proxilio. Nous ne sommes pas responsables du contenu de ces sites externes.
-            </p>
+      <Section title="5. Réservations">
+        <p>
+          Les réservations effectuées via Proxilio constituent un engagement entre l'utilisateur et le professionnel. Proxilio agit en tant qu'intermédiaire technique et n'est pas partie au contrat de prestation.
+        </p>
+        <p>
+          En cas de litige entre un particulier et un professionnel, Proxilio pourra être contacté à titre d'information mais ne saurait être tenu responsable de l'exécution de la prestation.
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">7. Modification des CGU</h2>
-            <p className="text-white  mb-4">
-                Proxilio se réserve le droit de modifier à tout moment les présentes CGU. Les utilisateurs seront informés de ces modifications par tout moyen jugé opportun par Proxilio. En continuant à utiliser le Site après la mise en ligne des nouvelles CGU, vous acceptez d'être lié par celles-ci.
-            </p>
+      <Section title="6. Avis et notations">
+        <p>
+          Les utilisateurs peuvent laisser des avis sur les prestations réalisées. Ces avis doivent être honnêtes et basés sur une expérience réelle. Tout avis diffamatoire, faux ou abusif pourra être supprimé.
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">8. Droit applicable et juridiction compétente</h2>
-            <p className="text-white  mb-4">
-                Les présentes CGU sont régies par le droit français. En cas de litige relatif à l'interprétation, l'exécution ou la validité des présentes CGU, les tribunaux français seront seuls compétents.
-            </p>
+      <Section title="7. Responsabilité de Proxilio">
+        <p>
+          Proxilio met en œuvre tous les moyens raisonnables pour assurer la disponibilité et la sécurité de la plateforme, mais ne saurait être tenu responsable d'interruptions temporaires de service, de pertes de données ou de dysfonctionnements indépendants de sa volonté.
+        </p>
+        <p>
+          Proxilio ne garantit pas l'exactitude des informations publiées par les professionnels (tarifs, horaires, disponibilités).
+        </p>
+      </Section>
 
-            <h2 className="text-orange-800 text-xl font-semibold mt-6">9. Contact</h2>
-            <p className="text-white  mb-4">
-                Pour toute question concernant ces CGU, veuillez nous contacter à l'adresse suivante : <a href="mpe@mail.com" className="text-blue-500 hover:underline">mpe@mail.com</a>.
-            </p>
-        </div>
-    );
-};
+      <Section title="8. Propriété intellectuelle">
+        <p>
+          La marque, le logo et l'ensemble des contenus de Proxilio sont la propriété exclusive de Proxilio. Toute reproduction sans autorisation est interdite.
+        </p>
+        <p>
+          Les professionnels conservent la propriété de leurs contenus (photos, descriptions) et accordent à Proxilio une licence d'affichage non exclusive pour la durée de leur inscription.
+        </p>
+      </Section>
+
+      <Section title="9. Résiliation">
+        <p>
+          Tout utilisateur peut supprimer son compte à tout moment depuis son tableau de bord. Les professionnels avec un abonnement Premium actif peuvent résilier depuis la page de gestion de leur abonnement — l'accès Premium reste actif jusqu'à la fin de la période facturée.
+        </p>
+        <p>
+          Proxilio se réserve le droit de suspendre ou supprimer tout compte en infraction avec les présentes CGU, sans préavis.
+        </p>
+      </Section>
+
+      <Section title="10. Modification des CGU">
+        <p>
+          Proxilio se réserve le droit de modifier les présentes CGU à tout moment. Les utilisateurs seront informés par e-mail en cas de modification substantielle. La poursuite de l'utilisation de la plateforme après notification vaut acceptation des nouvelles conditions.
+        </p>
+      </Section>
+
+      <Section title="11. Droit applicable">
+        <p>
+          Les présentes CGU sont soumises au droit français. Tout litige relèvera de la compétence exclusive des tribunaux français.
+        </p>
+      </Section>
+
+      <div className="mt-12 pt-8 border-t border-black/5 flex flex-wrap gap-4 text-xs font-light text-[#879f98]">
+        <Link to="/legal-notices" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Mentions légales</Link>
+        <Link to="/condifentiality-policies" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Politique de confidentialité</Link>
+        <Link to="/cookie-policies" className="hover:text-[#132A24] transition-colors underline underline-offset-4">Politique de cookies</Link>
+      </div>
+    </div>
+  </>
+);
 
 export default UsagePolicies;
