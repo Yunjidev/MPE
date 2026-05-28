@@ -7,6 +7,7 @@ const IndexCardsEntreprises = ({ entreprise, userId }) => {
   const navigate = useNavigate();
   const {
     id,
+    slug,
     name,
     city,
     zip_code,
@@ -22,7 +23,7 @@ const IndexCardsEntreprises = ({ entreprise, userId }) => {
     ? `${nextAvailableDate.date} · ${nextAvailableDate.startHour}–${nextAvailableDate.endHour}`
     : null;
 
-  const goTo = () => navigate(`/enterprise/${id}`);
+  const goTo = () => navigate(`/enterprise/${slug || id}`);
 
   return (
     <div

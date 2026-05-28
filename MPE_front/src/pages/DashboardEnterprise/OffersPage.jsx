@@ -41,7 +41,7 @@ function formatDuration(minutes) {
 }
 
 export default function OffersPage() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOffer, setModalOffer] = useState(undefined); // undefined = closed, null = add, object = edit
@@ -49,7 +49,7 @@ export default function OffersPage() {
 
   const fetchOffers = async () => {
     try {
-      const data = await getData(`enterprise/${id}`);
+      const data = await getData(`enterprise/${slug}`);
       setOffers(data.offers || []);
     } catch {
       setOffers([]);
@@ -60,11 +60,11 @@ export default function OffersPage() {
 
   useEffect(() => {
     fetchOffers();
-  }, [id]);
+  }, [slug]);
 
   const handleDelete = async (offerId) => {
     try {
-      await deleteData(`enterprise/${id}/offer/${offerId}`);
+      await deleteData(`enterprise/${slug}/offer/${offerId}`);
       setOffers((prev) => prev.filter((o) => o.id !== offerId));
     } catch {
       // silently ignore

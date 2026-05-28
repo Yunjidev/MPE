@@ -1,0 +1,17 @@
+# Robots.txt — Proxilio
+
+User-agent: *
+Disallow: /dashboard
+Disallow: /dashboard/user-db
+Disallow: /dashboard/register-company
+Disallow: /dashboard/security
+Disallow: /dashboard/accept-company
+Disallow: /dashboard/manage-companies
+Disallow: /dashboard/manage-users
+Disallow: /dashboard/enterprise/*/edit
+Disallow: /subscribe/success
+Disallow: /reset-password/
+
+Allow: /
+
+Sitemap: https://www.proxilio.fr/sitemap.xml

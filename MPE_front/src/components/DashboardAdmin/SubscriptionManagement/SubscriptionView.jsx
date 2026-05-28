@@ -116,7 +116,7 @@ function SubscriptionRow({ subscription, onDelete, onUpdate }) {
           ) : (
             <>
               <button
-                onClick={() => navigate(`/enterprise/${subscription.enterprise.id}`)}
+                onClick={() => navigate(`/enterprise/${subscription.enterprise.slug || subscription.enterprise.id}`)}
                 className="h-8 w-8 rounded-lg border border-black/5 bg-white flex items-center justify-center text-[#879f98] hover:text-[#132A24] hover:bg-[#eef5f1] transition"
                 title="Voir l'entreprise"
               >

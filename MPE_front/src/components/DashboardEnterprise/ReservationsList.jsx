@@ -13,7 +13,7 @@ import {
 import { useParams } from "react-router-dom";
 
 const ReservationsList = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,7 +26,7 @@ const ReservationsList = () => {
 
   const fetchReservations = async () => {
     try {
-      const data = await getData(`enterprise/${id}/reservations`);
+      const data = await getData(`enterprise/${slug}/reservations`);
       const sorted =
         data
           ?.slice()
@@ -44,10 +44,10 @@ const ReservationsList = () => {
   };
 
   useEffect(() => {
-    if (id) {
+    if (slug) {
       fetchReservations();
     }
-  }, [id]);
+  }, [slug]);
 
   const availableYears = useMemo(() => {
     const years = new Set();

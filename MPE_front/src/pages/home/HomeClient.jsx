@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { getData } from "../../services/data-fetch";
 import "./home.css";
 
@@ -44,7 +45,24 @@ export default function HomeClient() {
       .catch(() => {});
   }, []);
 
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Proxilio",
+    url: "https://www.proxilio.fr",
+    logo: "https://www.proxilio.fr/assets/img/logo.png",
+    description: "Proxilio connecte les particuliers aux meilleurs professionnels locaux vérifiés. Trouvez, réservez et évaluez des artisans et entrepreneurs près de chez vous.",
+    sameAs: ["https://www.proxilio.fr"],
+  };
+
   return (
+    <>
+    <Helmet>
+      <title>Proxilio — Professionnels locaux vérifiés</title>
+      <meta name="description" content="Trouvez, réservez et évaluez des professionnels locaux vérifiés près de chez vous. Plombiers, électriciens, artisans — Proxilio vous met en relation avec les meilleurs pros de votre région." />
+      <link rel="canonical" href="https://www.proxilio.fr/" />
+      <script type="application/ld+json">{JSON.stringify(organizationJsonLd)}</script>
+    </Helmet>
     <div className="text-[#132A24] antialiased overflow-x-hidden">
       <HeroSection />
       <div className="w-full h-px bg-black/5" />
@@ -52,5 +70,6 @@ export default function HomeClient() {
       <FeaturesSection />
       <PricingSection />
     </div>
+    </>
   );
 }

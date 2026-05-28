@@ -8,7 +8,7 @@ import ReservationSummary from "@/components/Enterprise/ComponentsForEnterprise/
 import StatsSummary from "@/components/Enterprise/ComponentsForStats/StatsSummary";
 
 export default function StatsEnterprises() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [enterprise, setEnterprise] = useState(null);
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function StatsEnterprises() {
   useEffect(() => {
     const fetchEnterprise = async () => {
       try {
-        const data = await getData(`enterprise/${id}`);
+        const data = await getData(`enterprise/${slug}`);
         setEnterprise(data);
       } catch (error) {
         console.error("Error fetching enterprise:", error);
@@ -35,14 +35,14 @@ export default function StatsEnterprises() {
   };
 
   const handleViewClick = () => {
-    if (enterprise) navigate(`/enterprise/${enterprise.id}`);
+    if (enterprise) navigate(`/enterprise/${enterprise.slug}`);
   };
 
   const handlePremiumRevoked = () => {
     setEnterprise((prev) => prev ? { ...prev, isPremium: false } : prev);
     setEnterprises((prev) =>
       Array.isArray(prev)
-        ? prev.map((e) => (String(e.id) === String(id) ? { ...e, isPremium: false } : e))
+        ? prev.map((e) => (e.slug === slug ? { ...e, isPremium: false } : e))
         : prev
     );
   };
@@ -70,7 +70,7 @@ export default function StatsEnterprises() {
 
       {isEditFormOpen && (
         <EditEnterpriseModal
-          enterpriseId={id}
+          enterpriseId={slug}
           onSave={handleSave}
           onClose={handleCloseEditForm}
         />

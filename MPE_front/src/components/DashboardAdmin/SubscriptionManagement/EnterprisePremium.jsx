@@ -92,7 +92,7 @@ const PremiumCompanies = () => {
 
               {/* Bouton voir */}
               <button
-                onClick={() => navigate(`/enterprise/${company.id}`)}
+                onClick={() => navigate(`/enterprise/${company.slug || company.id}`)}
                 className="h-8 w-8 rounded-lg border border-black/5 bg-white flex items-center justify-center text-[#879f98] hover:text-[#132A24] hover:bg-[#eef5f1] transition flex-shrink-0"
                 title="Voir la page entreprise"
               >

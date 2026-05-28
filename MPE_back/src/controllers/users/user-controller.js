@@ -366,13 +366,13 @@ exports.getUserEnterprises = async (req, res) => {
       include: [{
         model: sequelize.models.Enterprise,
         as: "enterprises",
-        attributes: ["id", "name", "isPremium", "isValidate", "logo"],
+        attributes: ["id", "slug", "name", "isPremium", "isValidate", "logo"],
       }],
     });
     if (!user) return res.status(404).json({ errors: "Utilisateur non trouvé" });
 
     const enterprises = (user.enterprises || []).map((e) => {
-      const data = { id: e.id, name: e.name, isPremium: e.isPremium, isValidate: e.isValidate };
+      const data = { id: e.id, slug: e.slug, name: e.name, isPremium: e.isPremium, isValidate: e.isValidate };
       if (e.logo) data.logo = files.getUrl(req, "enterprises/logo", e.logo);
       return data;
     });

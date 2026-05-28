@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import {
   FiShare2, FiCheck, FiMapPin, FiPhone, FiMail, FiGlobe, FiCalendar,
 } from "react-icons/fi";
@@ -12,7 +13,7 @@ import CommentList from "../../components/ShowEnterprise/CommentList";
 import PremiumReservationModal from "../../components/ShowEnterprise/PremiumReservationModal";
 
 const EnterpriseShow = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [enterprise, setEnterprise] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -23,12 +24,12 @@ const EnterpriseShow = () => {
 
   const fetchEnterprise = useCallback(async () => {
     try {
-      const data = await getData(`enterprise/${id}`);
+      const data = await getData(`enterprise/${slug}`);
       setEnterprise(data);
     } catch (error) {
       console.error("Error fetching enterprise:", error);
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => { fetchEnterprise(); }, [fetchEnterprise]);
 
@@ -40,7 +41,7 @@ const EnterpriseShow = () => {
   const handleShare = async () => {
     const shareUrl = typeof window !== "undefined"
       ? window.location.href
-      : `${import.meta.env.VITE_BASE_URL || ""}/enterprise/${id}`;
+      : `${import.meta.env.VITE_BASE_URL || ""}/enterprise/${slug}`;
     try {
       if (navigator.share) {
         await navigator.share({ title: enterprise?.name || "Entreprise", url: shareUrl });
@@ -103,7 +104,59 @@ const EnterpriseShow = () => {
     enterprise.mail  && { icon: <FiMail />,  label: enterprise.mail,  href: `mailto:${enterprise.mail}` },
   ].filter(Boolean);
 
+  const pageTitle = `${enterprise.name}${enterprise.job?.name ? ` — ${enterprise.job.name}` : ""}${enterprise.city ? ` à ${enterprise.city}` : ""} | Proxilio`;
+  const pageDescription = enterprise.description
+    ? enterprise.description.replace(/[#*_[\]]/g, "").slice(0, 155)
+    : `${enterprise.name} est un professionnel vérifié sur Proxilio${enterprise.city ? ` à ${enterprise.city}` : ""}. Consultez la fiche, les avis et réservez en ligne.`;
+  const pageUrl = `https://www.proxilio.fr/enterprise/${enterprise.slug || enterprise.id}`;
+  const pageImage = enterprise.photos?.[0] || enterprise.logo || "https://www.proxilio.fr/assets/img/logo.png";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: enterprise.name,
+    description: pageDescription,
+    url: pageUrl,
+    image: pageImage,
+    ...(enterprise.phone && { telephone: enterprise.phone }),
+    ...(enterprise.mail && { email: enterprise.mail }),
+    ...(enterprise.website && { sameAs: [enterprise.website] }),
+    address: {
+      "@type": "PostalAddress",
+      ...(enterprise.adress && { streetAddress: enterprise.adress }),
+      ...(enterprise.city && { addressLocality: enterprise.city }),
+      ...(enterprise.zip_code && { postalCode: enterprise.zip_code }),
+      addressCountry: "FR",
+    },
+    ...(enterprise.job?.name && { "@type": "LocalBusiness", additionalType: enterprise.job.name }),
+    ...(totalReviews > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: averageRating.toFixed(1),
+        reviewCount: totalReviews,
+        bestRating: "5",
+        worstRating: "1",
+      },
+    }),
+  };
+
   return (
+    <>
+    <Helmet>
+      <title>{pageTitle}</title>
+      <meta name="description" content={pageDescription} />
+      <link rel="canonical" href={pageUrl} />
+      <meta property="og:title" content={pageTitle} />
+      <meta property="og:description" content={pageDescription} />
+      <meta property="og:url" content={pageUrl} />
+      <meta property="og:image" content={pageImage} />
+      <meta property="og:type" content="business.business" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={pageTitle} />
+      <meta name="twitter:description" content={pageDescription} />
+      <meta name="twitter:image" content={pageImage} />
+      <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+    </Helmet>
     <div className="py-6 space-y-10">
 
       {/* ── Banner ── */}
@@ -406,7 +459,7 @@ const EnterpriseShow = () => {
       )}
 
       <PremiumReservationModal
-        enterpriseId={id}
+        enterpriseId={enterprise.id}
         isOpen={isBookingOpen}
         onClose={() => { setIsBookingOpen(false); setPrefillOfferId(null); }}
         onBooked={handleBookingSuccess}
@@ -414,6 +467,7 @@ const EnterpriseShow = () => {
         initialOfferId={prefillOfferId}
       />
     </div>
+    </>
   );
 };
 

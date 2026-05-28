@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useAtom } from "jotai";
 import { userAtom } from "../../store/user";
 import { getData } from "../../services/data-fetch";
@@ -84,6 +85,12 @@ const SearchEntreprise = () => {
   const activeFilterCount = selectedJobs.length + selectedCountries.length + selectedCities.length + (minRating ? 1 : 0) + (onlyPremium ? 1 : 0);
 
   return (
+    <>
+    <Helmet>
+      <title>Trouver un professionnel local vérifié | Proxilio</title>
+      <meta name="description" content="Recherchez parmi des centaines de professionnels locaux vérifiés : plombiers, électriciens, artisans et plus. Filtrez par métier, région et note. Réservez en ligne." />
+      <link rel="canonical" href="https://www.proxilio.fr/searchentreprise" />
+    </Helmet>
     <div className="px-4 sm:px-8 lg:px-16 2xl:px-24 py-10 sm:py-14 w-full">
 
       {/* Header */}
@@ -159,6 +166,7 @@ const SearchEntreprise = () => {
         </main>
       </div>
     </div>
+    </>
   );
 };
 

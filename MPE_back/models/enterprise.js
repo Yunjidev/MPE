@@ -148,6 +148,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
       isPremium: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

@@ -78,7 +78,7 @@ const LikesManagement = () => {
                 </div>
               </div>
               <button
-                onClick={() => navigate(`/enterprise/${eid}`)}
+                onClick={() => navigate(`/enterprise/${ent?.slug || eid}`)}
                 className="flex-shrink-0 text-xs font-light text-[#132A24] border border-[#132A24]/15 px-3 py-1.5 rounded-full hover:bg-[#132A24] hover:text-white transition-colors ml-2"
               >
                 Voir fiche

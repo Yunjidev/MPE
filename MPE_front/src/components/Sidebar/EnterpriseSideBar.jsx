@@ -14,10 +14,10 @@ export default function EnterpriseSideBar({ iconStyle, linkstyle, onClick }) {
         <li key={enterprise.id}>
           <Dropdown
             dropdownItems={[
-              { to: `/dashboard/enterprise/${enterprise.id}/dashboard`, icon: <MdDashboard className={iconStyle} />, label: "Tableau de Bord" },
-              { to: `/dashboard/enterprise/${enterprise.id}/planning`, icon: <FaCalendarAlt className={iconStyle} />, label: "Planning" },
-              { to: `/dashboard/enterprise/${enterprise.id}/reservations`, icon: <FaBook className={iconStyle} />, label: "Réservations" },
-              { to: `/dashboard/enterprise/${enterprise.id}/offers`, icon: <FaConciergeBell className={iconStyle} />, label: "Mes services" },
+              { to: `/dashboard/enterprise/${enterprise.slug}/dashboard`, icon: <MdDashboard className={iconStyle} />, label: "Tableau de Bord" },
+              { to: `/dashboard/enterprise/${enterprise.slug}/planning`, icon: <FaCalendarAlt className={iconStyle} />, label: "Planning" },
+              { to: `/dashboard/enterprise/${enterprise.slug}/reservations`, icon: <FaBook className={iconStyle} />, label: "Réservations" },
+              { to: `/dashboard/enterprise/${enterprise.slug}/offers`, icon: <FaConciergeBell className={iconStyle} />, label: "Mes services" },
             ]}
             label={enterprise.name}
             icon={

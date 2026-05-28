@@ -169,7 +169,7 @@ const ValidatedCompanies = () => {
     }
   };
 
-  const viewCompany = (companyId) => navigate(`/enterprise/${companyId}`);
+  const viewCompany = (company) => navigate(`/enterprise/${company.slug || company.id}`);
 
   const handleSubscriptionSubmit = async () => {
     if (!selectedCompany) return;
@@ -323,7 +323,7 @@ const ValidatedCompanies = () => {
                     </div>
 
                     <div className="md:ml-4 flex md:flex-col gap-2 md:items-end">
-                      <button onClick={() => viewCompany(company.id)} className={primaryIconBtn} title="Voir la fiche">
+                      <button onClick={() => viewCompany(company)} className={primaryIconBtn} title="Voir la fiche">
                         <FaEye />
                       </button>
                       <button onClick={() => { setSelectedCompany(company); setIsSubscriptionModalOpen(true); }} className={primaryIconBtn} title="Ajouter un abonnement">

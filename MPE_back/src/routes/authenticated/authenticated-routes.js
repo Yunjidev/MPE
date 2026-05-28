@@ -8,17 +8,17 @@ router.use(authMiddleware.isAuthenticated);
 // Routes pour les utilisateurs
 router.use("/", require("./user"));
 router.post(
-  "/enterprises/:id/reservations",
+  "/enterprises/:slug/reservations",
   reservationController.createEnterpriseReservationByUser,
 );
 router.use(
-  "/enterprises/:id",
+  "/enterprises/:slug",
   authMiddleware.isEnterpriseOwner(),
   require("./premium-calendar"),
 );
 // Routes verification propriétaire de l'entreprise
 router.use(
-  "/enterprise/:id",
+  "/enterprise/:slug",
   authMiddleware.isEnterpriseOwner(),
   require("./owner"),
 );

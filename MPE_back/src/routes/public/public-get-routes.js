@@ -29,7 +29,7 @@ router.get(
   enterprisePremiumController.getAllEnterprisesPremium,
 );
 router.get(
-  "/enterprise/:id",
+  "/enterprise/:slug",
   enterpriseValidateController.getEnterpriseByIdValidate,
 );
 router.get(

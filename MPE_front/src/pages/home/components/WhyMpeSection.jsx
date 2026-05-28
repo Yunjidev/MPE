@@ -10,9 +10,9 @@ const PRINCIPLES = [
   "Profitez du système de réservation en ligne, gérez vos disponibilités et recevez vos demandes directement depuis votre espace professionnel.",
 ];
 
-function EnterpriseCard({ id, name, job, city, logo, rating }) {
+function EnterpriseCard({ slug, id, name, job, city, logo, rating }) {
   return (
-    <Link to={`/enterprise/${id}`} className="flex-shrink-0 w-60 bg-white border border-black/5 rounded-2xl p-4 mx-3 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_-6px_rgba(0,0,0,0.10)] transition-shadow cursor-pointer">
+    <Link to={`/enterprise/${slug || id}`} className="flex-shrink-0 w-60 bg-white border border-black/5 rounded-2xl p-4 mx-3 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_-6px_rgba(0,0,0,0.10)] transition-shadow cursor-pointer">
       <div className="flex items-center gap-3 mb-3">
         <img
           src={logo || FALLBACK_LOGO}
@@ -106,6 +106,7 @@ export default function WhyMpeSection({ premiumEnterprises }) {
                   <EnterpriseCard
                     key={i}
                     id={e.id}
+                    slug={e.slug}
                     name={e.name}
                     job={e.job?.name}
                     city={e.city}

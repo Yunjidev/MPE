@@ -123,7 +123,7 @@ function AppContent() {
           <Route path="/pricing" element={<Pricing_page />} />
           <Route path="/subscribe" element={<SubscribePage />} />
           <Route path="/subscribe/success" element={<SubscribeSuccess />} />
-          <Route path="/enterprise/:id" element={<EnterprisePage />} />
+          <Route path="/enterprise/:slug" element={<EnterprisePage />} />
           <Route path="forgot-password" element={<ForgotPasswordForm />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           {/* Routes protégées pour les utilisateurs authentifiés */}
@@ -136,12 +136,12 @@ function AppContent() {
               <Route path="deleteAccount" element={<DeleteAccount />} />
               {/* Routes protégées pour les entrepreneurs */}
               <Route element={<EntrepreneurRoute />}>
-                <Route path="enterprise/:enterpriseId/edit" element={<UpdateCompany />} />
-                <Route path="enterprise/:id/offer" element={<OfferList />} />
-                <Route path="enterprise/:id/planning" element={<Planning />} />
-                <Route path="enterprise/:id/reservations" element={<ReservationsList />} />
-                <Route path="enterprise/:id/dashboard" element={<StatsEnterprises />} />
-                <Route path="enterprise/:id/offers" element={<OffersPage />} />
+                <Route path="enterprise/:slug/edit" element={<UpdateCompany />} />
+                <Route path="enterprise/:slug/offer" element={<OfferList />} />
+                <Route path="enterprise/:slug/planning" element={<Planning />} />
+                <Route path="enterprise/:slug/reservations" element={<ReservationsList />} />
+                <Route path="enterprise/:slug/dashboard" element={<StatsEnterprises />} />
+                <Route path="enterprise/:slug/offers" element={<OffersPage />} />
               </Route>
               {/* Routes protégées pour les administrateurs */}
               <Route element={<AdminRoute />}>

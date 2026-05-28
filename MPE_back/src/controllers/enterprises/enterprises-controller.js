@@ -4,6 +4,7 @@ const Enterprise = sequelize.models.Enterprise;
 const { Job, User, Country } = require("../../../models/index");
 const files = require("../../utils/files");
 const sendEmail = require("../../mailers/email-service");
+const { ensureUniqueSlug } = require("../../utils/slugify");
 
 exports.createEnterprise = async (req, res) => {
   try {
@@ -49,8 +50,10 @@ exports.createEnterprise = async (req, res) => {
       req.user.isEntrepreneur = true;
       await req.user.save();
     }
+    const slug = await ensureUniqueSlug(name, Enterprise);
     const newEnterprise = await Enterprise.create({
       name,
+      slug,
       phone,
       mail,
       adress,
@@ -70,6 +73,7 @@ exports.createEnterprise = async (req, res) => {
     });
     let enterpriseData = {
       id: newEnterprise.id,
+      slug: newEnterprise.slug,
       name: newEnterprise.name,
       isValidate: newEnterprise.isValidate,
     };
@@ -121,6 +125,9 @@ exports.updateEnterprise = async (req, res) => {
       removePhotos,
     } = req.body;
 
+    if (name && name !== enterprise.name) {
+      enterprise.slug = await ensureUniqueSlug(name, Enterprise, enterprise.id);
+    }
     enterprise.name = name || enterprise.name;
     enterprise.phone = phone || enterprise.phone;
     enterprise.mail = mail || enterprise.mail;
@@ -149,7 +156,7 @@ exports.updateEnterprise = async (req, res) => {
             {
               user: owner.username,
               enterprise: enterprise.name,
-              url: `${process.env.CLIENT_URL}/enterprise/${enterprise.id}`,
+              url: `${process.env.CLIENT_URL}/enterprise/${enterprise.slug || enterprise.id}`,
             },
           );
         }
@@ -208,6 +215,7 @@ exports.updateEnterprise = async (req, res) => {
     }
     const enterpriseData = {
       id: enterprise.id,
+      slug: enterprise.slug,
       name: enterprise.name,
       isValidate: enterprise.isValidate,
     };

@@ -49,22 +49,21 @@ const isOwner = (model) => async (req, res, next) => {
 };
 
 const isEnterpriseOwner = () => async (req, res, next) => {
-  const { id } = req.params;
+  const identifier = req.params.slug || req.params.id;
   if (!req.user) {
     return res.status(401).json({ message: "Utilisateur non connecté" });
   }
 
   try {
-    const enterprise = await sequelize.models.Enterprise.findByPk(id);
+    const isNumeric = /^\d+$/.test(identifier);
+    const enterprise = isNumeric
+      ? await sequelize.models.Enterprise.findByPk(parseInt(identifier))
+      : await sequelize.models.Enterprise.findOne({ where: { slug: identifier } });
     if (!enterprise) {
       return res.status(404).json({ message: "Entreprise non trouvée" });
     }
 
-    if (
-      enterprise.User_id !== req.user.id &&
-      req.user.isAdmin !== true &&
-      enterprise.isValidate !== true
-    ) {
+    if (enterprise.User_id !== req.user.id && req.user.isAdmin !== true) {
       return res
         .status(403)
         .json({ message: "Vous n'êtes pas autorisé à effectuer cette action" });

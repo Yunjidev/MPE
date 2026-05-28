@@ -178,9 +178,12 @@ exports.getAllEnterprisesValidate = async (req, res) => {
 
 exports.getEnterpriseByIdValidate = async (req, res) => {
   try {
-    const { id } = req.params;
-    const enterprise = await Enterprise.findByPk(id, {
-      where: { isValidate: true },
+    const identifier = req.params.slug || req.params.id;
+    const isNumeric = /^\d+$/.test(identifier);
+    const whereClause = isNumeric ? { id: parseInt(identifier) } : { slug: identifier };
+
+    const enterprise = await Enterprise.findOne({
+      where: whereClause,
       include: [
         {
           model: sequelize.models.Job,
@@ -322,7 +325,6 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
         enterprise.job.picture,
       );
     }
-    // Creations des routes avatars
     const offers = enterprise.offers;
     offers.forEach((offer) => {
       if (offer.image) {
@@ -349,8 +351,7 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
       );
       enterprise.entrepreneur.dataValues.avatar = avatarUrl;
     }
-    const averageRating = await calculateAverageRatingForEnterprise(id);
-    enterprise.averageRating = averageRating;
+    const averageRating = await calculateAverageRatingForEnterprise(enterprise.id);
     enterprise.availabilityDates = getAvailabilityDates(
       enterprise.disponibilities,
       enterprise.indisponibilities,
@@ -358,7 +359,7 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
       enterprise.manualBlocks || [],
     );
     const enterpriseData = Object.assign({}, enterprise.toJSON(), {
-      averageRating: averageRating,
+      averageRating,
       availabilityDates: enterprise.availabilityDates,
       nextAvalaibleDate: enterprise.availabilityDates[0],
     });
@@ -367,7 +368,7 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
     delete enterpriseData.subscriptions;
     res.status(200).json(enterpriseData);
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(500).json({ errors: error.message });
   }
 };

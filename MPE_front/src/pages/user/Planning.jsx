@@ -244,7 +244,7 @@ const STATUS_CONFIG = {
 };
 
 export default function Planning() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [enterprise, setEnterprise] = useState(null);
   const [disponibilities, setDisponibilities] = useState([]);
   const [manualBlocks, setManualBlocks] = useState([]);
@@ -262,7 +262,7 @@ export default function Planning() {
 
   const fetchEnterprise = useCallback(async () => {
     try {
-      const data = await getData(`enterprise/${id}`);
+      const data = await getData(`enterprise/${slug}`);
       setEnterprise(data);
     } catch (error) {
       console.error("Error fetching enterprise data:", error);
@@ -270,11 +270,11 @@ export default function Planning() {
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [slug]);
 
   const fetchDisponibilities = useCallback(async () => {
     try {
-      const data = await getData(`enterprises/${id}/disponibilites`);
+      const data = await getData(`enterprises/${slug}/disponibilites`);
       if (Array.isArray(data)) {
         setDisponibilities(data);
         setManualBlocks([]);
@@ -285,16 +285,16 @@ export default function Planning() {
     } catch (error) {
       console.error("Error fetching disponibilities:", error);
     }
-  }, [id]);
+  }, [slug]);
 
   const fetchReservations = useCallback(async () => {
     try {
-      const data = await getData(`enterprises/${id}/reservations`);
+      const data = await getData(`enterprises/${slug}/reservations`);
       setReservations(data);
     } catch (error) {
       console.error("Error fetching reservations:", error);
     }
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => { fetchEnterprise(); }, [fetchEnterprise]);
 
@@ -307,18 +307,18 @@ export default function Planning() {
 
   const handleDeleteDisponibility = useCallback(async (disponibilityId) => {
     try {
-      await deleteData(`enterprises/${id}/disponibilites/${disponibilityId}`);
+      await deleteData(`enterprises/${slug}/disponibilites/${disponibilityId}`);
       toast.success("Créneau supprimé.");
       fetchDisponibilities();
     } catch (error) {
       console.error("Error deleting disponibility:", error);
       toast.error("Impossible de supprimer ce créneau.");
     }
-  }, [fetchDisponibilities, id]);
+  }, [fetchDisponibilities, slug]);
 
   const handleCreateManualBlock = useCallback(async (payload) => {
     try {
-      await postData(`enterprises/${id}/manual-blocks`, payload);
+      await postData(`enterprises/${slug}/manual-blocks`, payload);
       toast.success("Créneau verrouillé.");
       fetchDisponibilities();
     } catch (error) {
@@ -330,18 +330,18 @@ export default function Planning() {
         toast.error("Impossible de verrouiller ce créneau.");
       }
     }
-  }, [fetchDisponibilities, id]);
+  }, [fetchDisponibilities, slug]);
 
   const handleDeleteManualBlock = useCallback(async (blockId) => {
     try {
-      await deleteData(`enterprises/${id}/manual-blocks/${blockId}`);
+      await deleteData(`enterprises/${slug}/manual-blocks/${blockId}`);
       toast.success("Fermeture supprimée.");
       fetchDisponibilities();
     } catch (error) {
       console.error("Error deleting manual block:", error);
       toast.error("Impossible de supprimer cette fermeture.");
     }
-  }, [fetchDisponibilities, id]);
+  }, [fetchDisponibilities, slug]);
 
   const handleEditDisponibility = useCallback((slot) => { setEditingSlot(slot); }, []);
 
@@ -367,7 +367,7 @@ export default function Planning() {
         toast.error("Impossible de modifier le créneau.");
       }
     }
-  }, [editingSlot, fetchDisponibilities, id]);
+  }, [editingSlot, fetchDisponibilities, slug]);
 
   const cancelEdit = useCallback(() => { setEditingSlot(null); }, []);
 
