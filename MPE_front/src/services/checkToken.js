@@ -3,17 +3,14 @@ import { authSignInUp } from "./auth-fetch";
 
 export const validateRefreshToken = async () => {
   const refreshToken = Cookies.get("mpe-refresh");
-  if (!refreshToken) {
-    return { isLogged: false };
-  }
+  if (!refreshToken) return null;
+
   try {
-    await authSignInUp("validate-refresh-token", {
-      refreshToken: refreshToken,
-    });
-    return { isLogged: true };
-  } catch (error) {
-    Cookies.remove("mpe-refresh");
+    const data = await authSignInUp("validate-refresh-token", { refreshToken });
+    return { user: data.user, enterprises: data.enterprises || [] };
+  } catch {
     Cookies.remove("mpe-auth");
-    localStorage.removeItem("user");
+    Cookies.remove("mpe-refresh");
+    return null;
   }
 };

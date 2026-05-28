@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import NotFound from "./pages/NotFound/NotFound";
 import EnterpriseBooking from "./pages/EnterpriseBooking/EnterpriseBooking";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Provider } from "jotai";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { validateRefreshToken } from "./services/checkToken";
 import { useSocketIo } from "./services/UseSocketIo";
+import AuthInitializer from "./context/AuthInitializer";
 
 // Context Providers
 import { UserProvider } from "./context/UserContext";
@@ -66,24 +66,19 @@ import ReservationsList from "./components/DashboardEnterprise/ReservationsList"
 function App() {
   useSocketIo();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      await validateRefreshToken();
-    };
-    checkAuth();
-  }, []);
-
   return (
     <Provider>
-      <UserProvider>
-        <ModalProvider>
-          <BrowserRouter>
-            <ScrollToTop />
-            <AppContent />
-            <ToastContainer />
-          </BrowserRouter>
-        </ModalProvider>
-      </UserProvider>
+      <AuthInitializer>
+        <UserProvider>
+          <ModalProvider>
+            <BrowserRouter>
+              <ScrollToTop />
+              <AppContent />
+              <ToastContainer />
+            </BrowserRouter>
+          </ModalProvider>
+        </UserProvider>
+      </AuthInitializer>
     </Provider>
   );
 }

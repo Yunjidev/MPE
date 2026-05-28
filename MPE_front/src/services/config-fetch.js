@@ -46,14 +46,12 @@ export const kyInstance = ky.create({
             } catch (refreshError) {
               Cookies.remove("mpe-auth");
               Cookies.remove("mpe-refresh");
-              localStorage.removeItem("user");
               window.location.href = "/signin";
               throw new Error("Vous devez vous reconnecter");
             }
           } else {
             Cookies.remove("mpe-auth");
             Cookies.remove("mpe-refresh");
-            localStorage.removeItem("user");
             window.location.href = "/signin";
             throw new Error("Vous devez vous reconnecter");
           }

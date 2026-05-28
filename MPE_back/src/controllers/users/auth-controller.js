@@ -295,9 +295,30 @@ exports.validateRefreshToken = async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const user = await User.findByPk(decoded.User_id);
+    if (!user) return res.status(401).json({ errors: "Utilisateur introuvable" });
+
     const accessToken = generateAccessToken(user.id);
     res.setHeader("Authorization", `${accessToken}`);
-    res.status(200).json({ refreshToken, message: "Token refresh" });
+
+    const enterprises = await user.getEnterprises();
+    const enterprisesData = enterprises.map((e) => {
+      const entry = { id: e.id, slug: e.slug, name: e.name, isValidate: e.isValidate, isPremium: e.isPremium };
+      if (e.logo) entry.logo = files.getUrl(req, "enterprises/logo", e.logo);
+      return entry;
+    });
+
+    const userData = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      isAdmin: user.isAdmin,
+      isEntrepreneur: user.isEntrepreneur,
+      avatar: user.avatar ? files.getUrl(req, "users/avatar", user.avatar) : null,
+    };
+
+    res.status(200).json({ refreshToken, message: "Token refresh", user: userData, enterprises: enterprisesData });
   } catch (error) {
     return res.status(401).json({ errors: "Token Invalide" });
   }
