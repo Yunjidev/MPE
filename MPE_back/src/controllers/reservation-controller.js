@@ -646,8 +646,10 @@ exports.getEnterpriseReservationsForOwner = async (req, res) => {
 
 exports.getEnterpriseReservationsPublic = async (req, res) => {
   try {
-    const { id } = req.params;
-    const enterprise = await Enterprise.findByPk(id, {
+    const identifier = req.params.slug || req.params.id;
+    const isNumeric = /^\d+$/.test(identifier);
+    const enterprise = await Enterprise.findOne({
+      where: isNumeric ? { id: parseInt(identifier) } : { slug: identifier },
       attributes: ["id", "isPremium"],
     });
 
@@ -699,7 +701,7 @@ exports.getEnterpriseReservationsPublic = async (req, res) => {
 
 exports.createEnterpriseReservationByUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const identifier = req.params.slug || req.params.id;
     const { date, start_time, offerId, phone } = req.body;
 
     if (!date || !start_time || !offerId || !phone) {
@@ -716,7 +718,9 @@ exports.createEnterpriseReservationByUser = async (req, res) => {
         .json({ error: "La date fournie est invalide." });
     }
 
-    const enterprise = await Enterprise.findByPk(id, {
+    const isNumeric = /^\d+$/.test(identifier);
+    const enterprise = await Enterprise.findOne({
+      where: isNumeric ? { id: parseInt(identifier) } : { slug: identifier },
       include: [
         {
           model: Offer,
