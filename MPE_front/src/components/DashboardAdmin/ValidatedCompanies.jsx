@@ -131,7 +131,7 @@ const ValidatedCompanies = () => {
       const country = company.country?.name?.toLowerCase() || "";
       const activity = company.job?.name?.toLowerCase() || "";
       const siretNumber = company.siret_number?.toLowerCase() || "";
-      const username = company.entrepreneur?.username?.toLowerCase() || "";
+      const entrepreneurSearch = [company.entrepreneur?.firstname, company.entrepreneur?.lastname, company.entrepreneur?.username].filter(Boolean).join(" ").toLowerCase();
       const averageRating = company.averageRating?.toString().toLowerCase() || "";
 
       return (
@@ -140,7 +140,7 @@ const ValidatedCompanies = () => {
         zipCode.includes(q) ||
         country.includes(q) ||
         activity.includes(q) ||
-        username.includes(q) ||
+        entrepreneurSearch.includes(q) ||
         averageRating.includes(q) ||
         siretNumber.includes(q)
       );
@@ -237,7 +237,7 @@ const ValidatedCompanies = () => {
             {currentSlice.map((company) => {
               const country = company.country?.name || "—";
               const job = company.job?.name || "—";
-              const username = company.entrepreneur?.username || "—";
+              const entrepreneurName = [company.entrepreneur?.firstname, company.entrepreneur?.lastname].filter(Boolean).join(" ") || company.entrepreneur?.username || "—";
               const rating = company.averageRating ?? "—";
               const manualExpirationLabel = formatDate(company.premiumManualEnd);
               const manualExpirationDate = company.premiumManualEnd ? new Date(company.premiumManualEnd) : null;
@@ -295,7 +295,7 @@ const ValidatedCompanies = () => {
                           <span className="text-xs text-[#879f98] font-light">Mise à jour…</span>
                         )}
                       </div>
-                      {manualExpirationLabel && (
+                      {manualExpirationLabel && company.activeSubscriptionType !== "forever" && (
                         <p className="text-xs text-[#879f98] font-light mb-1">
                           Expiration manuelle : {manualExpirationLabel}{!manualActive && " (expirée)"}
                         </p>
@@ -314,7 +314,7 @@ const ValidatedCompanies = () => {
                         </div>
                         <div className="flex items-center gap-1.5">
                           <FaUserAlt className="w-3 h-3 shrink-0" />
-                          <span className="truncate">Entrepreneur : {username}</span>
+                          <span className="truncate">Entrepreneur : {entrepreneurName}</span>
                         </div>
                         {company.siret_number && (
                           <div className="text-[#879f98]">SIRET : {company.siret_number}</div>
