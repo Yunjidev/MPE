@@ -4,7 +4,9 @@ import { enterprisesAtom } from "../store/enterprises";
 import { io } from "socket.io-client";
 
 export const initSocket = () => {
-  const socket = io("http://localhost:8080", {
+  const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api/";
+  const socketUrl = apiUrl.replace(/\/api\/?$/, "");
+  const socket = io(socketUrl, {
     withCredentials: true,
     transports: ["websocket", "polling"],
   });

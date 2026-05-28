@@ -62,10 +62,10 @@ export default function WhyMpeSection({ premiumEnterprises }) {
                 <p className="text-sm uppercase tracking-widest text-[#879f98] mb-6 flex items-center gap-2 font-light">
                   <span className="w-6 h-px bg-[#879f98]" /> Entrepreneur ? POURQUOI PROXILIO ?
                 </p>
-                <h3 className="font-light text-[40px] sm:text-[56px] leading-tight tracking-tight mb-6 text-[#132A24]">
+                <h2 className="font-light text-[40px] sm:text-[56px] leading-tight tracking-tight mb-6 text-[#132A24]">
                   Développez votre activité<br />
                   <span className="text-[#274F44]">localement.</span>
-                </h3>
+                </h2>
                 <p className="text-base sm:text-xl text-[#4b615a] font-light leading-relaxed tracking-tight">
                   Une plateforme pensée pour aider les professionnels à gagner en visibilité et trouver de nouveaux clients près de chez eux.
                 </p>

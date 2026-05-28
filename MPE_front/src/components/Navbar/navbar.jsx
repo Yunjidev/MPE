@@ -86,7 +86,7 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-3 sm:gap-4 group">
           <img
             src={logo}
-            alt="Proxilio"
+            alt=""
             className="h-11 sm:h-14 object-contain transition-all duration-500 group-hover:scale-110"
           />
           <span className="hidden lg:block font-light text-xl tracking-tight text-[#132A24]">

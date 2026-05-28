@@ -56,7 +56,7 @@ const QUESTIONS = [
       },
       {
         question: "Quelles sont les formules disponibles ?",
-        answer: "Deux formules sont disponibles : Mensuel à 30 €/mois (résiliable à tout moment) et Annuel à 270 €/an (soit 2 mois offerts). Le paiement est sécurisé via Stripe.",
+        answer: "Deux formules sont disponibles : Mensuel à 30 €/mois (résiliable à tout moment) et Annuel à 270 €/an (soit 3 mois offerts). Le paiement est sécurisé via Stripe.",
       },
     ],
   },
