@@ -25,7 +25,7 @@ const QUESTIONS = [
       },
       {
         question: "Les entreprises sont-elles vérifiées ?",
-        answer: "Oui, chaque entreprise est validée manuellement par notre équipe avant d'apparaître sur la plateforme. Un badge de certification est affiché sur les profils vérifiés.",
+        answer: "Oui, chaque entreprise est validée manuellement par notre équipe avant d'apparaître sur la plateforme.",
       },
     ],
   },
@@ -56,7 +56,7 @@ const QUESTIONS = [
       },
       {
         question: "Quelles sont les formules disponibles ?",
-        answer: "Deux formules sont disponibles : Mensuel à 35 €/mois (résiliable à tout moment) et Annuel à 350 €/an (soit 2 mois offerts). Le paiement est sécurisé via Stripe.",
+        answer: "Deux formules sont disponibles : Mensuel à 30 €/mois (résiliable à tout moment) et Annuel à 270 €/an (soit 2 mois offerts). Le paiement est sécurisé via Stripe.",
       },
     ],
   },
@@ -65,7 +65,7 @@ const QUESTIONS = [
     items: [
       {
         question: "Comment contacter le support ?",
-        answer: "Vous pouvez nous écrire depuis la page Contact ou par e-mail à support@proxilio.fr. Notre équipe vous répondra dans les meilleurs délais.",
+        answer: "Vous pouvez nous écrire depuis la page Contact ou par e-mail à contact@proxilio.fr. Notre équipe vous répondra dans les meilleurs délais.",
       },
     ],
   },
