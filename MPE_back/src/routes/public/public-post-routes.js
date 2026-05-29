@@ -41,4 +41,7 @@ router.post("/reset-password/:token", forgotPasswordLimiter, authController.rese
 const { sendContact, contactLimiter, contactValidation } = require("../../controllers/contact-controller");
 router.post("/contact", contactLimiter, contactValidation, sendContact);
 
+const { sendMessage, messageLimiter } = require("../../controllers/message-controller");
+router.post("/enterprise/:slug/messages", messageLimiter, sendMessage);
+
 module.exports = router;

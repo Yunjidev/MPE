@@ -112,4 +112,10 @@ router.post("/quotes/:quoteId/to-invoice", invoiceController.createFromQuote);
 // Routes Like
 router.get("/enterprises/:id/likes", likeController.getLikeByEnterpriseId);
 
+// Messagerie
+const messageController = require("../../controllers/message-controller");
+router.get("/messages", messageController.listMessages);
+router.put("/messages/:messageId/read", messageController.markAsRead);
+router.delete("/messages/:messageId", messageController.deleteMessage);
+
 module.exports = router;

@@ -65,6 +65,7 @@ import OfferList from "./components/DashboardEnterprise/OffersList";
 import ReservationsList from "./components/DashboardEnterprise/ReservationsList";
 import DevisPage    from "./pages/DashboardEnterprise/DevisPage";
 import FacturesPage from "./pages/DashboardEnterprise/FacturesPage";
+import MessagesPage from "./pages/DashboardEnterprise/MessagesPage";
 
 function App() {
   useSocketIo();
@@ -143,6 +144,7 @@ function AppContent() {
                 <Route path="enterprise/:slug/reservations" element={<ReservationsList />} />
                 <Route path="enterprise/:slug/devis" element={<DevisPage />} />
                 <Route path="enterprise/:slug/factures" element={<FacturesPage />} />
+                <Route path="enterprise/:slug/messages" element={<MessagesPage />} />
                 <Route path="enterprise/:slug/dashboard" element={<StatsEnterprises />} />
                 <Route path="enterprise/:slug/offers" element={<OffersPage />} />
               </Route>

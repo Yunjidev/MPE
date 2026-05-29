@@ -7,7 +7,8 @@ import {
 import { FaStar, FaFacebookF, FaInstagram } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import ReactMarkdown from "react-markdown";
-import { getData } from "../../services/data-fetch";
+import { getData, postData } from "../../services/data-fetch";
+import { toast } from "react-toastify";
 import OfferList from "../../components/ShowEnterprise/OfferList";
 import CommentList from "../../components/ShowEnterprise/CommentList";
 import PremiumReservationModal from "../../components/ShowEnterprise/PremiumReservationModal";
@@ -23,6 +24,10 @@ const EnterpriseShow = () => {
   const [shareStatus, setShareStatus] = useState(null);
   const [shareMessage, setShareMessage] = useState("");
   const [phoneRevealed, setPhoneRevealed] = useState(false);
+  const [msgOpen, setMsgOpen] = useState(false);
+  const [msgForm, setMsgForm] = useState({ sender_name: "", sender_email: "", sender_phone: "", content: "" });
+  const [msgSending, setMsgSending] = useState(false);
+  const [msgSent, setMsgSent] = useState(false);
 
   const fetchEnterprise = useCallback(async () => {
     try {
@@ -74,6 +79,24 @@ const EnterpriseShow = () => {
   };
 
   const handleOpenBooking = (offerId = null) => { setPrefillOfferId(offerId); setIsBookingOpen(true); };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!msgForm.sender_name.trim() || !msgForm.sender_email.trim() || !msgForm.content.trim()) {
+      toast.error("Nom, email et message sont requis.");
+      return;
+    }
+    try {
+      setMsgSending(true);
+      await postData(`enterprise/${enterprise.slug || enterprise.id}/messages`, msgForm);
+      setMsgSent(true);
+      toast.success("Message envoyé !");
+    } catch {
+      toast.error("Erreur lors de l'envoi. Réessayez.");
+    } finally {
+      setMsgSending(false);
+    }
+  };
 
   const averageRating = useMemo(() => {
     const value = Number(enterprise?.averageRating);
@@ -398,6 +421,12 @@ const EnterpriseShow = () => {
                   <FiMail /> Envoyer un email
                 </a>
               )}
+              <button
+                onClick={() => { setMsgOpen(true); setMsgSent(false); }}
+                className="mt-3 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors border border-[#132A24]/10"
+              >
+                ✉ Envoyer un message
+              </button>
             </div>
 
             {/* Autres informations */}
@@ -545,6 +574,57 @@ const EnterpriseShow = () => {
         initialOfferId={prefillOfferId}
         multiBooking={!!enterprise.multi_booking}
       />
+
+      {/* Modal message */}
+      {msgOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5">
+            {msgSent ? (
+              <div className="text-center py-6 space-y-3">
+                <div className="text-4xl">✅</div>
+                <p className="text-base font-light text-[#132A24]">Message envoyé !</p>
+                <p className="text-sm text-[#879f98] font-light">{enterprise.name} recevra votre message très prochainement.</p>
+                <button onClick={() => setMsgOpen(false)} className="mt-2 rounded-xl bg-[#132A24] px-6 py-2.5 text-sm font-light text-white hover:bg-[#1b3b33] transition">
+                  Fermer
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base font-light text-[#132A24]">Envoyer un message à {enterprise.name}</h2>
+                  <button onClick={() => setMsgOpen(false)} className="text-[#879f98] hover:text-[#132A24] text-xl leading-none transition">×</button>
+                </div>
+                <form onSubmit={handleSendMessage} className="space-y-3">
+                  {[
+                    { label: "Votre nom *", key: "sender_name", type: "text", placeholder: "Jean Dupont" },
+                    { label: "Votre email *", key: "sender_email", type: "email", placeholder: "jean@exemple.fr" },
+                    { label: "Téléphone (optionnel)", key: "sender_phone", type: "tel", placeholder: "06 12 34 56 78" },
+                  ].map(({ label, key, type, placeholder }) => (
+                    <div key={key}>
+                      <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">{label}</label>
+                      <input type={type} placeholder={placeholder} required={!label.includes("optionnel")}
+                        value={msgForm[key]}
+                        onChange={(e) => setMsgForm((p) => ({ ...p, [key]: e.target.value }))}
+                        className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition" />
+                    </div>
+                  ))}
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">Message *</label>
+                    <textarea required rows={5} placeholder="Décrivez votre besoin…"
+                      value={msgForm.content}
+                      onChange={(e) => setMsgForm((p) => ({ ...p, content: e.target.value }))}
+                      className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition resize-none" />
+                  </div>
+                  <p className="text-[11px] text-[#879f98] font-light">Votre message sera transmis directement à l'entreprise.</p>
+                  <button type="submit" disabled={msgSending} className="w-full rounded-xl bg-[#132A24] py-3 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-60">
+                    {msgSending ? "Envoi…" : "Envoyer le message"}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
     </>
   );

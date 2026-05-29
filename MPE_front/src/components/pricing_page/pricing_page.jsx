@@ -38,7 +38,7 @@ const PLANS = [
     desc: "Pour créer votre présence et démarrer.",
     badge: null,
     dark: false,
-    features: ["Page entreprise", "Dashboard", "Statistiques de base"],
+    features: ["Page entreprise", "Dashboard", "Statistiques de base", "Messagerie (5 derniers messages)"],
     cta: null,
   },
   {
@@ -49,7 +49,7 @@ const PLANS = [
     desc: "Accès complet, sans engagement.",
     badge: "Populaire",
     dark: false,
-    features: ["Tout le Basique", "Mise en avant accueil", "Badge certification", "Réservations en ligne", "Statistiques avancées", "Création de devis", "Création de factures", "Référencement prioritaire sur Google"],
+    features: ["Tout le Basique", "Mise en avant accueil", "Badge certification", "Réservations en ligne", "Statistiques avancées", "Création de devis", "Création de factures", "Messagerie illimitée + notifications email", "Référencement prioritaire sur Google"],
     cta: "/subscribe?plan=monthly",
   },
   {
@@ -69,6 +69,8 @@ const TABLE_ROWS = [
   { name: "Page d'entreprise",            b: true,  m: true,  a: true  },
   { name: "Dashboard entreprise",         b: true,  m: true,  a: true  },
   { name: "Statistiques de base",         b: true,  m: true,  a: true  },
+  { name: "Messagerie (5 derniers)",      b: true,  m: false, a: false },
+  { name: "Messagerie illimitée + notif", b: false, m: true,  a: true  },
   { name: "Statistiques avancées",        b: false, m: true,  a: true  },
   { name: "Mise en avant sur l'accueil",  b: false, m: true,  a: true  },
   { name: "Priorisation des recherches",  b: false, m: true,  a: true  },
