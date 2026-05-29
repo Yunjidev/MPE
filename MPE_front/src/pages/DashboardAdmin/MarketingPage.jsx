@@ -120,7 +120,7 @@ export default function MarketingPage() {
     try {
       setSending(true);
       const res = await postData("admin/marketing/send", { subject, body, emails });
-      toast.success(`${res.sent} email(s) envoyé(s).${res.failed ? ` ${res.failed} échec(s).` : ""}`);
+      toast.success(res.message || `Envoi lancé pour ${emails.length} destinataire(s).`);
     } catch (err) {
       try { toast.error(JSON.parse(err.message).error || "Erreur."); } catch { toast.error("Erreur lors de l'envoi."); }
     } finally { setSending(false); }

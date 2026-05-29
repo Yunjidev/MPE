@@ -114,26 +114,30 @@ exports.sendMarketing = async (req, res) => {
 
     const plain = body.replace(/[#*_\-`]/g, "").replace(/\n\n+/g, "\n\n");
     const FROM = `"Proxilio" <contact@proxilio.fr>`;
-    const BATCH = 50;   // emails par batch
-    const DELAY = 2000; // ms entre chaque batch (évite le rate-limit Brevo)
+    const BATCH = 50;
+    const DELAY = 1500;
 
-    let sent = 0, failed = 0;
+    /* Répondre immédiatement — l'envoi continue en arrière-plan */
+    res.status(200).json({ message: `Envoi lancé pour ${list.length} destinataire(s). Les emails partent en arrière-plan.`, total: list.length });
 
-    for (let i = 0; i < list.length; i += BATCH) {
-      const batch = list.slice(i, i + BATCH);
-      await Promise.allSettled(
-        batch.map((email) =>
-          brevoTransporter.sendMail({ from: FROM, to: email, subject, html, text: plain })
-            .then(() => { sent++; })
-            .catch(() => { failed++; })
-        )
-      );
-      if (i + BATCH < list.length) await new Promise((r) => setTimeout(r, DELAY));
-    }
+    setImmediate(async () => {
+      let sent = 0, failed = 0;
+      for (let i = 0; i < list.length; i += BATCH) {
+        const batch = list.slice(i, i + BATCH);
+        await Promise.allSettled(
+          batch.map((email) =>
+            brevoTransporter.sendMail({ from: FROM, to: email, subject, html, text: plain })
+              .then(() => { sent++; })
+              .catch((e) => { failed++; console.error(`[Marketing] Échec ${email}:`, e.message); })
+          )
+        );
+        if (i + BATCH < list.length) await new Promise((r) => setTimeout(r, DELAY));
+      }
+      console.log(`[Marketing] Envoi terminé : ${sent} OK, ${failed} échoués sur ${list.length}`);
+    });
 
-    return res.status(200).json({ message: `Email envoyé à ${sent} destinataire(s).`, sent, failed });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Erreur lors de l'envoi." });
+    if (!res.headersSent) res.status(500).json({ error: "Erreur lors de l'envoi." });
   }
 };
