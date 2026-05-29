@@ -20,8 +20,7 @@ const inputCls =
   "w-full rounded-xl bg-[#f5f7f6] text-[#132A24] placeholder:text-[#879f98] border border-black/5 px-3 py-2 text-sm font-light outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition";
 const labelCls = "block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1";
 
-function ManualReservationModal({ slug, onClose, onCreated }) {
-  const [offers, setOffers] = useState([]);
+function ManualReservationModal({ slug, offers, onClose, onCreated }) {
   const [offerId, setOfferId] = useState("");
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -29,12 +28,6 @@ function ManualReservationModal({ slug, onClose, onCreated }) {
   const [clientEmail, setClientEmail] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    getData(`enterprise/${slug}`)
-      .then((data) => setOffers(Array.isArray(data?.offers) ? data.offers : []))
-      .catch(() => setOffers([]));
-  }, [slug]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -204,6 +197,7 @@ const ReservationsList = () => {
   const { slug } = useParams();
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
+  const [offers, setOffers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [pageSize, setPageSize] = useState(8);
@@ -212,6 +206,15 @@ const ReservationsList = () => {
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [selectedYear, setSelectedYear] = useState("all");
   const [showManualModal, setShowManualModal] = useState(false);
+
+  const fetchOffers = async () => {
+    try {
+      const data = await getData(`enterprise/${slug}/offers`);
+      setOffers(Array.isArray(data) ? data : []);
+    } catch {
+      setOffers([]);
+    }
+  };
 
   const fetchReservations = async () => {
     try {
@@ -235,6 +238,7 @@ const ReservationsList = () => {
   useEffect(() => {
     if (slug) {
       fetchReservations();
+      fetchOffers();
     }
   }, [slug]);
 
@@ -671,6 +675,7 @@ const ReservationsList = () => {
       {showManualModal && (
         <ManualReservationModal
           slug={slug}
+          offers={offers}
           onClose={() => setShowManualModal(false)}
           onCreated={fetchReservations}
         />
