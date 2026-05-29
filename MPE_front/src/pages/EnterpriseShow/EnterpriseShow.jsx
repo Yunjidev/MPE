@@ -27,6 +27,7 @@ const EnterpriseShow = () => {
   const [shareMessage, setShareMessage] = useState("");
   const [phoneRevealed, setPhoneRevealed] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
+  const [authPrompt, setAuthPrompt] = useState(false);
   const [msgSending, setMsgSending] = useState(false);
   const [msgSent, setMsgSent] = useState(false);
   const [currentUser] = useAtom(userAtom);
@@ -82,6 +83,13 @@ const EnterpriseShow = () => {
   };
 
   const handleOpenBooking = (offerId = null) => { setPrefillOfferId(offerId); setIsBookingOpen(true); };
+
+  const handleOpenMsg = () => {
+    if (!currentUser?.isLogged) { setAuthPrompt(true); return; }
+    setMsgSent(false);
+    setMsgForm({ sender_name: currentUser.username || "", sender_email: currentUser.email || "", sender_phone: "", content: "" });
+    setMsgOpen(true);
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -262,6 +270,13 @@ const EnterpriseShow = () => {
 
           {/* CTA buttons */}
           <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={handleOpenMsg}
+              className="flex items-center gap-2 px-4 py-2.5 border border-[#132A24]/20 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors"
+            >
+              <FiMail />
+              Message
+            </button>
             {enterprise.isPremium ? (
               <button
                 onClick={() => handleOpenBooking(null)}
@@ -425,15 +440,7 @@ const EnterpriseShow = () => {
                 </a>
               )}
               <button
-                onClick={() => {
-                  setMsgSent(false);
-                  if (currentUser?.isLogged) {
-                    setMsgForm({ sender_name: currentUser.username || "", sender_email: currentUser.email || "", sender_phone: "", content: "" });
-                  } else {
-                    setMsgForm({ sender_name: "", sender_email: "", sender_phone: "", content: "" });
-                  }
-                  setMsgOpen(true);
-                }}
+                onClick={handleOpenMsg}
                 className="mt-3 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors border border-[#132A24]/10"
               >
                 ✉ Envoyer un message
@@ -585,6 +592,32 @@ const EnterpriseShow = () => {
         initialOfferId={prefillOfferId}
         multiBooking={!!enterprise.multi_booking}
       />
+
+      {/* Modal auth requis */}
+      {authPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 space-y-5 text-center">
+            <div className="text-4xl">✉️</div>
+            <h2 className="text-base font-light text-[#132A24]">Contactez {enterprise.name}</h2>
+            <p className="text-sm text-[#879f98] font-light leading-relaxed">
+              Pour envoyer un message et suivre la conversation directement sur Proxilio, connectez-vous ou créez un compte gratuit.
+            </p>
+            <div className="flex flex-col gap-2.5 pt-1">
+              <a href={`/signin?redirect=${encodeURIComponent(window.location.pathname)}`}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#132A24] px-5 py-3 text-sm font-light text-white hover:bg-[#1b3b33] transition">
+                Se connecter
+              </a>
+              <a href={`/signup?redirect=${encodeURIComponent(window.location.pathname)}`}
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#132A24]/20 bg-[#eef5f1] px-5 py-3 text-sm font-light text-[#132A24] hover:bg-[#132A24] hover:text-white transition">
+                Créer un compte gratuit
+              </a>
+            </div>
+            <button onClick={() => setAuthPrompt(false)} className="text-xs text-[#879f98] hover:text-[#132A24] transition underline underline-offset-2">
+              Annuler
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal message */}
       {msgOpen && (
