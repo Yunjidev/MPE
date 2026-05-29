@@ -61,13 +61,13 @@ export default function Sidebar() {
       {/* Sidebar */}
       <aside
         id="sidebar"
-        className={`fixed lg:sticky z-40 top-28 left-0 mt-8 lg:left-2 w-[280px] lg:w-[260px]
-        h-[calc(100vh-6rem)] px-2 transition-transform ${
+        className={`fixed lg:sticky z-40 top-0 left-0 lg:top-28 lg:mt-8 lg:left-2 w-[280px] lg:w-[260px]
+        h-full lg:h-[calc(100vh-6rem)] px-2 transition-transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <div className="h-full rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] overflow-hidden">
-          <div className="p-3 space-y-1 overflow-auto h-full">
+          <div className="p-3 space-y-1 overflow-y-auto overscroll-contain h-full" style={{ WebkitOverflowScrolling: "touch" }}>
             <section className="space-y-1">
               <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-[#879f98] font-light">
                 Utilisateur
