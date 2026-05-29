@@ -246,6 +246,9 @@ exports.replyAsUser = async (req, res) => {
 
     const reply = await MessageReply.create({ Message_id: msg.id, content: content.trim(), sender_type: "user" });
 
+    /* Marquer comme non lu côté entreprise */
+    await msg.update({ is_read: false });
+
     /* Notifier l'entreprise si Premium */
     if (msg.enterprise?.isPremium && msg.enterprise?.mail) {
       try {

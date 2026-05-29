@@ -24,10 +24,12 @@ export default function MessagesPage() {
   const fetchMessages = useCallback(async () => {
     try {
       setLoading(true);
-      setData(await getData(`enterprise/${slug}/messages`));
+      const result = await getData(`enterprise/${slug}/messages`);
+      setData(result);
+      setEnterpriseUnread((p) => ({ ...p, [slug]: result?.unread || 0 }));
     } catch { toast.error("Impossible de charger les messages."); }
     finally { setLoading(false); }
-  }, [slug]);
+  }, [slug, setEnterpriseUnread]);
 
   useEffect(() => { fetchMessages(); }, [fetchMessages]);
 
