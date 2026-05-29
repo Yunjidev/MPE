@@ -5,7 +5,11 @@ import { MdDashboard } from "react-icons/md";
 import { useAtom } from "jotai";
 import { enterprisesAtom } from "../../store/enterprises";
 
-export default function EnterpriseSideBar({ iconStyle, linkstyle, onClick }) {
+const Badge = ({ count }) => count > 0 ? (
+  <span className="ml-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-[#132A24] text-white text-[9px] font-medium">{count > 99 ? "99+" : count}</span>
+) : null;
+
+export default function EnterpriseSideBar({ iconStyle, linkstyle, unreadCounts = {}, onClick }) {
   const [enterprises] = useAtom(enterprisesAtom);
 
   return (
@@ -20,7 +24,7 @@ export default function EnterpriseSideBar({ iconStyle, linkstyle, onClick }) {
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/offers`, icon: <FaConciergeBell className={iconStyle} />, label: "Mes services" },
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/devis`, icon: <FaFileInvoiceDollar className={iconStyle} />, label: "Devis" },
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/factures`, icon: <FaReceipt className={iconStyle} />, label: "Factures" },
-              { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/messages`, icon: <FaEnvelope className={iconStyle} />, label: "Messagerie" },
+              { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/messages`, icon: <FaEnvelope className={iconStyle} />, label: <span className="flex items-center gap-1">Messagerie<Badge count={unreadCounts[enterprise.slug || enterprise.id] || 0} /></span> },
             ]}
             label={enterprise.name}
             icon={

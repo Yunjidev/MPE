@@ -7,6 +7,7 @@ import UserSideBar from "./UserSideBar";
 import EnterpriseSideBar from "./EnterpriseSideBar";
 import AdminSideBar from "./AdminSideBar";
 import HamburgerIcon from "../Utils/Svg/HamburgerIcon";
+import { getData } from "../../services/data-fetch";
 
 const linkstyle =
   "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#eef5f1] transition text-[#132A24] font-light text-sm";
@@ -16,6 +17,22 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user] = useAtom(userAtom);
   const [enterprisesRaw] = useAtom(enterprisesAtom);
+  const [userUnread, setUserUnread] = useState(0);
+  const [enterpriseUnread, setEnterpriseUnread] = useState({});
+
+  /* Fetch unread counts */
+  useEffect(() => {
+    if (!user?.isLogged) return;
+    getData("user/messages/unread-count").then((r) => setUserUnread(r?.unread || 0)).catch(() => {});
+    if (Array.isArray(enterprisesRaw)) {
+      enterprisesRaw.forEach((e) => {
+        const slug = e.slug || e.id;
+        getData(`enterprise/${slug}/messages/unread-count`).then((r) => {
+          setEnterpriseUnread((p) => ({ ...p, [slug]: r?.unread || 0 }));
+        }).catch(() => {});
+      });
+    }
+  }, [user?.isLogged]);
 
   useEffect(() => {
     const onDown = (e) => {
@@ -76,6 +93,7 @@ export default function Sidebar() {
                 user={user}
                 iconstyle={iconstyle}
                 linkstyle={linkstyle}
+                unreadMessages={userUnread}
                 onClick={() => {
                   if (window.innerWidth < 1024) setIsOpen(false);
                 }}
@@ -91,6 +109,7 @@ export default function Sidebar() {
                   enterprises={enterprisesRaw}
                   iconStyle={iconstyle}
                   linkstyle={linkstyle}
+                  unreadCounts={enterpriseUnread}
                   onClick={() => {
                     if (window.innerWidth < 1024) setIsOpen(false);
                   }}

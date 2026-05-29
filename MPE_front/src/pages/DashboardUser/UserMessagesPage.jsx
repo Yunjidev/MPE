@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { getData, postData } from "../../services/data-fetch";
+import { getData, postData, deleteData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
-import { IoPaperPlaneOutline } from "react-icons/io5";
+import { IoPaperPlaneOutline, IoTrashOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
 const inputCls = "w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition";
@@ -14,6 +14,7 @@ export default function UserMessagesPage() {
   const [selected, setSelected]   = useState(null);
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying]   = useState(false);
+  const [search, setSearch]       = useState("");
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -26,6 +27,17 @@ export default function UserMessagesPage() {
   useEffect(() => { fetchMessages(); }, [fetchMessages]);
 
   const handleSelect = (msg) => { setSelected(msg); setReplyText(""); };
+
+  const handleDelete = async (id, e) => {
+    e?.stopPropagation();
+    if (!window.confirm("Supprimer cette conversation ?")) return;
+    try {
+      await deleteData(`enterprise/${selected?.enterprise?.slug || "x"}/messages/${id}`);
+      setMessages((p) => p.filter((m) => m.id !== id));
+      if (selected?.id === id) setSelected(null);
+      toast.success("Conversation supprimée.");
+    } catch { toast.error("Erreur lors de la suppression."); }
+  };
 
   const handleReply = async () => {
     if (!replyText.trim()) return;
@@ -43,12 +55,29 @@ export default function UserMessagesPage() {
 
   if (loading) return <div className="mt-6 py-20 text-center text-sm text-[#879f98] font-light">Chargement…</div>;
 
+  const filtered = search.trim()
+    ? messages.filter((m) =>
+        m.enterprise?.name?.toLowerCase().includes(search.toLowerCase()) ||
+        m.content.toLowerCase().includes(search.toLowerCase()))
+    : messages;
+
   return (
     <div className="mt-6 space-y-5">
       <header className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 lg:p-6">
-        <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Mon espace</p>
-        <h1 className="mt-1 text-xl font-light text-[#132A24] tracking-tight">Mes messages</h1>
-        <p className="mt-1 text-sm text-[#879f98] font-light">{messages.length} conversation{messages.length > 1 ? "s" : ""}</p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Mon espace</p>
+            <h1 className="mt-1 text-xl font-light text-[#132A24] tracking-tight">Mes messages</h1>
+            <p className="mt-1 text-sm text-[#879f98] font-light">{messages.length} conversation{messages.length > 1 ? "s" : ""}</p>
+          </div>
+          <input
+            type="search"
+            placeholder="Rechercher une conversation…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="sm:w-60 rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 transition"
+          />
+        </div>
       </header>
 
       {messages.length === 0 ? (
@@ -64,80 +93,101 @@ export default function UserMessagesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
           {/* Liste des conversations */}
           <div className="lg:col-span-2 space-y-2">
-            {messages.map((msg) => {
-              const lastReply = msg.replies?.[msg.replies.length - 1];
+            {filtered.length === 0 && (
+              <p className="text-sm text-center text-[#879f98] font-light py-8">Aucun résultat pour "{search}"</p>
+            )}
+            {filtered.map((msg) => {
+              const lastReply = msg.replies?.slice().sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))[0];
               const hasUnread = lastReply?.sender_type === "enterprise";
               return (
                 <div key={msg.id}
                   onClick={() => handleSelect(msg)}
-                  className={`rounded-xl border p-4 cursor-pointer transition ${
+                  className={`group rounded-xl border p-4 cursor-pointer transition flex items-start gap-3 ${
                     selected?.id === msg.id ? "border-[#132A24] bg-[#eef5f1]" : hasUnread ? "border-[#132A24]/20 bg-[#f5f7f6]" : "border-black/5 bg-white hover:bg-[#f5f7f6]"
                   }`}
                 >
-                  <div className="flex items-start gap-3">
-                    {msg.enterprise?.logo ? (
-                      <img src={msg.enterprise.logo} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0 mt-0.5" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-lg bg-[#132A24]/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-xs text-[#132A24] font-medium">{msg.enterprise?.name?.[0]}</span>
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className={`text-sm truncate ${hasUnread ? "font-medium text-[#132A24]" : "font-light text-[#879f98]"}`}>
-                          {msg.enterprise?.name || "Entreprise"}
-                        </p>
-                        {hasUnread && <span className="shrink-0 w-2 h-2 rounded-full bg-[#132A24]" />}
-                      </div>
-                      <p className="text-xs text-[#879f98] font-light truncate mt-0.5">
-                        {lastReply ? lastReply.content : msg.content}
-                      </p>
-                      <p className="text-[10px] text-[#879f98]/60 font-light mt-0.5">{fmtDate(lastReply?.createdAt || msg.createdAt)}</p>
+                  {msg.enterprise?.logo ? (
+                    <img src={msg.enterprise.logo} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0 mt-0.5" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-lg bg-[#132A24]/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-xs text-[#132A24] font-medium">{msg.enterprise?.name?.[0]}</span>
                     </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className={`text-sm truncate ${hasUnread ? "font-medium text-[#132A24]" : "font-light text-[#879f98]"}`}>
+                        {msg.enterprise?.name || "Entreprise"}
+                      </p>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {hasUnread && <span className="w-2 h-2 rounded-full bg-[#132A24]" />}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDelete(msg.id, e); }}
+                          className="opacity-0 group-hover:opacity-100 transition text-red-400 hover:text-red-600"
+                        >
+                          <IoTrashOutline className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-[#879f98] font-light truncate mt-0.5">
+                      {lastReply ? lastReply.content : msg.content}
+                    </p>
+                    <p className="text-[10px] text-[#879f98]/60 font-light mt-0.5">{fmtDate(lastReply?.createdAt || msg.createdAt)}</p>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Détail de la conversation */}
+          {/* Détail */}
           <div className="lg:col-span-3">
             {selected ? (
               <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-6 space-y-4 sticky top-4">
                 {/* En-tête entreprise */}
-                <div className="flex items-center gap-3 pb-4 border-b border-black/5">
-                  {selected.enterprise?.logo ? (
-                    <img src={selected.enterprise.logo} alt="" className="w-10 h-10 rounded-xl object-cover" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-xl bg-[#132A24]/10 flex items-center justify-center">
-                      <span className="text-sm text-[#132A24] font-medium">{selected.enterprise?.name?.[0]}</span>
+                <div className="flex items-center justify-between gap-3 pb-4 border-b border-black/5">
+                  <div className="flex items-center gap-3">
+                    {selected.enterprise?.logo ? (
+                      <img src={selected.enterprise.logo} alt="" className="w-10 h-10 rounded-xl object-cover" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-[#132A24]/10 flex items-center justify-center">
+                        <span className="text-sm text-[#132A24] font-medium">{selected.enterprise?.name?.[0]}</span>
+                      </div>
+                    )}
+                    <div>
+                      <Link to={`/enterprise/${selected.enterprise?.slug}`} className="text-base font-light text-[#132A24] hover:underline">
+                        {selected.enterprise?.name}
+                      </Link>
+                      <p className="text-xs text-[#879f98] font-light">{fmtDate(selected.createdAt)}</p>
                     </div>
-                  )}
-                  <div>
-                    <Link to={`/enterprise/${selected.enterprise?.slug}`} className="text-base font-light text-[#132A24] hover:underline">
-                      {selected.enterprise?.name}
-                    </Link>
-                    <p className="text-xs text-[#879f98] font-light">{fmtDate(selected.createdAt)}</p>
                   </div>
+                  <button
+                    onClick={() => handleDelete(selected.id)}
+                    className="text-red-400 hover:text-red-600 transition p-1.5 rounded-lg hover:bg-red-50"
+                    title="Supprimer la conversation"
+                  >
+                    <IoTrashOutline className="w-4 h-4" />
+                  </button>
                 </div>
 
-                {/* Message initial (moi) */}
-                <div className="bg-[#f5f7f6] rounded-xl p-4 mr-4">
-                  <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1.5">Votre message</p>
-                  <p className="text-sm font-light text-[#132A24] leading-relaxed whitespace-pre-wrap">{selected.content}</p>
-                  <p className="text-[10px] text-[#879f98]/60 font-light mt-1">{fmtDate(selected.createdAt)}</p>
-                </div>
-
-                {/* Fil de réponses */}
-                {selected.replies?.map((reply, i) => (
-                  <div key={i} className={`rounded-xl p-4 ${reply.sender_type === "enterprise" ? "bg-[#eef5f1] mr-4" : "bg-[#f5f7f6] ml-4"}`}>
-                    <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1.5">
-                      {reply.sender_type === "enterprise" ? selected.enterprise?.name : "Vous"}
-                    </p>
-                    <p className="text-sm font-light text-[#132A24] leading-relaxed whitespace-pre-wrap">{reply.content}</p>
-                    <p className="text-[10px] text-[#879f98]/60 font-light mt-1">{fmtDate(reply.createdAt)}</p>
+                {/* Thread — scroll limité à 4 messages */}
+                <div className={`space-y-3 ${((selected.replies?.length || 0) + 1) > 4 ? "max-h-[360px] overflow-y-auto overscroll-contain pr-1" : ""}`}>
+                  {/* Message initial */}
+                  <div className="bg-[#f5f7f6] rounded-xl p-4 mr-4">
+                    <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1.5">Votre message</p>
+                    <p className="text-sm font-light text-[#132A24] leading-relaxed whitespace-pre-wrap">{selected.content}</p>
+                    <p className="text-[10px] text-[#879f98]/60 font-light mt-1">{fmtDate(selected.createdAt)}</p>
                   </div>
-                ))}
+
+                  {/* Réponses */}
+                  {selected.replies?.map((reply, i) => (
+                    <div key={i} className={`rounded-xl p-4 ${reply.sender_type === "enterprise" ? "bg-[#eef5f1] mr-4" : "bg-[#f5f7f6] ml-4"}`}>
+                      <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1.5">
+                        {reply.sender_type === "enterprise" ? selected.enterprise?.name : "Vous"}
+                      </p>
+                      <p className="text-sm font-light text-[#132A24] leading-relaxed whitespace-pre-wrap">{reply.content}</p>
+                      <p className="text-[10px] text-[#879f98]/60 font-light mt-1">{fmtDate(reply.createdAt)}</p>
+                    </div>
+                  ))}
+                </div>
 
                 {/* Répondre */}
                 <div className="border-t border-black/5 pt-4 space-y-3">

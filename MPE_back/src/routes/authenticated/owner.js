@@ -114,6 +114,7 @@ router.get("/enterprises/:id/likes", likeController.getLikeByEnterpriseId);
 
 // Messagerie
 const messageController = require("../../controllers/message-controller");
+router.get("/messages/unread-count", messageController.getEnterpriseUnreadCount);
 router.get("/messages", messageController.listMessages);
 router.put("/messages/:messageId/read", messageController.markAsRead);
 router.post("/messages/:messageId/reply", messageController.replyToMessage);

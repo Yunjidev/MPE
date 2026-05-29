@@ -15,6 +15,7 @@ export default function MessagesPage() {
   const [selected, setSelected]   = useState(null);
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying]   = useState(false);
+  const [search, setSearch]       = useState("");
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -75,7 +76,13 @@ export default function MessagesPage() {
 
   if (loading) return <div className="mt-6 py-20 text-center text-sm text-[#879f98] font-light">Chargement…</div>;
 
-  const messages = data?.messages || [];
+  const allMessages = data?.messages || [];
+  const messages = search.trim()
+    ? allMessages.filter((m) =>
+        m.sender_name.toLowerCase().includes(search.toLowerCase()) ||
+        m.sender_email.toLowerCase().includes(search.toLowerCase()) ||
+        m.content.toLowerCase().includes(search.toLowerCase()))
+    : allMessages;
   const isLimited = data?.limited;
   const hiddenCount = isLimited ? (data.total - data.freeLimit) : 0;
 
@@ -93,6 +100,13 @@ export default function MessagesPage() {
             </h1>
             <p className="mt-1 text-sm text-[#879f98] font-light">{data?.total ?? 0} message{(data?.total ?? 0) > 1 ? "s" : ""} reçu{(data?.total ?? 0) > 1 ? "s" : ""}</p>
           </div>
+          <input
+            type="search"
+            placeholder="Rechercher un message…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="mt-3 sm:mt-0 sm:w-60 rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 transition"
+          />
         </div>
       </header>
 
@@ -187,9 +201,9 @@ export default function MessagesPage() {
                   <p className="text-sm font-light text-[#132A24] leading-relaxed whitespace-pre-wrap">{selected.content}</p>
                 </div>
 
-                {/* Fil de réponses */}
+                {/* Fil de réponses — scroll après 4 messages */}
                 {selected.replies?.length > 0 && (
-                  <div className="space-y-3">
+                  <div className={`space-y-3 ${selected.replies.length > 4 ? "max-h-[360px] overflow-y-auto overscroll-contain pr-1" : ""}`}>
                     {selected.replies.map((reply, i) => (
                       <div key={i} className={`rounded-xl p-4 ${reply.sender_type === "enterprise" ? "bg-[#eef5f1] ml-4" : "bg-[#f5f7f6] mr-4"}`}>
                         <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1.5">

@@ -67,6 +67,14 @@ ${isUser ? '<p style="font-size:12px;background:#eef5f1;color:#132A24;padding:6p
   }
 };
 
+/* ── GET /enterprise/:slug/messages/unread-count — owner ── */
+exports.getEnterpriseUnreadCount = async (req, res) => {
+  try {
+    const unread = await Message.count({ where: { Enterprise_id: req.enterprise.id, is_read: false } });
+    return res.status(200).json({ unread });
+  } catch { res.status(500).json({ error: "Erreur serveur." }); }
+};
+
 /* ── GET /enterprise/:slug/messages — owner ── */
 exports.listMessages = async (req, res) => {
   try {
@@ -163,6 +171,23 @@ exports.deleteMessage = async (req, res) => {
     if (!msg) return res.status(404).json({ error: "Message introuvable." });
     await msg.destroy();
     return res.status(200).json({ ok: true });
+  } catch { res.status(500).json({ error: "Erreur serveur." }); }
+};
+
+/* ── GET /user/messages/unread-count — user authentifié ── */
+exports.getUserUnreadCount = async (req, res) => {
+  try {
+    const messages = await Message.findAll({
+      where: { User_id: req.user.id },
+      include: [{ model: MessageReply, as: "replies", attributes: ["sender_type", "createdAt"] }],
+    });
+    const unread = messages.filter((m) => {
+      const replies = m.replies || [];
+      if (!replies.length) return false;
+      const last = replies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+      return last.sender_type === "enterprise";
+    }).length;
+    return res.status(200).json({ unread });
   } catch { res.status(500).json({ error: "Erreur serveur." }); }
 };
 
