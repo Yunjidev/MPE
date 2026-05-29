@@ -167,6 +167,9 @@ exports.replyToMessage = async (req, res) => {
       } catch { /* ne pas bloquer */ }
     }
 
+    /* Marquer comme non lu côté user */
+    if (msg.User_id) await msg.update({ user_unread: true });
+
     /* Notification pour l'user Proxilio si applicable */
     if (msg.User_id) {
       createNotification({
@@ -198,17 +201,17 @@ exports.deleteMessage = async (req, res) => {
 /* ── GET /user/messages/unread-count — user authentifié ── */
 exports.getUserUnreadCount = async (req, res) => {
   try {
-    const messages = await Message.findAll({
-      where: { User_id: req.user.id },
-      include: [{ model: MessageReply, as: "replies", attributes: ["sender_type", "createdAt"] }],
-    });
-    const unread = messages.filter((m) => {
-      const replies = m.replies || [];
-      if (!replies.length) return false;
-      const last = replies.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
-      return last.sender_type === "enterprise";
-    }).length;
+    const { Op } = require("sequelize");
+    const unread = await Message.count({ where: { User_id: req.user.id, user_unread: true } });
     return res.status(200).json({ unread });
+  } catch { res.status(500).json({ error: "Erreur serveur." }); }
+};
+
+/* ── PUT /user/messages/:messageId/seen — user authentifié ── */
+exports.markUserSeen = async (req, res) => {
+  try {
+    await Message.update({ user_unread: false }, { where: { id: req.params.messageId, User_id: req.user.id } });
+    return res.status(200).json({ ok: true });
   } catch { res.status(500).json({ error: "Erreur serveur." }); }
 };
 

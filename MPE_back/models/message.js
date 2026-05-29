@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     sender_phone: { type: DataTypes.STRING, allowNull: true },
     content:      { type: DataTypes.TEXT,   allowNull: false },
     is_read:      { type: DataTypes.BOOLEAN, defaultValue: false },
+    user_unread:  { type: DataTypes.BOOLEAN, defaultValue: false },
     User_id:      { type: DataTypes.INTEGER, allowNull: true },
   });
 

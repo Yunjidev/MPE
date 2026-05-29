@@ -76,6 +76,7 @@ router.delete("/enterprise/:id/like", likeController.deleteLike);
 const messageController = require("../../controllers/message-controller");
 router.get("/user/messages/unread-count", messageController.getUserUnreadCount);
 router.get("/user/messages", messageController.listUserMessages);
+router.put("/user/messages/:messageId/seen", messageController.markUserSeen);
 router.post("/user/messages/:messageId/reply", messageController.replyAsUser);
 
 const notifController = require("../../controllers/notification-controller");

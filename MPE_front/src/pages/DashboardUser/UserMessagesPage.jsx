@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getData, postData, deleteData } from "../../services/data-fetch";
+import { getData, postData, putData, deleteData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
 import { IoPaperPlaneOutline, IoTrashOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -35,12 +35,15 @@ export default function UserMessagesPage() {
     if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight;
   }, [selected?.id, selected?.replies?.length]);
 
-  const handleSelect = (msg) => {
+  const handleSelect = async (msg) => {
     setSelected(msg);
     setReplyText("");
-    /* Si la dernière réponse est de l'entreprise, c'est "lu" maintenant */
-    const lastReply = msg.replies?.slice().sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))[0];
-    if (lastReply?.sender_type === "enterprise") {
+    if (msg.user_unread) {
+      /* Marquer comme lu côté serveur */
+      try { await putData(`user/messages/${msg.id}/seen`, {}); } catch { /* silencieux */ }
+      /* Mettre à jour l'état local et l'atom sidebar */
+      setMessages((p) => p.map((m) => m.id === msg.id ? { ...m, user_unread: false } : m));
+      setSelected((prev) => prev ? { ...prev, user_unread: false } : prev);
       setUserUnread((prev) => Math.max(0, prev - 1));
     }
   };
@@ -115,7 +118,7 @@ export default function UserMessagesPage() {
             )}
             {filtered.map((msg) => {
               const lastReply = msg.replies?.slice().sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))[0];
-              const hasUnread = lastReply?.sender_type === "enterprise";
+              const hasUnread = msg.user_unread;
               return (
                 <div key={msg.id}
                   onClick={() => handleSelect(msg)}
