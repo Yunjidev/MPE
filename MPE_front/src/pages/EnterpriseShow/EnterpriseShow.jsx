@@ -22,6 +22,7 @@ const EnterpriseShow = () => {
   const [prefillOfferId, setPrefillOfferId] = useState(null);
   const [shareStatus, setShareStatus] = useState(null);
   const [shareMessage, setShareMessage] = useState("");
+  const [phoneRevealed, setPhoneRevealed] = useState(false);
 
   const fetchEnterprise = useCallback(async () => {
     try {
@@ -107,7 +108,6 @@ const EnterpriseShow = () => {
 
   const contactItems = [
     formattedAddress && { icon: <FiMapPin />, label: formattedAddress },
-    enterprise.phone && { icon: <FiPhone />, label: enterprise.phone, href: `tel:${enterprise.phone}` },
     enterprise.mail  && { icon: <FiMail />,  label: enterprise.mail,  href: `mailto:${enterprise.mail}` },
   ].filter(Boolean);
 
@@ -364,11 +364,7 @@ const EnterpriseShow = () => {
               <div className="space-y-3">
                 {contactItems.map((item, i) =>
                   item.href ? (
-                    <a
-                      key={i}
-                      href={item.href}
-                      className="flex items-start gap-3 text-sm text-[#879f98] hover:text-[#132A24] transition-colors group"
-                    >
+                    <a key={i} href={item.href} className="flex items-start gap-3 text-sm text-[#879f98] hover:text-[#132A24] transition-colors group">
                       <span className="mt-0.5 text-[#132A24] flex-shrink-0">{item.icon}</span>
                       <span className="group-hover:underline break-all">{item.label}</span>
                     </a>
@@ -379,26 +375,101 @@ const EnterpriseShow = () => {
                     </div>
                   )
                 )}
+                {enterprise.phone && (
+                  <div className="flex items-start gap-3 text-sm">
+                    <span className="mt-0.5 text-[#132A24] flex-shrink-0"><FiPhone /></span>
+                    {phoneRevealed ? (
+                      <a href={`tel:${enterprise.phone}`} className="text-[#132A24] hover:underline break-all">{enterprise.phone}</a>
+                    ) : (
+                      <button onClick={() => setPhoneRevealed(true)} className="text-[#879f98] hover:text-[#132A24] transition-colors underline underline-offset-2 text-left">
+                        Afficher le numéro de téléphone
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
-              {enterprise.phone && (
-                <a
-                  href={`tel:${enterprise.phone}`}
-                  className="mt-5 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#132A24] hover:bg-[#1b3b33] text-white text-sm font-light rounded-xl transition-colors"
-                >
-                  <FiPhone />
-                  Appeler maintenant
+              {enterprise.phone && phoneRevealed && (
+                <a href={`tel:${enterprise.phone}`} className="mt-5 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#132A24] hover:bg-[#1b3b33] text-white text-sm font-light rounded-xl transition-colors">
+                  <FiPhone /> Appeler maintenant
                 </a>
               )}
-              {!enterprise.phone && enterprise.mail && (
-                <a
-                  href={`mailto:${enterprise.mail}`}
-                  className="mt-5 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#132A24] hover:bg-[#1b3b33] text-white text-sm font-light rounded-xl transition-colors"
-                >
-                  <FiMail />
-                  Envoyer un email
+              {enterprise.mail && (
+                <a href={`mailto:${enterprise.mail}`} className="mt-3 flex w-full items-center justify-center gap-2 px-4 py-2.5 border border-black/10 hover:bg-[#f5f7f6] text-[#132A24] text-sm font-light rounded-xl transition-colors">
+                  <FiMail /> Envoyer un email
                 </a>
               )}
             </div>
+
+            {/* Autres informations */}
+            {(enterprise.payment_methods?.length > 0 || enterprise.service_types?.length > 0 || enterprise.languages?.length > 0) && (
+              <div className="bg-white border border-black/5 rounded-2xl p-5 shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] space-y-4">
+                <h3 className="text-sm font-light text-[#132A24] tracking-tight">Autres informations</h3>
+
+                {enterprise.payment_methods?.length > 0 && (
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-2">Moyens de paiement</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: "Carte bancaire", icon: "💳" },
+                        { value: "Chèque",         icon: "📝" },
+                        { value: "Espèces",        icon: "💶" },
+                        { value: "Virement",       icon: "🏦" },
+                      ].filter(({ value }) => enterprise.payment_methods.includes(value)).map(({ value, icon }) => (
+                        <span key={value} className="inline-flex items-center gap-1.5 rounded-full bg-[#f5f7f6] border border-black/5 px-3 py-1.5 text-xs font-light text-[#132A24]">
+                          <span>{icon}</span>{value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {enterprise.service_types?.length > 0 && (
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-2">Types de prestations</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: "Déplacement à domicile",    icon: "🏠" },
+                        { value: "Dans mes locaux",           icon: "🏢" },
+                        { value: "À distance / En ligne",     icon: "🌐" },
+                        { value: "Visioconférence",           icon: "💻" },
+                        { value: "Sur chantier",              icon: "🏗️" },
+                        { value: "Livraison à domicile",      icon: "📦" },
+                      ].filter(({ value }) => enterprise.service_types.includes(value)).map(({ value, icon }) => (
+                        <span key={value} className="inline-flex items-center gap-1.5 rounded-full bg-[#f5f7f6] border border-black/5 px-3 py-1.5 text-xs font-light text-[#132A24]">
+                          <span>{icon}</span>{value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {enterprise.languages?.length > 0 && (
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-2">Langues parlées</p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        { value: "Français",    flag: "🇫🇷" },
+                        { value: "Anglais",     flag: "🇬🇧" },
+                        { value: "Espagnol",    flag: "🇪🇸" },
+                        { value: "Allemand",    flag: "🇩🇪" },
+                        { value: "Italien",     flag: "🇮🇹" },
+                        { value: "Portugais",   flag: "🇵🇹" },
+                        { value: "Arabe",       flag: "🇸🇦" },
+                        { value: "Polonais",    flag: "🇵🇱" },
+                        { value: "Turc",        flag: "🇹🇷" },
+                        { value: "Néerlandais", flag: "🇳🇱" },
+                        { value: "Russe",       flag: "🇷🇺" },
+                        { value: "Roumain",     flag: "🇷🇴" },
+                      ].filter(({ value }) => enterprise.languages.includes(value)).map(({ value, flag }) => (
+                        <span key={value} className="inline-flex items-center gap-1.5 rounded-full bg-[#f5f7f6] border border-black/5 px-3 py-1.5 text-xs font-light text-[#132A24]">
+                          <span>{flag}</span>{value}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Social links */}
             {socialLinks.length > 0 && (

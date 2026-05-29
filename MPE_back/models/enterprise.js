@@ -171,6 +171,21 @@ module.exports = (sequelize, DataTypes) => {
       bic:               { type: DataTypes.STRING, allowNull: true },
       payment_reference: { type: DataTypes.STRING, allowNull: true },
       bic_swift:         { type: DataTypes.STRING, allowNull: true },
+      payment_methods: {
+        type: DataTypes.TEXT, allowNull: true,
+        get() { const v = this.getDataValue("payment_methods"); return v ? JSON.parse(v) : []; },
+        set(v) { this.setDataValue("payment_methods", JSON.stringify(v || [])); },
+      },
+      service_types: {
+        type: DataTypes.TEXT, allowNull: true,
+        get() { const v = this.getDataValue("service_types"); return v ? JSON.parse(v) : []; },
+        set(v) { this.setDataValue("service_types", JSON.stringify(v || [])); },
+      },
+      languages: {
+        type: DataTypes.TEXT, allowNull: true,
+        get() { const v = this.getDataValue("languages"); return v ? JSON.parse(v) : []; },
+        set(v) { this.setDataValue("languages", JSON.stringify(v || [])); },
+      },
       premiumManualStart: {
         type: DataTypes.DATE,
         allowNull: true,

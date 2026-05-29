@@ -43,6 +43,9 @@ export default function EnterpriseForm({
     legal_status: "",
     rcs_number: "",
     rm_number: "",
+    payment_methods: [],
+    service_types: [],
+    languages: [],
   });
 
   // Banner géré séparément (prépendé en premier dans photos au submit)
@@ -102,11 +105,14 @@ export default function EnterpriseForm({
         logo: memoizedInitialData?.logo || "",
         photos: galleryPhotos,
         multi_booking: memoizedInitialData?.multi_booking ?? false,
-        tva_number:   memoizedInitialData?.tva_number   || "",
-        legal_form:   memoizedInitialData?.legal_form   || "",
-        legal_status: memoizedInitialData?.legal_status || "",
-        rcs_number:   memoizedInitialData?.rcs_number   || "",
-        rm_number:    memoizedInitialData?.rm_number    || "",
+        tva_number:      memoizedInitialData?.tva_number   || "",
+        legal_form:      memoizedInitialData?.legal_form   || "",
+        legal_status:    memoizedInitialData?.legal_status || "",
+        rcs_number:      memoizedInitialData?.rcs_number   || "",
+        rm_number:       memoizedInitialData?.rm_number    || "",
+        payment_methods: Array.isArray(memoizedInitialData?.payment_methods) ? memoizedInitialData.payment_methods : [],
+        service_types:   Array.isArray(memoizedInitialData?.service_types)   ? memoizedInitialData.service_types   : [],
+        languages:       Array.isArray(memoizedInitialData?.languages)       ? memoizedInitialData.languages       : [],
       }));
     }
   }, [memoizedInitialData, isEditMode]);
@@ -168,19 +174,15 @@ export default function EnterpriseForm({
 
     const formDataToSubmit = new FormData();
 
+    const ARRAY_FIELDS = ["payment_methods", "service_types", "languages"];
     Object.keys(formData).forEach((key) => {
       const val = formData[key];
-      if (key === "photos") return; // géré plus bas
-      if (key === "multi_booking") {
-        formDataToSubmit.append(key, val ? "true" : "false");
-        return;
-      }
+      if (key === "photos") return;
+      if (key === "multi_booking") { formDataToSubmit.append(key, val ? "true" : "false"); return; }
+      if (ARRAY_FIELDS.includes(key)) { formDataToSubmit.append(key, JSON.stringify(val || [])); return; }
       if (val !== initialData[key] && val !== "" && val != null) {
-        if (key === "logo") {
-          formDataToSubmit.append("logo", val);
-        } else {
-          formDataToSubmit.append(key, val);
-        }
+        if (key === "logo") { formDataToSubmit.append("logo", val); }
+        else { formDataToSubmit.append(key, val); }
       }
     });
 
@@ -354,6 +356,94 @@ export default function EnterpriseForm({
                 </label>
               </div>
             )}
+
+            {/* ── Moyens de paiement ── */}
+            <div className="border border-black/5 rounded-xl p-5 space-y-4">
+              <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">Moyens de paiement acceptés</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { value: "Carte bancaire", icon: "💳" },
+                  { value: "Chèque",         icon: "📝" },
+                  { value: "Espèces",        icon: "💶" },
+                  { value: "Virement",       icon: "🏦" },
+                ].map(({ value, icon }) => {
+                  const checked = formData.payment_methods.includes(value);
+                  return (
+                    <label key={value} className={`flex items-center gap-2.5 cursor-pointer rounded-xl border p-3 transition ${checked ? "border-[#132A24] bg-[#eef5f1]" : "border-black/5 bg-[#f5f7f6] hover:bg-white"}`}>
+                      <input type="checkbox" className="sr-only" checked={checked}
+                        onChange={() => setFormData((p) => ({
+                          ...p, payment_methods: checked ? p.payment_methods.filter((v) => v !== value) : [...p.payment_methods, value]
+                        }))} />
+                      <span className="text-lg">{icon}</span>
+                      <span className={`text-sm font-light ${checked ? "text-[#132A24]" : "text-[#879f98]"}`}>{value}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── Types de prestations ── */}
+            <div className="border border-black/5 rounded-xl p-5 space-y-4">
+              <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">Types de prestations</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { value: "Déplacement à domicile",    icon: "🏠", desc: "Je me déplace chez le client" },
+                  { value: "Dans mes locaux",           icon: "🏢", desc: "Le client vient dans mon entreprise" },
+                  { value: "À distance / En ligne",     icon: "🌐", desc: "Prestation 100 % à distance" },
+                  { value: "Visioconférence",           icon: "💻", desc: "Via Zoom, Teams, Meet…" },
+                  { value: "Sur chantier",              icon: "🏗️", desc: "Intervention sur site de travaux" },
+                  { value: "Livraison à domicile",      icon: "📦", desc: "Je livre les produits ou réalisations" },
+                ].map(({ value, icon, desc }) => {
+                  const checked = formData.service_types.includes(value);
+                  return (
+                    <label key={value} className={`flex items-center gap-3 cursor-pointer rounded-xl border p-3 transition ${checked ? "border-[#132A24] bg-[#eef5f1]" : "border-black/5 bg-[#f5f7f6] hover:bg-white"}`}>
+                      <input type="checkbox" className="sr-only" checked={checked}
+                        onChange={() => setFormData((p) => ({
+                          ...p, service_types: checked ? p.service_types.filter((v) => v !== value) : [...p.service_types, value]
+                        }))} />
+                      <span className="text-xl shrink-0">{icon}</span>
+                      <div>
+                        <p className={`text-sm font-light leading-tight ${checked ? "text-[#132A24]" : "text-[#879f98]"}`}>{value}</p>
+                        <p className="text-xs text-[#879f98] font-light">{desc}</p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* ── Langues parlées ── */}
+            <div className="border border-black/5 rounded-xl p-5 space-y-4">
+              <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">Langues parlées</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {[
+                  { value: "Français",    flag: "🇫🇷" },
+                  { value: "Anglais",     flag: "🇬🇧" },
+                  { value: "Espagnol",    flag: "🇪🇸" },
+                  { value: "Allemand",    flag: "🇩🇪" },
+                  { value: "Italien",     flag: "🇮🇹" },
+                  { value: "Portugais",   flag: "🇵🇹" },
+                  { value: "Arabe",       flag: "🇸🇦" },
+                  { value: "Polonais",    flag: "🇵🇱" },
+                  { value: "Turc",        flag: "🇹🇷" },
+                  { value: "Néerlandais", flag: "🇳🇱" },
+                  { value: "Russe",       flag: "🇷🇺" },
+                  { value: "Roumain",     flag: "🇷🇴" },
+                ].map(({ value, flag }) => {
+                  const checked = formData.languages.includes(value);
+                  return (
+                    <label key={value} className={`flex items-center gap-2.5 cursor-pointer rounded-xl border px-3 py-2.5 transition ${checked ? "border-[#132A24] bg-[#eef5f1]" : "border-black/5 bg-[#f5f7f6] hover:bg-white"}`}>
+                      <input type="checkbox" className="sr-only" checked={checked}
+                        onChange={() => setFormData((p) => ({
+                          ...p, languages: checked ? p.languages.filter((v) => v !== value) : [...p.languages, value]
+                        }))} />
+                      <span className="text-lg">{flag}</span>
+                      <span className={`text-sm font-light ${checked ? "text-[#132A24]" : "text-[#879f98]"}`}>{value}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
 
             {/* ── Submit ── */}
             <button

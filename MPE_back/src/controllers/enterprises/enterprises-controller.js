@@ -152,6 +152,11 @@ exports.updateEnterprise = async (req, res) => {
     if (rcs_number   !== undefined) enterprise.rcs_number   = rcs_number   || null;
     if (rm_number    !== undefined) enterprise.rm_number    = rm_number    || null;
 
+    const parseArr = (v) => { if (Array.isArray(v)) return v; try { return JSON.parse(v); } catch { return []; } };
+    if (req.body.payment_methods !== undefined) enterprise.payment_methods = parseArr(req.body.payment_methods);
+    if (req.body.service_types   !== undefined) enterprise.service_types   = parseArr(req.body.service_types);
+    if (req.body.languages       !== undefined) enterprise.languages       = parseArr(req.body.languages);
+
     if (req.user.isAdmin) {
       const wasValidated = enterprise.isValidate;
       enterprise.isValidate = isValidate !== undefined ? isValidate : enterprise.isValidate;
