@@ -14,7 +14,7 @@ const generateTemplate = (templateName, data, format) => {
   return template;
 };
 
-const sendEmail = (email, subject, templateName, data) => {
+const sendEmail = (email, subject, templateName, data, attachments = []) => {
   const html = generateTemplate(templateName, data, "html");
   const text = generateTemplate(templateName, data, "txt");
 
@@ -24,6 +24,7 @@ const sendEmail = (email, subject, templateName, data) => {
     subject,
     html,
     text,
+    attachments,
   });
 };
 

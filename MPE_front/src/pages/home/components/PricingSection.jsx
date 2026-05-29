@@ -16,7 +16,7 @@ const PLANS = [
     price: "10€", label: "/mois",
     color: "text-[#ea580c]",
     border: "border-[#ea580c]/40",
-    features: ["Tout le Basique","Mise en avant accueil","Priorisation recherches","Calendrier & réservations","Création de devis"],
+    features: ["Tout le Basique","Mise en avant accueil","Priorisation recherches","Calendrier & réservations","Création de devis","Référencement prioritaire Google"],
     btn: "Passer Premium", to: "/subscribe?plan=monthly",
     btnStyle: "bg-[#ea580c] hover:bg-[#274F44] text-white shadow-lg",
   },

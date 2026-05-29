@@ -54,6 +54,8 @@ export default function Pricing() {
                 "Priorisation dans les recherches",
                 "Certification Premium",
                 "Calendrier + Réservations",
+                "Création de devis PDF",
+                "Référencement prioritaire Google",
             ],
         },
     ];

@@ -4,7 +4,9 @@ const { sequelize } = require("../../models/index");
 const Quote = sequelize.models.Quote;
 const Enterprise = sequelize.models.Enterprise;
 const sendEmail = require("../mailers/email-service");
+const buildPdf = require("../utils/generateQuotePdf");
 const moment = require("moment-timezone");
+const path = require("path");
 
 const ensurePremiumEnterprise = (enterprise) => {
   if (!enterprise || !enterprise.isPremium) {
@@ -214,6 +216,12 @@ exports.sendQuoteByEmail = async (req, res) => {
         </tr>`;
     }).join("");
 
+    const logoPath = enterprise.logo
+      ? path.join(__dirname, "../../uploads/enterprises/logo", path.basename(enterprise.logo))
+      : null;
+
+    const pdfBuffer = await buildPdf(quote, logoPath);
+
     await sendEmail(
       recipientEmail,
       `Devis ${quote.quote_number} — ${quote.ent_name || enterprise.name}`,
@@ -250,7 +258,14 @@ exports.sendQuoteByEmail = async (req, res) => {
         payment_conditions: quote.payment_conditions || "",
         is_free: quote.is_free ? "Devis gratuit" : "Devis payant",
         notes: quote.notes || "",
-      }
+      },
+      [
+        {
+          filename: `devis-${quote.quote_number}.pdf`,
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ]
     );
 
     await quote.update({ status: "sent" });
