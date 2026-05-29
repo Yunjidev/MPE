@@ -72,4 +72,9 @@ router.get("/likes", likeController.getLikes);
 router.post("/enterprise/:id/like", likeController.createLike);
 router.delete("/enterprise/:id/like", likeController.deleteLike);
 
+// Messagerie user
+const messageController = require("../../controllers/message-controller");
+router.get("/user/messages", messageController.listUserMessages);
+router.post("/user/messages/:messageId/reply", messageController.replyAsUser);
+
 module.exports = router;

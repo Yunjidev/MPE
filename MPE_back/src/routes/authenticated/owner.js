@@ -116,6 +116,7 @@ router.get("/enterprises/:id/likes", likeController.getLikeByEnterpriseId);
 const messageController = require("../../controllers/message-controller");
 router.get("/messages", messageController.listMessages);
 router.put("/messages/:messageId/read", messageController.markAsRead);
+router.post("/messages/:messageId/reply", messageController.replyToMessage);
 router.delete("/messages/:messageId", messageController.deleteMessage);
 
 module.exports = router;

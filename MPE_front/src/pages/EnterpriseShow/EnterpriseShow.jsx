@@ -9,6 +9,8 @@ import { FaXTwitter } from "react-icons/fa6";
 import ReactMarkdown from "react-markdown";
 import { getData, postData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
+import { useAtom } from "jotai";
+import { userAtom } from "../../store/user";
 import OfferList from "../../components/ShowEnterprise/OfferList";
 import CommentList from "../../components/ShowEnterprise/CommentList";
 import PremiumReservationModal from "../../components/ShowEnterprise/PremiumReservationModal";
@@ -25,9 +27,10 @@ const EnterpriseShow = () => {
   const [shareMessage, setShareMessage] = useState("");
   const [phoneRevealed, setPhoneRevealed] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
-  const [msgForm, setMsgForm] = useState({ sender_name: "", sender_email: "", sender_phone: "", content: "" });
   const [msgSending, setMsgSending] = useState(false);
   const [msgSent, setMsgSent] = useState(false);
+  const [currentUser] = useAtom(userAtom);
+  const [msgForm, setMsgForm] = useState({ sender_name: "", sender_email: "", sender_phone: "", content: "" });
 
   const fetchEnterprise = useCallback(async () => {
     try {
@@ -422,7 +425,15 @@ const EnterpriseShow = () => {
                 </a>
               )}
               <button
-                onClick={() => { setMsgOpen(true); setMsgSent(false); }}
+                onClick={() => {
+                  setMsgSent(false);
+                  if (currentUser?.isLogged) {
+                    setMsgForm({ sender_name: currentUser.username || "", sender_email: currentUser.email || "", sender_phone: "", content: "" });
+                  } else {
+                    setMsgForm({ sender_name: "", sender_email: "", sender_phone: "", content: "" });
+                  }
+                  setMsgOpen(true);
+                }}
                 className="mt-3 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors border border-[#132A24]/10"
               >
                 ✉ Envoyer un message
@@ -594,8 +605,21 @@ const EnterpriseShow = () => {
                   <h2 className="text-base font-light text-[#132A24]">Envoyer un message à {enterprise.name}</h2>
                   <button onClick={() => setMsgOpen(false)} className="text-[#879f98] hover:text-[#132A24] text-xl leading-none transition">×</button>
                 </div>
+
+                {currentUser?.isLogged ? (
+                  <div className="flex items-center gap-2 bg-[#eef5f1] rounded-xl px-3 py-2.5">
+                    <span className="text-[#132A24] text-sm">✓</span>
+                    <p className="text-xs font-light text-[#132A24]">Connecté en tant que <strong className="font-medium">{currentUser.username}</strong> — la réponse apparaîtra dans votre messagerie Proxilio.</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 bg-[#f5f7f6] rounded-xl px-3 py-2.5">
+                    <span className="text-[#879f98] text-sm">ℹ</span>
+                    <p className="text-xs font-light text-[#879f98]">Sans compte, l'entreprise vous répondra par email.</p>
+                  </div>
+                )}
+
                 <form onSubmit={handleSendMessage} className="space-y-3">
-                  {[
+                  {!currentUser?.isLogged && [
                     { label: "Votre nom *", key: "sender_name", type: "text", placeholder: "Jean Dupont" },
                     { label: "Votre email *", key: "sender_email", type: "email", placeholder: "jean@exemple.fr" },
                     { label: "Téléphone (optionnel)", key: "sender_phone", type: "tel", placeholder: "06 12 34 56 78" },
@@ -615,7 +639,6 @@ const EnterpriseShow = () => {
                       onChange={(e) => setMsgForm((p) => ({ ...p, content: e.target.value }))}
                       className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition resize-none" />
                   </div>
-                  <p className="text-[11px] text-[#879f98] font-light">Votre message sera transmis directement à l'entreprise.</p>
                   <button type="submit" disabled={msgSending} className="w-full rounded-xl bg-[#132A24] py-3 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-60">
                     {msgSending ? "Envoi…" : "Envoyer le message"}
                   </button>

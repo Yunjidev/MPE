@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 import NavLink from "../Utils/Link";
 import Dropdown from "./Dropdown";
-import { FaTachometerAlt, FaBuilding, FaCog, FaUnlockAlt, FaTrashAlt } from "react-icons/fa";
+import { FaTachometerAlt, FaBuilding, FaCog, FaUnlockAlt, FaTrashAlt, FaEnvelope } from "react-icons/fa";
 
 export default function UserSideBar({ user, iconstyle, linkstyle, onClick }) {
   const navItems = [
     { to: "/dashboard/user-db", icon: <FaTachometerAlt className={iconstyle} />, label: "Mon profil" },
+    { to: "/dashboard/user-messages", icon: <FaEnvelope className={iconstyle} />, label: "Mes messages" },
     { to: "/dashboard/register-company", icon: <FaBuilding className={iconstyle} />, label: "Création Entreprise" },
     {
       type: "dropdown",

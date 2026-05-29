@@ -119,10 +119,23 @@ const isAuthorizedReservation = async (req, res, next) => {
   }
 };
 
+/* Middleware optionnel : attache req.user si token valide, ne bloque pas sinon */
+const softAuth = async (req, res, next) => {
+  const header = req.headers.authorization;
+  if (!header) return next();
+  const token = header.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findByPk(decoded.User_id);
+  } catch { /* token invalide ou expiré — on continue sans user */ }
+  next();
+};
+
 module.exports = {
   isAuthenticated,
   isOwner,
   isEnterpriseOwner,
   isAdmin,
   isAuthorizedReservation,
+  softAuth,
 };

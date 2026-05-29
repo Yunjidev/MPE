@@ -42,6 +42,7 @@ const { sendContact, contactLimiter, contactValidation } = require("../../contro
 router.post("/contact", contactLimiter, contactValidation, sendContact);
 
 const { sendMessage, messageLimiter } = require("../../controllers/message-controller");
-router.post("/enterprise/:slug/messages", messageLimiter, sendMessage);
+const { softAuth } = require("../../middlewares/auth-middleware");
+router.post("/enterprise/:slug/messages", messageLimiter, softAuth, sendMessage);
 
 module.exports = router;
