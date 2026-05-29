@@ -6,8 +6,10 @@ module.exports = (sequelize, DataTypes) => {
     sender_email: { type: DataTypes.STRING, allowNull: false },
     sender_phone: { type: DataTypes.STRING, allowNull: true },
     content:      { type: DataTypes.TEXT,   allowNull: false },
-    is_read:      { type: DataTypes.BOOLEAN, defaultValue: false },
-    user_unread:  { type: DataTypes.BOOLEAN, defaultValue: false },
+    is_read:               { type: DataTypes.BOOLEAN, defaultValue: false },
+    user_unread:           { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleted_by_enterprise: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deleted_by_user:       { type: DataTypes.BOOLEAN, defaultValue: false },
     User_id:      { type: DataTypes.INTEGER, allowNull: true },
   });
 

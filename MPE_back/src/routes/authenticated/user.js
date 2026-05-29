@@ -78,6 +78,7 @@ router.get("/user/messages/unread-count", messageController.getUserUnreadCount);
 router.get("/user/messages", messageController.listUserMessages);
 router.put("/user/messages/:messageId/seen", messageController.markUserSeen);
 router.post("/user/messages/:messageId/reply", messageController.replyAsUser);
+router.delete("/user/messages/:messageId", messageController.deleteMessageAsUser);
 
 const notifController = require("../../controllers/notification-controller");
 router.get("/user/notifications", notifController.listNotifications);

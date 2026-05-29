@@ -52,7 +52,7 @@ export default function UserMessagesPage() {
     e?.stopPropagation();
     if (!window.confirm("Supprimer cette conversation ?")) return;
     try {
-      await deleteData(`enterprise/${selected?.enterprise?.slug || "x"}/messages/${id}`);
+      await deleteData(`user/messages/${id}`);
       setMessages((p) => p.filter((m) => m.id !== id));
       if (selected?.id === id) setSelected(null);
       toast.success("Conversation supprimée.");

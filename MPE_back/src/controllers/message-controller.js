@@ -80,7 +80,7 @@ ${isUser ? '<p style="font-size:12px;background:#eef5f1;color:#132A24;padding:6p
 /* ── GET /enterprise/:slug/messages/unread-count — owner ── */
 exports.getEnterpriseUnreadCount = async (req, res) => {
   try {
-    const unread = await Message.count({ where: { Enterprise_id: req.enterprise.id, is_read: false } });
+    const unread = await Message.count({ where: { Enterprise_id: req.enterprise.id, is_read: false, deleted_by_enterprise: false } });
     return res.status(200).json({ unread });
   } catch { res.status(500).json({ error: "Erreur serveur." }); }
 };
@@ -90,7 +90,7 @@ exports.listMessages = async (req, res) => {
   try {
     const enterprise = req.enterprise;
     const messages = await Message.findAll({
-      where: { Enterprise_id: enterprise.id },
+      where: { Enterprise_id: enterprise.id, deleted_by_enterprise: false },
       order: [["createdAt", "DESC"]],
       include: replyIncludes,
     });
@@ -193,7 +193,17 @@ exports.deleteMessage = async (req, res) => {
   try {
     const msg = await Message.findOne({ where: { id: req.params.messageId, Enterprise_id: req.enterprise.id } });
     if (!msg) return res.status(404).json({ error: "Message introuvable." });
-    await msg.destroy();
+    await msg.update({ deleted_by_enterprise: true });
+    return res.status(200).json({ ok: true });
+  } catch { res.status(500).json({ error: "Erreur serveur." }); }
+};
+
+/* ── DELETE /user/messages/:messageId — user ── */
+exports.deleteMessageAsUser = async (req, res) => {
+  try {
+    const msg = await Message.findOne({ where: { id: req.params.messageId, User_id: req.user.id } });
+    if (!msg) return res.status(404).json({ error: "Message introuvable." });
+    await msg.update({ deleted_by_user: true });
     return res.status(200).json({ ok: true });
   } catch { res.status(500).json({ error: "Erreur serveur." }); }
 };
@@ -201,8 +211,7 @@ exports.deleteMessage = async (req, res) => {
 /* ── GET /user/messages/unread-count — user authentifié ── */
 exports.getUserUnreadCount = async (req, res) => {
   try {
-    const { Op } = require("sequelize");
-    const unread = await Message.count({ where: { User_id: req.user.id, user_unread: true } });
+    const unread = await Message.count({ where: { User_id: req.user.id, user_unread: true, deleted_by_user: false } });
     return res.status(200).json({ unread });
   } catch { res.status(500).json({ error: "Erreur serveur." }); }
 };
@@ -219,7 +228,7 @@ exports.markUserSeen = async (req, res) => {
 exports.listUserMessages = async (req, res) => {
   try {
     const messages = await Message.findAll({
-      where: { User_id: req.user.id },
+      where: { User_id: req.user.id, deleted_by_user: false },
       order: [["createdAt", "DESC"]],
       include: [
         { model: Enterprise, as: "enterprise", attributes: ["id", "name", "slug", "logo"] },
