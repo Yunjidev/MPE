@@ -1,130 +1,117 @@
 "use strict";
 
+const fs   = require("fs");
+const path = require("path");
 const transporter = require("../../config/mailer");
 
-const DEFAULT_TEMPLATES = [
-  {
-    id: 1,
-    name: "Présentation Proxilio",
-    subject: "Découvrez Proxilio — Référencez votre entreprise gratuitement",
-    body: `Bonjour,
+const TEMPLATES_FILE = path.join(__dirname, "../data/marketing-templates.json");
 
-Nous vous contactons pour vous présenter Proxilio, la plateforme qui référence les professionnels du bâtiment et de l'artisanat en France.
+function readTemplates() {
+  try { return JSON.parse(fs.readFileSync(TEMPLATES_FILE, "utf-8")); }
+  catch { return []; }
+}
 
-🔍 Pourquoi rejoindre Proxilio ?
+function writeTemplates(templates) {
+  fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(templates, null, 2), "utf-8");
+}
 
-• Visibilité gratuite : créez votre fiche entreprise et soyez trouvé par des milliers de clients potentiels près de chez vous.
-• Référencement Google : les profils Proxilio remontent dans les résultats de recherche Google.
-• Réservation en ligne : vos clients prennent rendez-vous directement depuis votre profil, 24h/24.
-• Badge de confiance : un badge certifié renforce votre crédibilité auprès des particuliers.
-• Devis & Factures PDF : créez et envoyez vos devis et factures professionnels depuis la plateforme.
+function nextId(templates) {
+  return templates.length ? Math.max(...templates.map((t) => t.id)) + 1 : 1;
+}
 
-💡 C'est gratuit pour commencer !
+/* ── CRUD templates ── */
 
-Inscrivez-vous sur proxilio.fr et créez votre fiche en quelques minutes.
-
-L'équipe Proxilio — proxilio.fr`,
-  },
-  {
-    id: 2,
-    name: "Offre Premium",
-    subject: "Passez Premium sur Proxilio — 10 €/mois, sans engagement",
-    body: `Bonjour,
-
-Votre profil est déjà en ligne sur Proxilio. Saviez-vous que l'offre Premium peut multiplier votre visibilité ?
-
-⭐ Ce que vous gagnez avec Premium :
-
-• Mise en avant sur la page d'accueil — affiché en premier avant vos concurrents
-• Priorisation dans les résultats de recherche
-• Badge de certification officiel
-• Calendrier de réservation en ligne
-• Statistiques avancées
-• Création de devis et factures PDF professionnels
-• Référencement prioritaire sur Google
-
-💰 Tarifs :
-• Mensuel : 10 €/mois, sans engagement
-• Annuel : 100 €/an (2 mois offerts)
-
-👉 Passez Premium sur proxilio.fr/pricing
-
-L'équipe Proxilio`,
-  },
-  {
-    id: 3,
-    name: "Référencement Google",
-    subject: "Votre entreprise n'apparaît pas sur Google ? Proxilio peut changer ça",
-    body: `Bonjour,
-
-Aujourd'hui, 90 % des particuliers cherchent un artisan sur Google avant de contacter quelqu'un.
-
-Si votre entreprise n'apparaît pas dans les premiers résultats, vous perdez des clients chaque jour.
-
-Proxilio vous aide à être visible :
-
-✅ Votre fiche Proxilio remonte dans les résultats Google
-✅ Vos clients vous trouvent avant vos concurrents
-✅ Avis vérifiés qui renforcent votre réputation en ligne
-✅ Réservation en ligne intégrée
-
-Créez votre fiche gratuite sur proxilio.fr
-
-À bientôt,
-L'équipe Proxilio`,
-  },
-];
-
-exports.getTemplates = async (req, res) => {
-  return res.status(200).json(DEFAULT_TEMPLATES);
+exports.getTemplates = (req, res) => {
+  return res.status(200).json(readTemplates());
 };
+
+exports.createTemplate = (req, res) => {
+  const { name, subject, body } = req.body;
+  if (!name?.trim() || !subject?.trim() || !body?.trim())
+    return res.status(400).json({ error: "Nom, sujet et corps sont requis." });
+  const templates = readTemplates();
+  const tpl = { id: nextId(templates), name: name.trim(), subject: subject.trim(), body: body.trim() };
+  templates.push(tpl);
+  writeTemplates(templates);
+  return res.status(201).json(tpl);
+};
+
+exports.updateTemplate = (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, subject, body } = req.body;
+  const templates = readTemplates();
+  const idx = templates.findIndex((t) => t.id === id);
+  if (idx === -1) return res.status(404).json({ error: "Template introuvable." });
+  templates[idx] = { ...templates[idx], ...(name && { name }), ...(subject && { subject }), ...(body && { body }) };
+  writeTemplates(templates);
+  return res.status(200).json(templates[idx]);
+};
+
+exports.deleteTemplate = (req, res) => {
+  const id = parseInt(req.params.id);
+  const templates = readTemplates();
+  const filtered = templates.filter((t) => t.id !== id);
+  if (filtered.length === templates.length) return res.status(404).json({ error: "Template introuvable." });
+  writeTemplates(filtered);
+  return res.status(200).json({ message: "Template supprimé." });
+};
+
+/* ── Envoi marketing ── */
+
+function mdToHtml(md) {
+  return md
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #e0e0de;margin:20px 0"/>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:14px;font-weight:500;color:#132A24;margin:18px 0 8px">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:16px;font-weight:400;color:#132A24;margin:0 0 16px">$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="font-weight:600;color:#132A24">$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '<li style="margin:4px 0;padding-left:4px">$1</li>')
+    .replace(/(<li[^>]*>.*<\/li>\n?)+/g, (m) => `<ul style="padding-left:20px;margin:10px 0">${m}</ul>`)
+    .replace(/\n\n/g, '</p><p style="margin:10px 0">')
+    .replace(/\n/g, "<br/>");
+}
 
 exports.sendMarketing = async (req, res) => {
   try {
     const { subject, body, emails } = req.body;
-    if (!subject?.trim() || !body?.trim() || !emails?.length) {
+    if (!subject?.trim() || !body?.trim() || !emails?.length)
       return res.status(400).json({ error: "Sujet, corps et liste d'emails sont requis." });
-    }
 
     const list = emails.map((e) => e.trim()).filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
     if (!list.length) return res.status(400).json({ error: "Aucune adresse e-mail valide." });
 
-    const htmlBody = body.replace(/\n/g, "<br/>").replace(/\*(.*?)\*/g, "<strong>$1</strong>");
+    const htmlContent = mdToHtml(body);
     const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#f5f7f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f7f6;padding:40px 20px;">
 <tr><td align="center">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;">
 <tr><td style="background:#132A24;border-radius:16px 16px 0 0;padding:28px 40px;text-align:center;">
 <p style="margin:0;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#879f98;font-weight:300;">Proxilio</p>
-<h1 style="margin:8px 0 0;font-size:20px;font-weight:300;color:#fff;letter-spacing:-0.5px;">${subject}</h1>
 </td></tr>
 <tr><td style="background:#fff;padding:32px 40px;font-size:14px;font-weight:300;color:#132A24;line-height:1.8;">
-${htmlBody}
+<p style="margin:0 0 10px">${htmlContent}</p>
 </td></tr>
 <tr><td style="background:#f5f7f6;border-radius:0 0 16px 16px;padding:16px 40px;text-align:center;border-top:1px solid #eaede9;">
-<p style="margin:0;font-size:11px;color:#aaa;font-weight:300;">Proxilio — <a href="https://proxilio.fr" style="color:#132A24;">proxilio.fr</a></p>
+<p style="margin:0;font-size:11px;color:#aaa;font-weight:300;">Proxilio — <a href="https://proxilio.fr" style="color:#132A24;">proxilio.fr</a> · Pour ne plus recevoir ces emails, contactez-nous.</p>
 </td></tr>
 </table>
 </td></tr>
 </table>
 </body></html>`;
 
-    let sent = 0;
-    let failed = 0;
+    const plain = body.replace(/[#*_\-`]/g, "").replace(/\n\n+/g, "\n\n");
+    let sent = 0, failed = 0;
     for (const email of list) {
       try {
         await transporter.sendMail({
           from: `"Proxilio" <${process.env.EMAIL || "contact@proxilio.fr"}>`,
-          to: email,
-          subject,
-          html,
-          text: body,
+          to: email, subject, html, text: plain,
         });
         sent++;
       } catch { failed++; }
     }
-
     return res.status(200).json({ message: `Email envoyé à ${sent} destinataire(s).`, sent, failed });
   } catch (error) {
     console.error(error);

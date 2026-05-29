@@ -141,6 +141,9 @@ router.delete("/condition/:id", conditionsController.deleteCondition);
 // Routes Marketing
 const marketingController = require("../../controllers/marketing-controller");
 router.get("/marketing/templates", marketingController.getTemplates);
+router.post("/marketing/templates", marketingController.createTemplate);
+router.put("/marketing/templates/:id", marketingController.updateTemplate);
+router.delete("/marketing/templates/:id", marketingController.deleteTemplate);
 router.post("/marketing/send", marketingController.sendMarketing);
 
 module.exports = router;
