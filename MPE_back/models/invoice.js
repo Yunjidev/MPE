@@ -49,6 +49,11 @@ module.exports = (sequelize, DataTypes) => {
 
       payment_conditions: DataTypes.TEXT,
       payment_method:     DataTypes.STRING,
+      payment_days:       { type: DataTypes.INTEGER, defaultValue: 30 },
+      iban:               DataTypes.STRING,
+      bic:                DataTypes.STRING,
+      payment_reference:  DataTypes.STRING,
+      bic_swift:          DataTypes.STRING,
       notes:              DataTypes.TEXT,
 
       tva_rate:  { type: DataTypes.DECIMAL(5, 2), defaultValue: 20 },

@@ -49,14 +49,19 @@ function generateInvoicePDF(inv, enterpriseLogo) {
   }).join("");
 
   const logoHtml = enterpriseLogo ? `<img src="${enterpriseLogo}" alt="Logo" style="max-height:56px;max-width:140px;object-fit:contain;border-radius:8px;"/>` : "";
+  const payDays = parseInt(inv.payment_days) || 30;
+  const limitDate = (() => {
+    if (inv.due_date) return dt(inv.due_date);
+    const b = new Date(inv.invoice_date); b.setDate(b.getDate() + payDays); return dt(b);
+  })();
 
   const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/><title>Facture ${d(inv.invoice_number)}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;background:#fff;font-size:13px;line-height:1.5}.page{max-width:800px;margin:0 auto}.header{background:#132A24;color:#fff;padding:32px 40px;display:flex;justify-content:space-between;align-items:flex-start;gap:24px}.header-left{display:flex;flex-direction:column;gap:12px}.header-right{text-align:right;flex-shrink:0}.label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;margin-bottom:4px}.inv-num{font-size:22px;font-weight:300;letter-spacing:-.02em}.dates{font-size:11px;color:#879f98;line-height:2}.body{padding:32px 40px}.parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}.party{background:#f9f9f7;border-radius:8px;padding:16px}.party-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;margin-bottom:8px}.party-name{font-size:14px;font-weight:500;color:#132A24;margin-bottom:4px}.party-info{font-size:11px;color:#666;line-height:1.7}.section-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;border-bottom:1px solid #eee;padding-bottom:7px;margin:24px 0 14px}table{width:100%;border-collapse:collapse}th{background:#f5f5f3;padding:8px 12px;text-align:left;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#879f98;font-weight:500}th:last-child,td:last-child{text-align:right}th:nth-child(2),td:nth-child(2){text-align:center}.totals{margin-top:20px;margin-left:auto;width:240px}.totals-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#555}.totals-ttc{border-top:2px solid #132A24;padding-top:10px;margin-top:6px;font-size:15px;font-weight:600;color:#132A24}.conditions{background:#f9f9f7;border-radius:8px;padding:14px;margin-top:20px;font-size:12px;color:#555;line-height:1.7}.paid-stamp{border:3px solid #132A24;border-radius:8px;padding:14px 24px;margin-top:28px;text-align:center;opacity:0.85}.footer{text-align:center;padding:16px 40px;font-size:10px;color:#aaa;border-top:1px solid #eee;margin-top:24px}
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;background:#fff;font-size:13px;line-height:1.5}.page{max-width:800px;margin:0 auto}.header{background:#132A24;color:#fff;padding:32px 40px;display:flex;justify-content:space-between;align-items:flex-start;gap:24px}.header-left{display:flex;flex-direction:column;gap:12px}.header-right{text-align:right;flex-shrink:0}.label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;margin-bottom:4px}.inv-num{font-size:22px;font-weight:300;letter-spacing:-.02em}.dates{font-size:11px;color:#879f98;line-height:2}.dates .limit{color:#fff;font-weight:400}.body{padding:32px 40px}.parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}.party{background:#f9f9f7;border-radius:8px;padding:16px}.party-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;margin-bottom:8px}.party-name{font-size:14px;font-weight:500;color:#132A24;margin-bottom:4px}.party-info{font-size:11px;color:#666;line-height:1.7}.section-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;border-bottom:1px solid #eee;padding-bottom:7px;margin:24px 0 14px}table{width:100%;border-collapse:collapse}th{background:#f5f5f3;padding:8px 12px;text-align:left;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#879f98;font-weight:500}th:last-child,td:last-child{text-align:right}th:nth-child(2),td:nth-child(2){text-align:center}.totals{margin-top:20px;margin-left:auto;width:240px}.totals-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#555}.totals-ttc{border-top:2px solid #132A24;padding-top:10px;margin-top:6px;font-size:15px;font-weight:600;color:#132A24}.conditions{background:#f9f9f7;border-radius:8px;padding:14px;margin-top:20px;font-size:12px;color:#555;line-height:1.7}.iban-box{background:#f9f9f7;border-radius:8px;padding:14px;margin-top:16px;font-size:12px;color:#555;line-height:1.9}.legal{margin-top:20px;padding-top:14px;border-top:1px solid #eee;font-size:10px;color:#999;line-height:1.7;font-style:italic}.paid-stamp{border:3px solid #132A24;border-radius:8px;padding:14px 24px;margin-top:28px;text-align:center;opacity:0.85}.footer{text-align:center;padding:16px 40px;font-size:10px;color:#aaa;border-top:1px solid #eee;margin-top:24px}
 @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}@page{size:A4;margin:0}body{margin:0}.page{max-width:100%}}</style></head>
 <body><div class="page">
   <div class="header">
     <div class="header-left">${logoHtml}<div><div class="label">Facture</div><div class="inv-num">${d(inv.invoice_number)}</div></div></div>
-    <div class="header-right"><div class="dates">Date : ${dt(inv.invoice_date)}<br/>${inv.due_date ? `Échéance : ${dt(inv.due_date)}` : ""}</div></div>
+    <div class="header-right"><div class="dates">Date : ${dt(inv.invoice_date)}<br/><span class="limit">Date limite de paiement : ${limitDate}</span><br/>Délai : ${payDays} jours</div></div>
   </div>
   <div class="body">
     <div class="parties">
@@ -110,6 +115,7 @@ function InvoiceForm({ enterprise, initial, onSaved, onCancel }) {
   const [form, setForm] = useState({
     invoice_date: today(),
     due_date: "",
+    payment_days: 30,
     tva_rate: 20,
     ent_name: enterprise?.name || "", ent_address: enterprise?.adress || "",
     ent_city: enterprise?.city || "", ent_zip: enterprise?.zip_code || "",
@@ -118,7 +124,10 @@ function InvoiceForm({ enterprise, initial, onSaved, onCancel }) {
     ent_tva_number: "", ent_legal_form: "", ent_legal_status: "", ent_rcs: "", ent_rm: "",
     client_name: "", client_company: "", client_address: "", client_city: "", client_zip: "", client_phone: "", client_email: "",
     labor_description: "", labor_price_type: "", labor_price: "",
-    travel_expenses: "", payment_conditions: "Paiement à 30 jours.", payment_method: "",
+    travel_expenses: "",
+    payment_conditions: "Paiement à réception de facture.",
+    payment_method: "",
+    iban: "", bic: "", payment_reference: "", bic_swift: "",
     notes: "",
     ...initial,
   });
@@ -165,11 +174,36 @@ function InvoiceForm({ enterprise, initial, onSaved, onCancel }) {
 
       <Section title="Informations de la facture">
         <Row>
-          <Field label="Date de facturation"><input type="date" value={form.invoice_date} onChange={(e) => set("invoice_date", e.target.value)} className={`mt-1 ${inputCls}`} required /></Field>
-          <Field label="Date d'échéance"><input type="date" value={form.due_date} onChange={(e) => set("due_date", e.target.value)} className={`mt-1 ${inputCls}`} /></Field>
+          <Field label="Date de facturation">
+            <input type="date" value={form.invoice_date}
+              onChange={(e) => {
+                const d = e.target.value;
+                const base = new Date(d);
+                base.setDate(base.getDate() + (parseInt(form.payment_days) || 30));
+                set("invoice_date", d);
+                set("due_date", base.toISOString().split("T")[0]);
+              }}
+              className={`mt-1 ${inputCls}`} required />
+          </Field>
+          <Field label="Délai de paiement (jours)">
+            <input type="number" value={form.payment_days} min={1}
+              onChange={(e) => {
+                const days = parseInt(e.target.value) || 30;
+                const base = new Date(form.invoice_date || today());
+                base.setDate(base.getDate() + days);
+                set("payment_days", days);
+                set("due_date", base.toISOString().split("T")[0]);
+              }}
+              className={`mt-1 ${inputCls}`} />
+          </Field>
         </Row>
         <Row>
-          <Field label="Taux TVA (%)"><input type="number" value={form.tva_rate} onChange={(e) => set("tva_rate", e.target.value)} className={`mt-1 ${inputCls}`} min={0} step={0.1} /></Field>
+          <Field label="Date limite de paiement (calculée)">
+            <input type="date" value={form.due_date} onChange={(e) => set("due_date", e.target.value)} className={`mt-1 ${inputCls}`} />
+          </Field>
+          <Field label="Taux TVA (%)">
+            <input type="number" value={form.tva_rate} onChange={(e) => set("tva_rate", e.target.value)} className={`mt-1 ${inputCls}`} min={0} step={0.1} />
+          </Field>
         </Row>
       </Section>
 
@@ -248,6 +282,17 @@ function InvoiceForm({ enterprise, initial, onSaved, onCancel }) {
           <Field label="Moyen de paiement"><input className={`mt-1 ${inputCls}`} value={form.payment_method} placeholder="Virement, chèque, espèces…" onChange={(e) => set("payment_method", e.target.value)} /></Field>
         </Row>
         <Field label="Notes"><textarea className={`mt-1 ${inputCls} min-h-[60px]`} value={form.notes} onChange={(e) => set("notes", e.target.value)} /></Field>
+      </Section>
+
+      <Section title="Informations de paiement (virement)">
+        <Row>
+          <Field label="IBAN"><input className={`mt-1 ${inputCls}`} value={form.iban} onChange={(e) => set("iban", e.target.value)} placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX" /></Field>
+          <Field label="BIC"><input className={`mt-1 ${inputCls}`} value={form.bic} onChange={(e) => set("bic", e.target.value)} placeholder="XXXXXXXX" /></Field>
+        </Row>
+        <Row>
+          <Field label="Libellé (référence virement)"><input className={`mt-1 ${inputCls}`} value={form.payment_reference} onChange={(e) => set("payment_reference", e.target.value)} placeholder="Ex : Facture FACT-2026-0001" /></Field>
+          <Field label="BIC banque partenaire (SWIFT)"><input className={`mt-1 ${inputCls}`} value={form.bic_swift} onChange={(e) => set("bic_swift", e.target.value)} placeholder="Pour virements internationaux" /></Field>
+        </Row>
       </Section>
 
       <div className="flex justify-end gap-3">
@@ -336,7 +381,10 @@ function InvoiceDetail({ invoice, slug, enterpriseLogo, onBack, onDelete, onStat
             </div>
             <div className="text-right text-xs text-[#879f98] font-light space-y-1">
               <p>Date : {fmtDate(invoice.invoice_date)}</p>
-              {invoice.due_date && <p>Échéance : {fmtDate(invoice.due_date)}</p>}
+              <p className="text-white font-light">
+                Date limite de paiement : {fmtDate(invoice.due_date) || (() => { const b = new Date(invoice.invoice_date); b.setDate(b.getDate() + (parseInt(invoice.payment_days)||30)); return fmtDate(b); })()}
+              </p>
+              {invoice.payment_days && <p>Délai : {invoice.payment_days} jours</p>}
               {invoice.status === "paid" && invoice.paid_at && <p className="text-[#4b8a74]">Payée le {fmtDate(invoice.paid_at)}</p>}
             </div>
           </div>
@@ -391,6 +439,25 @@ function InvoiceDetail({ invoice, slug, enterpriseLogo, onBack, onDelete, onStat
               {invoice.payment_method && <p><strong className="text-[#132A24] font-medium">Moyen : </strong>{invoice.payment_method}</p>}
             </div>
           )}
+
+          {(invoice.iban || invoice.bic || invoice.payment_reference || invoice.bic_swift) && (
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light border-b border-black/5 pb-2 mb-3">Informations de paiement</p>
+              <div className="bg-[#f5f7f6] rounded-xl p-4 space-y-1 text-sm font-light">
+                {invoice.iban              && <p><strong className="text-[#132A24] font-medium">IBAN : </strong>{invoice.iban}</p>}
+                {invoice.bic               && <p><strong className="text-[#132A24] font-medium">BIC : </strong>{invoice.bic}</p>}
+                {invoice.payment_reference && <p><strong className="text-[#132A24] font-medium">Libellé : </strong>{invoice.payment_reference}</p>}
+                {invoice.bic_swift         && <p><strong className="text-[#132A24] font-medium">BIC banque partenaire (SWIFT) : </strong>{invoice.bic_swift}</p>}
+              </div>
+            </div>
+          )}
+
+          {/* Mention légale */}
+          <div className="border-t border-black/5 pt-4">
+            <p className="text-[11px] text-[#879f98] font-light leading-relaxed">
+              {invoice.ent_name || "L'entreprise"} vous a envoyé cette facture le {fmtDate(invoice.invoice_date)}. Celle-ci doit être réglée sous {invoice.payment_days || 30} jours à compter de cette date. Passé ce délai, une pénalité de retard de 11,13 % sera appliquée, ainsi qu'une indemnité forfaitaire de 40 € due au titre des frais de recouvrement. Pas d'escompte pour règlement anticipé.
+            </p>
+          </div>
         </div>
       </div>
 

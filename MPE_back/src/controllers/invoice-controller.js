@@ -36,7 +36,7 @@ function buildPayload(body, enterprise) {
     ent_siret, ent_tva_number, ent_legal_form, ent_legal_status, ent_rcs, ent_rm,
     client_name, client_company, client_address, client_city, client_zip, client_phone, client_email,
     items = [], labor_description, labor_price_type, labor_price, travel_expenses,
-    payment_conditions, payment_method, notes, tva_rate = 20,
+    payment_conditions, payment_method, payment_days, iban, bic, payment_reference, bic_swift, notes, tva_rate = 20,
     Quote_id, Reservation_id,
   } = body;
 
@@ -74,6 +74,11 @@ function buildPayload(body, enterprise) {
     travel_expenses:   sanitizeNum(travel_expenses) || 0,
     payment_conditions: sanitize(payment_conditions),
     payment_method:     sanitize(payment_method),
+    payment_days:       payment_days != null ? parseInt(payment_days) : 30,
+    iban:               sanitize(iban),
+    bic:                sanitize(bic),
+    payment_reference:  sanitize(payment_reference),
+    bic_swift:          sanitize(bic_swift),
     notes:              sanitize(notes),
     tva_rate: parseFloat(tva_rate) || 20,
     total_ht, total_tva, total_ttc,
@@ -229,6 +234,7 @@ exports.sendInvoiceByEmail = async (req, res) => {
         invoice_date:   moment(invoice.invoice_date).format("DD/MM/YYYY"),
         due_date:       dueDate,
         ent_name:       invoice.ent_name || enterprise.name,
+        ent_email:      invoice.ent_email || enterprise.mail,
         client_name:    invoice.client_name,
         total_ttc:      formatAmount(invoice.total_ttc),
       },

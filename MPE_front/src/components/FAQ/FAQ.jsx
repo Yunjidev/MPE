@@ -52,7 +52,7 @@ const QUESTIONS = [
     items: [
       {
         question: "Qu'est-ce que l'offre Premium pour les professionnels ?",
-        answer: "L'offre Premium permet aux entreprises de bénéficier d'une mise en avant sur la page d'accueil, d'une priorité dans les résultats de recherche, d'un badge de confiance, d'un calendrier de réservation en ligne et de statistiques avancées.",
+        answer: "L'offre Premium permet aux entreprises de bénéficier d'une mise en avant sur la page d'accueil, d'une priorité dans les résultats de recherche, d'un badge de confiance, d'un calendrier de réservation en ligne, de statistiques avancées, de la création de devis et factures PDF, ainsi que d'un référencement prioritaire sur Google.",
       },
       {
         question: "Quelles sont les formules disponibles ?",

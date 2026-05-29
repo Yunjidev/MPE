@@ -220,6 +220,7 @@ exports.sendQuoteByEmail = async (req, res) => {
         quote_date: moment(quote.quote_date).format("DD/MM/YYYY"),
         validity_date: validityDate,
         ent_name: quote.ent_name || enterprise.name,
+        ent_email: quote.ent_email || enterprise.mail,
         client_name: quote.client_name,
         total_ttc: formatAmount(quote.total_ttc),
       },

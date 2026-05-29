@@ -9,7 +9,7 @@ Date         : {quote_date}
 Valable jusqu'au : {validity_date}
 Total TTC    : {total_ttc}
 
-Pour accepter ce devis, répondez à cet e-mail.
+Pour accepter ce devis ou poser une question, contactez {ent_name} par mail {ent_email}.
 
 ---
 Devis émis via Proxilio — proxilio.fr

@@ -49,7 +49,7 @@ const PLANS = [
     desc: "Accès complet, sans engagement.",
     badge: "Populaire",
     dark: false,
-    features: ["Tout le Basique", "Mise en avant accueil", "Badge certification", "Réservations en ligne", "Statistiques avancées", "Création de devis", "Référencement prioritaire sur Google"],
+    features: ["Tout le Basique", "Mise en avant accueil", "Badge certification", "Réservations en ligne", "Statistiques avancées", "Création de devis", "Création de factures", "Référencement prioritaire sur Google"],
     cta: "/subscribe?plan=monthly",
   },
   {
@@ -75,6 +75,7 @@ const TABLE_ROWS = [
   { name: "Badge de certification",       b: false, m: true,  a: true  },
   { name: "Calendrier & Réservations",    b: false, m: true,  a: true  },
   { name: "Création de devis PDF",        b: false, m: true,  a: true  },
+  { name: "Création de factures PDF",     b: false, m: true,  a: true  },
   { name: "Référencement prioritaire Google", b: false, m: true, a: true },
   { name: "Support prioritaire",          b: false, m: false, a: true  },
 ];

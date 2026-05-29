@@ -50,12 +50,18 @@ function buildPdf(invoice, logoPath) {
     doc.fillColor("#879f98").fontSize(8).font("Helvetica").text("FACTURE", titleX, 22);
     doc.fillColor("#ffffff").fontSize(18).font("Helvetica").text(invoice.invoice_number || "", titleX, 33);
 
-    const dueDate = invoice.due_date ? fmtDate(invoice.due_date) : "";
+    const payDaysH = parseInt(invoice.payment_days) || 30;
+    const dueDate = (() => {
+      if (invoice.due_date) return fmtDate(invoice.due_date);
+      const base = new Date(invoice.invoice_date);
+      base.setDate(base.getDate() + payDaysH);
+      return fmtDate(base);
+    })();
 
     doc.fillColor("#879f98").fontSize(8).font("Helvetica")
-      .text(`Date : ${fmtDate(invoice.invoice_date)}`, 0, 24, { align: "right", width: W - M })
-      .text(`Échéance : : ${dueDate}`, 0, 36, { align: "right", width: W - M })
-      .text("Facture", 0, 50, { align: "right", width: W - M });
+      .text(`Date : ${fmtDate(invoice.invoice_date)}`, 0, 20, { align: "right", width: W - M })
+      .text(`Date limite de paiement : ${dueDate}`, 0, 32, { align: "right", width: W - M })
+      .text(`Délai : ${payDaysH} jours`, 0, 44, { align: "right", width: W - M });
 
     /* ── PARTIES ── */
     let y = 130;
@@ -194,26 +200,6 @@ function buildPdf(invoice, logoPath) {
     drawTotal("Total TTC", fmtAmt(invoice.total_ttc), true);
     y += 20;
 
-    /* ── CONDITIONS ── */
-    const conditions = [
-      invoice.payment_conditions  ? `Paiement : ${invoice.payment_conditions}` : null,
-      invoice.delivery_conditions ? `Livraison : ${invoice.delivery_conditions}` : null,
-      invoice.sav_conditions      ? `SAV : ${invoice.sav_conditions}` : null,
-    ].filter(Boolean);
-
-    if (conditions.length > 0) {
-      doc.rect(M, y, contentW, 8).fill(LGRAY); // top stripe
-      const condH = conditions.length * 14 + 16;
-      doc.rect(M, y, contentW, condH).fill(LGRAY);
-      y += 8;
-      conditions.forEach((line) => {
-        doc.fillColor(BLACK).fontSize(8).font("Helvetica")
-          .text(line, M + 8, y, { width: contentW - 16 });
-        y += 14;
-      });
-      y += 8;
-    }
-
     if (invoice.notes) {
       y += 4;
       doc.fillColor(GRAY).fontSize(7.5).font("Helvetica-Bold")
@@ -224,22 +210,39 @@ function buildPdf(invoice, logoPath) {
       y += doc.currentLineHeight() + 14;
     }
 
-    /* ── BON POUR ACCORD ── */
-    if (y > 700) { doc.addPage(); y = 40; }
+    /* ── IBAN / VIREMENT ── */
+    const hasIban = invoice.iban || invoice.bic || invoice.payment_reference || invoice.bic_swift;
+    if (hasIban) {
+      if (y > 680) { doc.addPage(); y = 40; }
+      doc.fillColor(GRAY).fontSize(7.5).font("Helvetica-Bold")
+        .text("INFORMATIONS DE PAIEMENT", M, y, { characterSpacing: 0.8 });
+      y += 14;
+      const ibanLines = [
+        invoice.iban              ? `IBAN : ${invoice.iban}` : null,
+        invoice.bic               ? `BIC : ${invoice.bic}` : null,
+        invoice.payment_reference ? `Libellé : ${invoice.payment_reference}` : null,
+        invoice.bic_swift         ? `BIC banque partenaire (SWIFT) : ${invoice.bic_swift}` : null,
+      ].filter(Boolean);
+      const ibanH = ibanLines.length * 13 + 16;
+      doc.rect(M, y, contentW, ibanH).fill(LGRAY);
+      y += 8;
+      ibanLines.forEach((line) => {
+        doc.fillColor(BLACK).fontSize(8.5).font("Helvetica")
+          .text(line, M + 10, y, { width: contentW - 20 });
+        y += 13;
+      });
+      y += 10;
+    }
 
-    doc.rect(M, y, contentW, 90).dash(3, { space: 3 }).strokeColor("#cccccc").lineWidth(1).stroke().undash();
-    doc.fillColor(GREEN).fontSize(11).font("Helvetica-Bold")
-      .text("Conditions de règlement", M, y + 12, { align: "center", width: contentW });
-    doc.fillColor(GRAY).fontSize(8).font("Helvetica")
-      .text("Lu et approuvé — Signature précédée de la mention « Conditions de règlement »", M, y + 28, { align: "center", width: contentW });
-    const sigY = y + 52;
-    const sig1X = M + 60;
-    const sig2X = M + contentW - 60 - 140;
-    [[sig1X, "Date :"], [sig2X, "Signature :"]].forEach(([sx, label]) => {
-      doc.fillColor(GRAY).fontSize(7.5).font("Helvetica").text(label, sx, sigY - 10, { width: 140 });
-      doc.moveTo(sx, sigY + 20).lineTo(sx + 140, sigY + 20).lineWidth(0.7).strokeColor("#999999").stroke();
-    });
-    y += 100;
+    /* ── MENTION LÉGALE ── */
+    if (y > 700) { doc.addPage(); y = 40; }
+    drawHLine(doc, y);
+    y += 10;
+    const payDays   = parseInt(invoice.payment_days) || 30;
+    const legalText = `${invoice.ent_name || "L'entreprise"} vous a envoyé cette facture le ${fmtDate(invoice.invoice_date)}. Celle-ci doit être réglée sous ${payDays} jours à compter de cette date. Passé ce délai, une pénalité de retard de 11,13 % sera appliquée, ainsi qu'une indemnité forfaitaire de 40 € due au titre des frais de recouvrement. Pas d'escompte pour règlement anticipé.`;
+    doc.fillColor(GRAY).fontSize(7).font("Helvetica")
+      .text(legalText, M, y, { width: contentW, align: "justify" });
+    y += doc.currentLineHeight(true) + 14;
 
     /* ── FOOTER ── */
     const footerY = doc.page.height - 30;
