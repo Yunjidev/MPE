@@ -31,8 +31,8 @@ function ManualReservationModal({ slug, onClose, onCreated }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    getData(`enterprise/${slug}/offers`)
-      .then((data) => setOffers(Array.isArray(data) ? data : []))
+    getData(`enterprise/${slug}`)
+      .then((data) => setOffers(Array.isArray(data?.offers) ? data.offers : []))
       .catch(() => setOffers([]));
   }, [slug]);
 
@@ -99,11 +99,18 @@ function ManualReservationModal({ slug, onClose, onCreated }) {
               required
             >
               <option value="">Sélectionner une prestation</option>
-              {offers.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}{o.duration ? ` (${o.duration} min)` : ""}
-                </option>
-              ))}
+              {offers.map((o) => {
+                const dur = o.duration
+                  ? o.duration >= 60
+                    ? `${Math.floor(o.duration / 60)}h${o.duration % 60 > 0 ? o.duration % 60 : ""}`
+                    : `${o.duration} min`
+                  : "";
+                return (
+                  <option key={o.id} value={o.id}>
+                    {o.name}{dur ? ` — ${dur}` : ""}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
