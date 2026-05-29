@@ -31,6 +31,15 @@ function computeTotals(items, laborPrice, laborPriceType, travel, tvaRate) {
 
 const EMPTY_ITEM = { description: "", quantity: 1, unit_price: "" };
 
+const Section = ({ title, children }) => (
+  <div className="border border-black/5 rounded-xl p-5 space-y-4">
+    <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">{title}</p>
+    {children}
+  </div>
+);
+const Row = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
+const Field = ({ label, children }) => <div><label className={labelCls}>{label}</label>{children}</div>;
+
 /* ─── QuoteForm ─────────────────────────────────────────── */
 function QuoteForm({ enterprise, initial, onSaved, onCancel }) {
   const slug = enterprise?.slug || enterprise?.id;
@@ -95,15 +104,6 @@ function QuoteForm({ enterprise, initial, onSaved, onCancel }) {
     } finally { setSaving(false); }
   };
 
-  const Section = ({ title, children }) => (
-    <div className="border border-black/5 rounded-xl p-5 space-y-4">
-      <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">{title}</p>
-      {children}
-    </div>
-  );
-
-  const Row = ({ children }) => <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{children}</div>;
-  const Field = ({ label, children }) => <div><label className={labelCls}>{label}</label>{children}</div>;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
