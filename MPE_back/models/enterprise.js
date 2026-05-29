@@ -167,6 +167,10 @@ module.exports = (sequelize, DataTypes) => {
       legal_status: { type: DataTypes.STRING, allowNull: true },
       rcs_number:   { type: DataTypes.STRING, allowNull: true },
       rm_number:    { type: DataTypes.STRING, allowNull: true },
+      iban:              { type: DataTypes.STRING, allowNull: true },
+      bic:               { type: DataTypes.STRING, allowNull: true },
+      payment_reference: { type: DataTypes.STRING, allowNull: true },
+      bic_swift:         { type: DataTypes.STRING, allowNull: true },
       premiumManualStart: {
         type: DataTypes.DATE,
         allowNull: true,

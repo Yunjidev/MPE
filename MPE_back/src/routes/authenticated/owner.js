@@ -37,6 +37,10 @@ router.put(
 );
 router.delete("/", enterprisesController.deleteEnterprise);
 
+// Informations de paiement de l'entreprise
+router.get("/payment-info", enterprisesController.getPaymentInfo);
+router.put("/payment-info", enterprisesController.updatePaymentInfo);
+
 // Routes Disponibilité
 router.post("/disponibility", disponibilitiesController.createDisponibility);
 router.use("/disponibility/:id", disponibilitiesController.updateDisponibility);

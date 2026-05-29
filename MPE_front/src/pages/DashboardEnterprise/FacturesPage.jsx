@@ -85,9 +85,11 @@ function generateInvoicePDF(inv, enterpriseLogo) {
     </div>
     ${inv.payment_conditions ? `<div class="conditions"><strong style="color:#132A24;">Paiement : </strong>${inv.payment_conditions}${inv.payment_method ? `<br/><strong style="color:#132A24;">Moyen : </strong>${inv.payment_method}` : ""}</div>` : ""}
     ${inv.notes ? `<div class="section-title">Notes</div><p style="font-size:12px;color:#555;line-height:1.7;">${inv.notes}</p>` : ""}
+    ${(inv.iban || inv.bic || inv.payment_reference || inv.bic_swift) ? `<div class="iban-box"><strong style="color:#132A24;font-size:10px;letter-spacing:.1em;text-transform:uppercase;">Informations de paiement</strong><br/>${inv.iban ? `<span>IBAN : ${inv.iban}</span><br/>` : ""}${inv.bic ? `<span>BIC : ${inv.bic}</span><br/>` : ""}${inv.payment_reference ? `<span>Libellé : ${inv.payment_reference}</span><br/>` : ""}${inv.bic_swift ? `<span>BIC banque partenaire (SWIFT) : ${inv.bic_swift}</span>` : ""}</div>` : ""}
     ${inv.status === "paid" ? `<div class="paid-stamp"><p style="font-size:16px;font-weight:600;color:#132A24;letter-spacing:2px;">PAYÉE</p>${inv.paid_at ? `<p style="font-size:11px;color:#879f98;margin-top:4px;">Le ${dt(inv.paid_at)}</p>` : ""}</div>` : ""}
+    <div class="legal">${d(inv.ent_name) || "L'entreprise"} vous a envoyé cette facture le ${dt(inv.invoice_date)}. Celle-ci doit être réglée sous ${payDays} jours à compter de cette date. Passé ce délai, une pénalité de retard de 11,13 % sera appliquée, ainsi qu'une indemnité forfaitaire de 40 € due au titre des frais de recouvrement. Pas d'escompte pour règlement anticipé.</div>
   </div>
-  <div class="footer">Facture émise via <strong>Proxilio</strong> — proxilio.fr</div>
+  <div class="footer">Facture émise via <strong>Proxilio</strong> — proxilio.fr · Échéance : ${limitDate}</div>
 </div>
 <script>window.onload=()=>{window.print()}</script>
 </body></html>`;
@@ -477,6 +479,51 @@ function InvoiceDetail({ invoice, slug, enterpriseLogo, onBack, onDelete, onStat
   );
 }
 
+/* ── PaymentInfoModal ────────────────────────────────────── */
+function PaymentInfoModal({ slug, enterprise, onClose }) {
+  const [form, setForm] = useState({
+    iban: enterprise?.iban || "",
+    bic: enterprise?.bic || "",
+    payment_reference: enterprise?.payment_reference || "",
+    bic_swift: enterprise?.bic_swift || "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      await putData(`enterprise/${slug}/payment-info`, form);
+      toast.success("Informations de paiement enregistrées.");
+      onClose(form);
+    } catch { toast.error("Erreur lors de la sauvegarde."); }
+    finally { setSaving(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-light text-[#132A24]">Informations de paiement</h2>
+          <button onClick={() => onClose(null)} className="text-[#879f98] hover:text-[#132A24] transition text-xl leading-none">×</button>
+        </div>
+        <p className="text-xs text-[#879f98] font-light">Ces informations seront pré-remplies automatiquement lors de la création d'une facture.</p>
+        <div className="space-y-3">
+          <Field label="IBAN"><input className={`mt-1 ${inputCls}`} value={form.iban} onChange={(e) => setForm((p) => ({ ...p, iban: e.target.value }))} placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX" /></Field>
+          <Field label="BIC"><input className={`mt-1 ${inputCls}`} value={form.bic} onChange={(e) => setForm((p) => ({ ...p, bic: e.target.value }))} placeholder="XXXXXXXX" /></Field>
+          <Field label="Libellé (référence virement)"><input className={`mt-1 ${inputCls}`} value={form.payment_reference} onChange={(e) => setForm((p) => ({ ...p, payment_reference: e.target.value }))} placeholder="Ex : Facture FACT-2026-0001" /></Field>
+          <Field label="BIC banque partenaire (SWIFT)"><input className={`mt-1 ${inputCls}`} value={form.bic_swift} onChange={(e) => setForm((p) => ({ ...p, bic_swift: e.target.value }))} placeholder="Pour virements internationaux" /></Field>
+        </div>
+        <div className="flex justify-end gap-3">
+          <button onClick={() => onClose(null)} className="rounded-xl border border-black/10 px-4 py-2 text-sm font-light text-[#879f98] hover:bg-[#f5f7f6] transition">Annuler</button>
+          <button onClick={handleSave} disabled={saving} className="rounded-xl bg-[#132A24] px-4 py-2 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-60">
+            {saving ? "Sauvegarde…" : "Enregistrer"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── FacturesPage ────────────────────────────────────────── */
 export default function FacturesPage() {
   const { slug } = useParams();
@@ -486,6 +533,7 @@ export default function FacturesPage() {
   const [view, setView]   = useState("list");
   const [editInv, setEditInv]   = useState(null);
   const [detailInv, setDetailInv] = useState(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const fetchEnterprise = useCallback(async () => {
     try { setEnterprise(await getData(`enterprise/${slug}`)); } catch { /**/ }
@@ -516,11 +564,28 @@ export default function FacturesPage() {
     return <div className="mt-6 bg-white border border-black/5 rounded-2xl p-10 text-center shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)]"><p className="text-sm text-[#879f98] font-light">La facturation est réservée aux entreprises Premium.</p></div>;
   }
 
-  if (view === "form") return <div className="mt-6"><InvoiceForm enterprise={enterprise} initial={editInv} onSaved={onSaved} onCancel={() => setView("list")} /></div>;
+  const newInvoiceDefaults = {
+    iban: enterprise?.iban || "",
+    bic: enterprise?.bic || "",
+    payment_reference: enterprise?.payment_reference || "",
+    bic_swift: enterprise?.bic_swift || "",
+  };
+
+  if (view === "form") return <div className="mt-6"><InvoiceForm enterprise={enterprise} initial={editInv ?? newInvoiceDefaults} onSaved={onSaved} onCancel={() => setView("list")} /></div>;
   if (view === "detail" && detailInv) return <div className="mt-6"><InvoiceDetail invoice={detailInv} slug={slug} enterpriseLogo={enterprise?.logo} onBack={onBack} onDelete={onDelete} onStatusChange={onStatusChange} /></div>;
 
   return (
     <div className="mt-6 space-y-5">
+      {showPaymentModal && (
+        <PaymentInfoModal
+          slug={slug}
+          enterprise={enterprise}
+          onClose={(updated) => {
+            setShowPaymentModal(false);
+            if (updated) setEnterprise((p) => ({ ...p, ...updated }));
+          }}
+        />
+      )}
       <header className="rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 lg:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -528,9 +593,14 @@ export default function FacturesPage() {
             <h1 className="mt-1 text-xl font-light text-[#132A24] tracking-tight">Mes factures</h1>
             <p className="mt-1 text-sm text-[#879f98] font-light">Créez et gérez vos factures professionnelles.</p>
           </div>
-          <button onClick={() => { setEditInv(null); setView("form"); }} className="inline-flex items-center gap-2 rounded-xl bg-[#132A24] px-4 py-2.5 text-sm font-light text-white hover:bg-[#1b3b33] transition shrink-0">
-            <IoAddOutline /> Nouvelle facture
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button onClick={() => setShowPaymentModal(true)} className="inline-flex items-center gap-2 rounded-xl border border-black/10 px-4 py-2.5 text-sm font-light text-[#879f98] hover:bg-[#f5f7f6] hover:text-[#132A24] transition">
+              Mes informations de paiement
+            </button>
+            <button onClick={() => { setEditInv(null); setView("form"); }} className="inline-flex items-center gap-2 rounded-xl bg-[#132A24] px-4 py-2.5 text-sm font-light text-white hover:bg-[#1b3b33] transition">
+              <IoAddOutline /> Nouvelle facture
+            </button>
+          </div>
         </div>
       </header>
 

@@ -277,3 +277,27 @@ exports.deleteEnterprise = async (req, res) => {
     res.status(500).json({ errors: error.errors });
   }
 };
+
+exports.getPaymentInfo = async (req, res) => {
+  try {
+    const { iban, bic, payment_reference, bic_swift } = req.enterprise;
+    return res.status(200).json({ iban, bic, payment_reference, bic_swift });
+  } catch (error) {
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+};
+
+exports.updatePaymentInfo = async (req, res) => {
+  try {
+    const { iban, bic, payment_reference, bic_swift } = req.body;
+    const enterprise = req.enterprise;
+    enterprise.iban              = iban              ?? enterprise.iban;
+    enterprise.bic               = bic               ?? enterprise.bic;
+    enterprise.payment_reference = payment_reference ?? enterprise.payment_reference;
+    enterprise.bic_swift         = bic_swift         ?? enterprise.bic_swift;
+    await enterprise.save();
+    return res.status(200).json({ message: "Informations de paiement mises à jour.", iban: enterprise.iban, bic: enterprise.bic, payment_reference: enterprise.payment_reference, bic_swift: enterprise.bic_swift });
+  } catch (error) {
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+};
