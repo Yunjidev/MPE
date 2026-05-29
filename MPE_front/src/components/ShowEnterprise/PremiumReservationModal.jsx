@@ -29,8 +29,9 @@ const buildSlots = (disponibilities, reservations, manualBlocks, selectedDate, d
   const dayDisponibilities = disponibilities.filter((d) => d.day === dayLabel);
   if (dayDisponibilities.length === 0) return [];
 
+  const selectedDateStr = dayjs(selectedDate).format("YYYY-MM-DD");
   const sameDayReservations = multiBooking ? [] : reservations.filter((r) =>
-    dayjs(r.date).isSame(selectedDate, "day")
+    typeof r.date === "string" ? r.date.startsWith(selectedDateStr) : dayjs(r.date).format("YYYY-MM-DD") === selectedDateStr
   );
   const sameDayManualBlocks = manualBlocks
     .filter((b) => dayjs(b.date).isSame(selectedDate, "day"))
@@ -58,8 +59,8 @@ const buildSlots = (disponibilities, reservations, manualBlocks, selectedDate, d
       if (slotStartDT.isBefore(now)) { cursor = slotEnd; continue; }
 
       const overlaps = sameDayReservations.some((r) => {
-        const rStart = formatReservationDate(r.date, r.start_time);
-        const rEnd   = formatReservationDate(r.date, r.end_time);
+        const rStart = formatReservationDate(selectedDate, r.start_time);
+        const rEnd   = formatReservationDate(selectedDate, r.end_time);
         return r.status !== "cancelled" && r.status !== "rejected" &&
           slotStartDT.isBefore(rEnd) && slotEndDT.isAfter(rStart);
       });
