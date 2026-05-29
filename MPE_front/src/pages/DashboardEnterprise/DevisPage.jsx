@@ -868,6 +868,17 @@ export default function DevisPage() {
                       className="text-[#879f98] hover:text-[#132A24] transition text-xs font-light border border-black/10 rounded-lg px-2.5 py-1">
                       Modifier
                     </button>
+                    <button onClick={async (e) => {
+                      e.stopPropagation();
+                      if (!window.confirm("Supprimer ce devis ?")) return;
+                      try {
+                        await deleteData(`enterprise/${slug}/quotes/${q.id}`);
+                        setQuotes((p) => p.filter((x) => x.id !== q.id));
+                        toast.success("Devis supprimé.");
+                      } catch { toast.error("Erreur lors de la suppression."); }
+                    }} className="text-red-400 hover:text-red-600 transition text-xs font-light border border-red-200 hover:border-red-400 rounded-lg px-2.5 py-1 flex items-center gap-1">
+                      <IoTrashOutline className="w-3 h-3" /> Supprimer
+                    </button>
                   </div>
                 </div>
               );

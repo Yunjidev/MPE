@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import NavLink from "../Utils/Link";
-import { FaTachometerAlt, FaBuilding, FaUsers, FaPenFancy, FaEuroSign } from "react-icons/fa";
+import { FaTachometerAlt, FaBuilding, FaUsers, FaPenFancy, FaEuroSign, FaEnvelope } from "react-icons/fa";
 
 export default function AdminSideBar({ user, iconstyle, linkstyle, onClick }) {
   if (!user?.isAdmin) return null;
@@ -12,6 +12,7 @@ export default function AdminSideBar({ user, iconstyle, linkstyle, onClick }) {
     { to: "/dashboard/manage-companies", icon: <FaBuilding className={iconstyle} />, label: "Liste des entreprises validées" },
     { to: "/dashboard/jobsandcountrycreate", icon: <FaPenFancy className={iconstyle} />, label: "Gestion des métiers" },
     { to: "/dashboard/subscriptionmanagement", icon: <FaEuroSign className={iconstyle} />, label: "Gestion des abonnements" },
+    { to: "/dashboard/marketing", icon: <FaEnvelope className={iconstyle} />, label: "Marketing — Emails" },
   ];
 
   return (

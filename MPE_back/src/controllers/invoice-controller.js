@@ -75,10 +75,10 @@ function buildPayload(body, enterprise) {
     payment_conditions: sanitize(payment_conditions),
     payment_method:     sanitize(payment_method),
     payment_days:       payment_days != null ? parseInt(payment_days) : 30,
-    iban:               sanitize(iban),
-    bic:                sanitize(bic),
-    payment_reference:  sanitize(payment_reference),
-    bic_swift:          sanitize(bic_swift),
+    iban:               sanitize(iban)              || enterprise.iban              || null,
+    bic:                sanitize(bic)               || enterprise.bic               || null,
+    payment_reference:  sanitize(payment_reference) || enterprise.payment_reference || null,
+    bic_swift:          sanitize(bic_swift)          || enterprise.bic_swift          || null,
     notes:              sanitize(notes),
     tva_rate: parseFloat(tva_rate) || 20,
     total_ht, total_tva, total_ttc,
@@ -221,7 +221,14 @@ exports.sendInvoiceByEmail = async (req, res) => {
       ? path.join(__dirname, "../../uploads/enterprises/logo", path.basename(enterprise.logo))
       : null;
 
-    const pdfBuffer = await buildPdf(invoice, logoPath);
+    const invoiceForPdf = {
+      ...invoice.toJSON(),
+      iban:              invoice.iban              || enterprise.iban,
+      bic:               invoice.bic               || enterprise.bic,
+      payment_reference: invoice.payment_reference || enterprise.payment_reference,
+      bic_swift:         invoice.bic_swift          || enterprise.bic_swift,
+    };
+    const pdfBuffer = await buildPdf(invoiceForPdf, logoPath);
     const formatAmount = (v) => v != null ? `${parseFloat(v).toFixed(2).replace(".", ",")} €` : "—";
     const dueDate = invoice.due_date ? moment(invoice.due_date).format("DD/MM/YYYY") : "—";
 

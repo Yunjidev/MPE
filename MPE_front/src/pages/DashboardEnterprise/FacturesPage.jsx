@@ -308,7 +308,7 @@ function InvoiceForm({ enterprise, initial, onSaved, onCancel }) {
 }
 
 /* ── InvoiceDetail ───────────────────────────────────────── */
-function InvoiceDetail({ invoice, slug, enterpriseLogo, onBack, onDelete, onStatusChange }) {
+function InvoiceDetail({ invoice, slug, enterprise, enterpriseLogo, onBack, onDelete, onStatusChange }) {
   const [sendEmail, setSendEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [markingPaid, setMarkingPaid] = useState(false);
@@ -356,7 +356,13 @@ function InvoiceDetail({ invoice, slug, enterpriseLogo, onBack, onDelete, onStat
         </button>
         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-light border ${statusCls}`}>{statusLabel}</span>
         <div className="ml-auto flex flex-wrap gap-2">
-          <button onClick={() => generateInvoicePDF(invoice, enterpriseLogo)} className="inline-flex items-center gap-1.5 rounded-xl border border-[#132A24]/20 bg-[#eef5f1] px-3 py-2 text-xs font-light text-[#132A24] hover:bg-[#132A24] hover:text-white transition">
+          <button onClick={() => generateInvoicePDF({
+            ...invoice,
+            iban: invoice.iban || enterprise?.iban,
+            bic: invoice.bic || enterprise?.bic,
+            payment_reference: invoice.payment_reference || enterprise?.payment_reference,
+            bic_swift: invoice.bic_swift || enterprise?.bic_swift,
+          }, enterpriseLogo)} className="inline-flex items-center gap-1.5 rounded-xl border border-[#132A24]/20 bg-[#eef5f1] px-3 py-2 text-xs font-light text-[#132A24] hover:bg-[#132A24] hover:text-white transition">
             <IoDownloadOutline /> Exporter PDF
           </button>
           {invoice.status !== "paid" && (
@@ -442,17 +448,23 @@ function InvoiceDetail({ invoice, slug, enterpriseLogo, onBack, onDelete, onStat
             </div>
           )}
 
-          {(invoice.iban || invoice.bic || invoice.payment_reference || invoice.bic_swift) && (
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light border-b border-black/5 pb-2 mb-3">Informations de paiement</p>
-              <div className="bg-[#f5f7f6] rounded-xl p-4 space-y-1 text-sm font-light">
-                {invoice.iban              && <p><strong className="text-[#132A24] font-medium">IBAN : </strong>{invoice.iban}</p>}
-                {invoice.bic               && <p><strong className="text-[#132A24] font-medium">BIC : </strong>{invoice.bic}</p>}
-                {invoice.payment_reference && <p><strong className="text-[#132A24] font-medium">Libellé : </strong>{invoice.payment_reference}</p>}
-                {invoice.bic_swift         && <p><strong className="text-[#132A24] font-medium">BIC banque partenaire (SWIFT) : </strong>{invoice.bic_swift}</p>}
+          {(() => {
+            const iban = invoice.iban || enterprise?.iban;
+            const bic  = invoice.bic  || enterprise?.bic;
+            const ref  = invoice.payment_reference || enterprise?.payment_reference;
+            const swft = invoice.bic_swift || enterprise?.bic_swift;
+            return (iban || bic || ref || swft) ? (
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light border-b border-black/5 pb-2 mb-3">Informations de paiement</p>
+                <div className="bg-[#f5f7f6] rounded-xl p-4 space-y-1 text-sm font-light">
+                  {iban && <p><strong className="text-[#132A24] font-medium">IBAN : </strong>{iban}</p>}
+                  {bic  && <p><strong className="text-[#132A24] font-medium">BIC : </strong>{bic}</p>}
+                  {ref  && <p><strong className="text-[#132A24] font-medium">Libellé : </strong>{ref}</p>}
+                  {swft && <p><strong className="text-[#132A24] font-medium">BIC banque partenaire (SWIFT) : </strong>{swft}</p>}
+                </div>
               </div>
-            </div>
-          )}
+            ) : null;
+          })()}
 
           {/* Mention légale */}
           <div className="border-t border-black/5 pt-4">
@@ -572,7 +584,7 @@ export default function FacturesPage() {
   };
 
   if (view === "form") return <div className="mt-6"><InvoiceForm enterprise={enterprise} initial={editInv ?? newInvoiceDefaults} onSaved={onSaved} onCancel={() => setView("list")} /></div>;
-  if (view === "detail" && detailInv) return <div className="mt-6"><InvoiceDetail invoice={detailInv} slug={slug} enterpriseLogo={enterprise?.logo} onBack={onBack} onDelete={onDelete} onStatusChange={onStatusChange} /></div>;
+  if (view === "detail" && detailInv) return <div className="mt-6"><InvoiceDetail invoice={detailInv} slug={slug} enterprise={enterprise} enterpriseLogo={enterprise?.logo} onBack={onBack} onDelete={onDelete} onStatusChange={onStatusChange} /></div>;
 
   return (
     <div className="mt-6 space-y-5">
