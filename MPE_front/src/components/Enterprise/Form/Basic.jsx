@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { FaUser, FaBarcode } from "react-icons/fa";
 import { MdOutlineAreaChart } from "react-icons/md";
 import Input from "../../Utils/Inputs/Input";
+import SearchableSelect from "../../Utils/Inputs/SearchableSelect";
 
 export default function Basic({ formData, jobOptions, onChange }) {
   return (
@@ -22,15 +23,14 @@ export default function Basic({ formData, jobOptions, onChange }) {
         icon={<FaBarcode />}
         maxLength={14}
       />
-      <Input.Select
+      <SearchableSelect
         id="Job_id"
-        className="col-span-2"
         value={formData.Job_id}
         onChange={onChange}
         placeholder="Secteur d'activité *"
         options={jobOptions}
         icon={<MdOutlineAreaChart />}
-        required
+        className="col-span-2"
       />
     </>
   );

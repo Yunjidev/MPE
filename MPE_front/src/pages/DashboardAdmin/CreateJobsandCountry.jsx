@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaBriefcase } from "react-icons/fa";
 import { useForm } from "react-hook-form";
+import SearchableSelect from "../../components/Utils/Inputs/SearchableSelect";
 import { postData, putData, deleteData, getData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
 
@@ -133,38 +134,45 @@ const CreateJobForm = () => {
         </div>
       </div>
 
-      {/* Select métier */}
+      {/* Mode : modifier existant ou créer nouveau */}
+      <div className="flex items-center gap-3 mb-4">
+        <button type="button"
+          onClick={() => { setSelectedJob(null); reset(); }}
+          className={`px-4 py-2 rounded-xl text-sm font-light transition ${!selectedJob ? "bg-[#132A24] text-white" : "border border-black/10 text-[#879f98] hover:bg-[#f5f7f6]"}`}>
+          + Nouveau métier
+        </button>
+        <span className="text-sm text-[#879f98] font-light">ou modifier un existant ↓</span>
+      </div>
+
+      {/* Select métier avec recherche */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-6">
-          <label htmlFor="jobSelect" className={labelCls}>
-            Sélectionner un métier
-          </label>
-          <select
-            id="jobSelect"
-            onChange={handleJobSelect}
-            className={`${inputCls} mt-4 pr-10`}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Choisir dans la liste…
-            </option>
-            {jobs.map((job) => (
-              <option key={job.id} value={job.name}>
-                {job.name}
-              </option>
-            ))}
-          </select>
+          <label className={labelCls}>Sélectionner un métier existant</label>
+          <div className="mt-2">
+            <SearchableSelect
+              id="jobSelect"
+              value={selectedJob?.id || ""}
+              onChange={(e) => {
+                const found = jobs.find((j) => String(j.id) === String(e.target.value));
+                if (found) { setSelectedJob(found); setValue("jobTitle", found.name); }
+                else { setSelectedJob(null); reset(); }
+              }}
+              options={jobs}
+              placeholder="Rechercher un métier…"
+              icon={<FaBriefcase className="text-[#879f98]" />}
+            />
+          </div>
         </div>
 
         {/* État sélectionné */}
         <div className="lg:col-span-6 flex items-end">
           {selectedJob ? (
             <div className="w-full h-11 rounded-xl border border-[#132A24]/20 bg-[#eef5f1] text-[#132A24] grid place-items-center text-sm font-light">
-              Métier sélectionné : <strong className="ml-1 font-light">{selectedJob.name}</strong>
+              Modification de : <strong className="ml-1 font-medium">{selectedJob.name}</strong>
             </div>
           ) : (
             <div className="w-full h-11 rounded-xl border border-black/5 bg-[#f5f7f6] text-[#879f98] grid place-items-center text-sm font-light">
-              Aucun métier sélectionné
+              Mode création — aucun métier sélectionné
             </div>
           )}
         </div>
