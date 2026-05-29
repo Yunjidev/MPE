@@ -1,20 +1,24 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getData, postData, deleteData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
 import { IoPaperPlaneOutline, IoTrashOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { useAtom } from "jotai";
+import { userUnreadAtom } from "../../store/messaging";
 
 const inputCls = "w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition";
 const fmtDate = (d) =>
   d ? new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
 
 export default function UserMessagesPage() {
-  const [messages, setMessages]   = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [selected, setSelected]   = useState(null);
-  const [replyText, setReplyText] = useState("");
-  const [replying, setReplying]   = useState(false);
-  const [search, setSearch]       = useState("");
+  const [messages, setMessages]     = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [selected, setSelected]     = useState(null);
+  const [replyText, setReplyText]   = useState("");
+  const [replying, setReplying]     = useState(false);
+  const [search, setSearch]         = useState("");
+  const [, setUserUnread]           = useAtom(userUnreadAtom);
+  const threadRef                   = useRef(null);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -26,7 +30,20 @@ export default function UserMessagesPage() {
 
   useEffect(() => { fetchMessages(); }, [fetchMessages]);
 
-  const handleSelect = (msg) => { setSelected(msg); setReplyText(""); };
+  /* Scroll en bas à chaque ouverture/nouveau message */
+  useEffect(() => {
+    if (threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight;
+  }, [selected?.id, selected?.replies?.length]);
+
+  const handleSelect = (msg) => {
+    setSelected(msg);
+    setReplyText("");
+    /* Si la dernière réponse est de l'entreprise, c'est "lu" maintenant */
+    const lastReply = msg.replies?.slice().sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))[0];
+    if (lastReply?.sender_type === "enterprise") {
+      setUserUnread((prev) => Math.max(0, prev - 1));
+    }
+  };
 
   const handleDelete = async (id, e) => {
     e?.stopPropagation();
@@ -168,8 +185,8 @@ export default function UserMessagesPage() {
                   </button>
                 </div>
 
-                {/* Thread — scroll limité à 4 messages */}
-                <div className={`space-y-3 ${((selected.replies?.length || 0) + 1) > 4 ? "max-h-[360px] overflow-y-auto overscroll-contain pr-1" : ""}`}>
+                {/* Thread — scroll ancré en bas, limité à 4 messages visibles */}
+                <div ref={threadRef} className="space-y-3 max-h-[360px] overflow-y-auto overscroll-contain pr-1">
                   {/* Message initial */}
                   <div className="bg-[#f5f7f6] rounded-xl p-4 mr-4">
                     <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1.5">Votre message</p>
@@ -191,8 +208,9 @@ export default function UserMessagesPage() {
 
                 {/* Répondre */}
                 <div className="border-t border-black/5 pt-4 space-y-3">
-                  <textarea rows={3} placeholder="Votre réponse…" value={replyText}
+                  <textarea rows={3} placeholder="Votre réponse… (Entrée pour envoyer, Maj+Entrée pour sauter une ligne)" value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleReply(); } }}
                     className={`${inputCls} resize-none`} />
                   <button onClick={handleReply} disabled={replying || !replyText.trim()}
                     className="inline-flex items-center gap-2 rounded-xl bg-[#132A24] px-4 py-2.5 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-50">

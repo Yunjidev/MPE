@@ -10,7 +10,7 @@ const Badge = ({ count }) => count > 0 ? (
 export default function UserSideBar({ user, iconstyle, linkstyle, unreadMessages = 0, onClick }) {
   const navItems = [
     { to: "/dashboard/user-db", icon: <FaTachometerAlt className={iconstyle} />, label: "Mon profil" },
-    { to: "/dashboard/user-messages", icon: <FaEnvelope className={iconstyle} />, label: <span className="flex items-center justify-between w-full"><span>Mes messages</span><Badge count={unreadMessages} /></span> },
+    { to: "/dashboard/user-messages", icon: <FaEnvelope className={iconstyle} />, label: <span className="flex-1 flex items-center justify-between"><span>Mes messages</span><Badge count={unreadMessages} /></span> },
     { to: "/dashboard/register-company", icon: <FaBuilding className={iconstyle} />, label: "Création Entreprise" },
     {
       type: "dropdown",

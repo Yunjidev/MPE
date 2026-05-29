@@ -24,7 +24,7 @@ export default function EnterpriseSideBar({ iconStyle, linkstyle, unreadCounts =
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/offers`, icon: <FaConciergeBell className={iconStyle} />, label: "Mes services" },
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/devis`, icon: <FaFileInvoiceDollar className={iconStyle} />, label: "Devis" },
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/factures`, icon: <FaReceipt className={iconStyle} />, label: "Factures" },
-              { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/messages`, icon: <FaEnvelope className={iconStyle} />, label: <span className="flex items-center gap-1">Messagerie<Badge count={unreadCounts[enterprise.slug || enterprise.id] || 0} /></span> },
+              { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/messages`, icon: <FaEnvelope className={iconStyle} />, label: <span className="flex-1 flex items-center justify-between"><span>Messagerie</span><Badge count={unreadCounts[enterprise.slug || enterprise.id] || 0} /></span> },
             ]}
             label={enterprise.name}
             icon={

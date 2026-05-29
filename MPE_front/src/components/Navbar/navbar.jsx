@@ -74,7 +74,13 @@ const Navbar = () => {
     } catch { /* silencieux */ }
   }, [user?.isLogged]);
 
-  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    const onFocus = () => fetchNotifications();
+    window.addEventListener("focus", onFocus);
+    return () => { clearInterval(interval); window.removeEventListener("focus", onFocus); };
+  }, [fetchNotifications]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

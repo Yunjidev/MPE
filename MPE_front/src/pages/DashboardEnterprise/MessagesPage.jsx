@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getData, deleteData, putData, postData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
 import { IoTrashOutline, IoMailOpenOutline, IoLockClosedOutline, IoStarOutline, IoPaperPlaneOutline } from "react-icons/io5";
+import { useAtom } from "jotai";
+import { enterpriseUnreadAtom } from "../../store/messaging";
 
 const inputCls = "w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition";
 const fmtDate = (d) =>
@@ -10,12 +12,14 @@ const fmtDate = (d) =>
 
 export default function MessagesPage() {
   const { slug } = useParams();
-  const [data, setData]           = useState(null);
-  const [loading, setLoading]     = useState(true);
-  const [selected, setSelected]   = useState(null);
-  const [replyText, setReplyText] = useState("");
-  const [replying, setReplying]   = useState(false);
-  const [search, setSearch]       = useState("");
+  const [data, setData]                 = useState(null);
+  const [loading, setLoading]           = useState(true);
+  const [selected, setSelected]         = useState(null);
+  const [replyText, setReplyText]       = useState("");
+  const [replying, setReplying]         = useState(false);
+  const [search, setSearch]             = useState("");
+  const [, setEnterpriseUnread]         = useAtom(enterpriseUnreadAtom);
+  const threadRef                       = useRef(null);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -27,17 +31,29 @@ export default function MessagesPage() {
 
   useEffect(() => { fetchMessages(); }, [fetchMessages]);
 
+  /* Scroll en bas du thread à chaque changement de conversation */
+  useEffect(() => {
+    if (threadRef.current) {
+      threadRef.current.scrollTop = threadRef.current.scrollHeight;
+    }
+  }, [selected?.id, selected?.replies?.length]);
+
   const handleSelect = async (msg) => {
     setSelected(msg);
     setReplyText("");
     if (!msg.is_read) {
       try {
         await putData(`enterprise/${slug}/messages/${msg.id}/read`, {});
-        setData((p) => ({
-          ...p,
-          messages: p.messages.map((m) => m.id === msg.id ? { ...m, is_read: true } : m),
-          unread: Math.max(0, p.unread - 1),
-        }));
+        setData((p) => {
+          const newUnread = Math.max(0, p.unread - 1);
+          /* Mise à jour atom sidebar en temps réel */
+          setEnterpriseUnread((prev) => ({ ...prev, [slug]: newUnread }));
+          return {
+            ...p,
+            messages: p.messages.map((m) => m.id === msg.id ? { ...m, is_read: true } : m),
+            unread: newUnread,
+          };
+        });
       } catch { /* silencieux */ }
     }
   };
@@ -201,9 +217,9 @@ export default function MessagesPage() {
                   <p className="text-sm font-light text-[#132A24] leading-relaxed whitespace-pre-wrap">{selected.content}</p>
                 </div>
 
-                {/* Fil de réponses — scroll après 4 messages */}
+                {/* Fil de réponses — scroll après 4, toujours ancré en bas */}
                 {selected.replies?.length > 0 && (
-                  <div className={`space-y-3 ${selected.replies.length > 4 ? "max-h-[360px] overflow-y-auto overscroll-contain pr-1" : ""}`}>
+                  <div ref={threadRef} className="space-y-3 max-h-[360px] overflow-y-auto overscroll-contain pr-1">
                     {selected.replies.map((reply, i) => (
                       <div key={i} className={`rounded-xl p-4 ${reply.sender_type === "enterprise" ? "bg-[#eef5f1] ml-4" : "bg-[#f5f7f6] mr-4"}`}>
                         <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1.5">
@@ -229,9 +245,10 @@ export default function MessagesPage() {
                   )}
                   <textarea
                     rows={3}
-                    placeholder="Votre réponse…"
+                    placeholder="Votre réponse… (Entrée pour envoyer, Maj+Entrée pour sauter une ligne)"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleReply(); } }}
                     className={`${inputCls} resize-none`}
                   />
                   <button onClick={handleReply} disabled={replying || !replyText.trim()}

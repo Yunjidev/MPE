@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAtom } from "jotai";
 import { userAtom } from "../../store/user";
 import { enterprisesAtom } from "../../store/enterprises";
+import { userUnreadAtom, enterpriseUnreadAtom } from "../../store/messaging";
 import UserSideBar from "./UserSideBar";
 import EnterpriseSideBar from "./EnterpriseSideBar";
 import AdminSideBar from "./AdminSideBar";
@@ -17,22 +18,31 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user] = useAtom(userAtom);
   const [enterprisesRaw] = useAtom(enterprisesAtom);
-  const [userUnread, setUserUnread] = useState(0);
-  const [enterpriseUnread, setEnterpriseUnread] = useState({});
+  const [userUnread, setUserUnread] = useAtom(userUnreadAtom);
+  const [enterpriseUnread, setEnterpriseUnread] = useAtom(enterpriseUnreadAtom);
 
-  /* Fetch unread counts */
+  /* Fetch unread counts + polling toutes les 30s */
   useEffect(() => {
     if (!user?.isLogged) return;
-    getData("user/messages/unread-count").then((r) => setUserUnread(r?.unread || 0)).catch(() => {});
-    if (Array.isArray(enterprisesRaw)) {
-      enterprisesRaw.forEach((e) => {
-        const slug = e.slug || e.id;
-        getData(`enterprise/${slug}/messages/unread-count`).then((r) => {
-          setEnterpriseUnread((p) => ({ ...p, [slug]: r?.unread || 0 }));
-        }).catch(() => {});
-      });
-    }
-  }, [user?.isLogged]);
+
+    const fetch = () => {
+      getData("user/messages/unread-count").then((r) => setUserUnread(r?.unread || 0)).catch(() => {});
+      if (Array.isArray(enterprisesRaw)) {
+        enterprisesRaw.forEach((e) => {
+          const slug = e.slug || e.id;
+          getData(`enterprise/${slug}/messages/unread-count`).then((r) => {
+            setEnterpriseUnread((p) => ({ ...p, [slug]: r?.unread || 0 }));
+          }).catch(() => {});
+        });
+      }
+    };
+
+    fetch();
+    const interval = setInterval(fetch, 30000);
+    const onFocus = () => fetch();
+    window.addEventListener("focus", onFocus);
+    return () => { clearInterval(interval); window.removeEventListener("focus", onFocus); };
+  }, [user?.isLogged, enterprisesRaw]);
 
   useEffect(() => {
     const onDown = (e) => {
@@ -69,10 +79,7 @@ export default function Sidebar() {
 
       {/* Overlay mobile */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/20 lg:hidden"
-          onClick={() => setIsOpen(false)}
-        />
+        <div className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setIsOpen(false)} />
       )}
 
       {/* Sidebar */}
@@ -86,50 +93,24 @@ export default function Sidebar() {
         <div className="h-full rounded-2xl border border-black/5 bg-white shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] overflow-hidden">
           <div className="p-3 space-y-1 overflow-y-auto overscroll-contain h-full" style={{ WebkitOverflowScrolling: "touch" }}>
             <section className="space-y-1">
-              <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-[#879f98] font-light">
-                Utilisateur
-              </div>
-              <UserSideBar
-                user={user}
-                iconstyle={iconstyle}
-                linkstyle={linkstyle}
-                unreadMessages={userUnread}
-                onClick={() => {
-                  if (window.innerWidth < 1024) setIsOpen(false);
-                }}
-              />
+              <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-[#879f98] font-light">Utilisateur</div>
+              <UserSideBar user={user} iconstyle={iconstyle} linkstyle={linkstyle} unreadMessages={userUnread}
+                onClick={() => { if (window.innerWidth < 1024) setIsOpen(false); }} />
             </section>
 
             {showEnterpriseSection && (
               <section className="space-y-1">
-                <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-[#879f98] font-light">
-                  Entreprise
-                </div>
-                <EnterpriseSideBar
-                  enterprises={enterprisesRaw}
-                  iconStyle={iconstyle}
-                  linkstyle={linkstyle}
-                  unreadCounts={enterpriseUnread}
-                  onClick={() => {
-                    if (window.innerWidth < 1024) setIsOpen(false);
-                  }}
-                />
+                <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-[#879f98] font-light">Entreprise</div>
+                <EnterpriseSideBar iconStyle={iconstyle} linkstyle={linkstyle} unreadCounts={enterpriseUnread}
+                  onClick={() => { if (window.innerWidth < 1024) setIsOpen(false); }} />
               </section>
             )}
 
             {user?.isAdmin && (
               <section className="space-y-1">
-                <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-[#879f98] font-light">
-                  Administration
-                </div>
-                <AdminSideBar
-                  user={user}
-                  iconstyle={iconstyle}
-                  linkstyle={linkstyle}
-                  onClick={() => {
-                    if (window.innerWidth < 1024) setIsOpen(false);
-                  }}
-                />
+                <div className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-widest text-[#879f98] font-light">Administration</div>
+                <AdminSideBar user={user} iconstyle={iconstyle} linkstyle={linkstyle}
+                  onClick={() => { if (window.innerWidth < 1024) setIsOpen(false); }} />
               </section>
             )}
           </div>
