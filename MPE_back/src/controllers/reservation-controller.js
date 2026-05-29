@@ -700,6 +700,92 @@ exports.getEnterpriseReservationsPublic = async (req, res) => {
   }
 };
 
+exports.createManualReservationForOwner = async (req, res) => {
+  try {
+    const enterprise = req.enterprise;
+    ensurePremiumEnterprise(enterprise);
+
+    const { offerId, date, start_time, client_name, client_email, client_phone } = req.body;
+
+    if (!offerId || !date || !start_time || !client_name?.trim()) {
+      return res.status(400).json({
+        error: "La prestation, la date, l'heure et le nom du client sont obligatoires.",
+      });
+    }
+
+    const normalizedDate = normalizeDateInput(date);
+    if (!normalizedDate) {
+      return res.status(400).json({ error: "La date fournie est invalide." });
+    }
+
+    const offer = await Offer.findOne({
+      where: { id: offerId, Enterprise_id: enterprise.id },
+    });
+    if (!offer) {
+      return res.status(404).json({ error: "Prestation introuvable pour cette entreprise." });
+    }
+
+    const duration = parseInt(offer.duration, 10);
+    if (Number.isNaN(duration) || duration <= 0) {
+      return res.status(400).json({ error: "La prestation n'a pas de durée valide." });
+    }
+
+    const startMoment = moment(start_time, "HH:mm");
+    if (!startMoment.isValid()) {
+      return res.status(400).json({ error: "L'heure de début est invalide." });
+    }
+
+    const endMoment = startMoment.clone().add(duration, "minutes");
+    const end_time = endMoment.format("HH:mm");
+
+    const overlaps = await Reservation.findOne({
+      where: {
+        Enterprise_id: enterprise.id,
+        date: normalizedDate,
+        status: { [Op.notIn]: ["cancelled", "rejected"] },
+        [Op.and]: [
+          { start_time: { [Op.lt]: end_time } },
+          { end_time: { [Op.gt]: startMoment.format("HH:mm") } },
+        ],
+      },
+    });
+
+    if (overlaps) {
+      return res.status(409).json({ error: "Ce créneau est déjà réservé." });
+    }
+
+    let sanitizedPhone = null;
+    if (client_phone) {
+      sanitizedPhone = String(client_phone).replace(/[\s.-]/g, "").trim();
+      if (!/^\+?[0-9]{6,15}$/.test(sanitizedPhone)) {
+        return res.status(400).json({ error: "Numéro de téléphone invalide." });
+      }
+    }
+
+    const newReservation = await Reservation.create({
+      date: normalizedDate,
+      start_time: startMoment.format("HH:mm"),
+      end_time,
+      status: "accepted",
+      Enterprise_id: enterprise.id,
+      Offer_id: offer.id,
+      User_id: null,
+      manual_client_name: client_name.trim(),
+      manual_client_email: client_email?.trim() || null,
+      contact_phone: sanitizedPhone,
+    });
+
+    return res.status(201).json({
+      message: "Réservation manuelle créée.",
+      reservation: newReservation,
+    });
+  } catch (error) {
+    const status = error.statusCode || 500;
+    const message = error.statusCode === 403 ? error.message : "Erreur lors de la création de la réservation.";
+    res.status(status).json({ error: message });
+  }
+};
+
 exports.createEnterpriseReservationByUser = async (req, res) => {
   try {
     const identifier = req.params.slug || req.params.id;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getData, putData } from "../../services/data-fetch";
+import { getData, putData, postData } from "../../services/data-fetch";
 import { FaCheck, FaTimes } from "react-icons/fa";
 import {
   IoCalendarOutline,
@@ -10,8 +10,188 @@ import {
   IoEllipseOutline,
   IoCallOutline,
   IoMailOutline,
+  IoAddOutline,
+  IoCloseOutline,
 } from "react-icons/io5";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+
+const inputCls =
+  "w-full rounded-xl bg-[#f5f7f6] text-[#132A24] placeholder:text-[#879f98] border border-black/5 px-3 py-2 text-sm font-light outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition";
+const labelCls = "block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1";
+
+function ManualReservationModal({ slug, onClose, onCreated }) {
+  const [offers, setOffers] = useState([]);
+  const [offerId, setOfferId] = useState("");
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    getData(`enterprise/${slug}/offers`)
+      .then((data) => setOffers(Array.isArray(data) ? data : []))
+      .catch(() => setOffers([]));
+  }, [slug]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!offerId || !date || !startTime || !clientName.trim()) {
+      toast.error("Prestation, date, heure et nom du client sont obligatoires.");
+      return;
+    }
+    try {
+      setSubmitting(true);
+      await postData(`enterprises/${slug}/reservations/manual`, {
+        offerId: Number(offerId),
+        date,
+        start_time: startTime,
+        client_name: clientName.trim(),
+        client_email: clientEmail.trim() || undefined,
+        client_phone: clientPhone.trim() || undefined,
+      });
+      toast.success("Réservation manuelle créée.");
+      onCreated();
+      onClose();
+    } catch (err) {
+      try {
+        const data = JSON.parse(err.message);
+        toast.error(data.error || "Erreur lors de la création.");
+      } catch {
+        toast.error("Erreur lors de la création.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_-12px_rgba(0,0,0,0.15)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-black/5 px-6 py-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Calendrier</p>
+            <h2 className="text-base font-light text-[#132A24]">Nouvelle réservation manuelle</h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f5f7f6] text-[#879f98] hover:bg-[#eef5f1] hover:text-[#132A24] transition"
+          >
+            <IoCloseOutline className="text-lg" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+          <div>
+            <label className={labelCls}>Prestation *</label>
+            <select
+              value={offerId}
+              onChange={(e) => setOfferId(e.target.value)}
+              className={inputCls}
+              required
+            >
+              <option value="">Sélectionner une prestation</option>
+              {offers.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}{o.duration ? ` (${o.duration} min)` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelCls}>Date *</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className={inputCls}
+                required
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Heure de début *</label>
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className={inputCls}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="border-t border-black/5 pt-4">
+            <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-3">Informations client</p>
+            <div className="space-y-3">
+              <div>
+                <label className={labelCls}>Nom du client *</label>
+                <input
+                  type="text"
+                  value={clientName}
+                  onChange={(e) => setClientName(e.target.value)}
+                  placeholder="Prénom Nom"
+                  className={inputCls}
+                  required
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Email (optionnel)</label>
+                <input
+                  type="email"
+                  value={clientEmail}
+                  onChange={(e) => setClientEmail(e.target.value)}
+                  placeholder="client@email.com"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Téléphone (optionnel)</label>
+                <input
+                  type="tel"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  placeholder="0612345678"
+                  className={inputCls}
+                />
+              </div>
+            </div>
+          </div>
+
+          <p className="text-xs text-[#879f98] font-light">
+            La réservation sera automatiquement marquée comme <strong className="text-[#132A24] font-light">Validée</strong> et apparaîtra dans le calendrier.
+          </p>
+
+          <div className="flex gap-2 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 rounded-xl border border-black/10 px-4 py-2.5 text-sm font-light text-[#879f98] hover:bg-[#f5f7f6] transition"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-1 rounded-xl bg-[#132A24] px-4 py-2.5 text-sm font-light text-white transition hover:bg-[#1b3b33] active:scale-[0.98] disabled:opacity-60"
+            >
+              {submitting ? "Enregistrement…" : "Créer la réservation"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 const ReservationsList = () => {
   const { slug } = useParams();
@@ -24,6 +204,7 @@ const ReservationsList = () => {
   const [timeFilter, setTimeFilter] = useState("upcoming");
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [selectedYear, setSelectedYear] = useState("all");
+  const [showManualModal, setShowManualModal] = useState(false);
 
   const fetchReservations = async () => {
     try {
@@ -65,18 +246,8 @@ const ReservationsList = () => {
 
   const availableMonths = useMemo(() => {
     const MONTH_NAMES = [
-      "Janvier",
-      "Février",
-      "Mars",
-      "Avril",
-      "Mai",
-      "Juin",
-      "Juillet",
-      "Août",
-      "Septembre",
-      "Octobre",
-      "Novembre",
-      "Décembre",
+      "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+      "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
     ];
 
     const months = new Set();
@@ -84,8 +255,7 @@ const ReservationsList = () => {
       if (reservation.date) {
         const parsed = new Date(reservation.date);
         if (!Number.isNaN(parsed.getTime())) {
-          const key = parsed.getMonth();
-          months.add(key);
+          months.add(parsed.getMonth());
         }
       }
     });
@@ -104,39 +274,27 @@ const ReservationsList = () => {
 
     const filtered = reservations
       .filter((reservation) => {
-        if (!reservation.date) {
-          return true;
-        }
+        if (!reservation.date) return true;
         const startDate = new Date(reservation.date);
         if (!Number.isNaN(startDate.getTime()) && reservation.start_time) {
           const [hours, minutes] = reservation.start_time.split(":");
           startDate.setHours(Number(hours) || 0, Number(minutes) || 0, 0, 0);
         }
         const startTimestamp = startDate.getTime();
-        if (Number.isNaN(startTimestamp)) {
-          return true;
-        }
-        if (timeFilter === "upcoming") {
-          return startTimestamp >= now;
-        }
-        if (timeFilter === "past") {
-          return startTimestamp < now;
-        }
+        if (Number.isNaN(startTimestamp)) return true;
+        if (timeFilter === "upcoming") return startTimestamp >= now;
+        if (timeFilter === "past") return startTimestamp < now;
         return true;
       })
       .filter((reservation) => {
-        const offerName = reservation.offer?.name
-          ? reservation.offer.name.toLowerCase()
-          : "";
+        const offerName = reservation.offer?.name?.toLowerCase() || "";
         const userName =
           reservation.user?.firstname?.toLowerCase() ||
           reservation.user?.firstName?.toLowerCase() ||
           reservation.user?.username?.toLowerCase() ||
+          reservation.manual_client_name?.toLowerCase() ||
           "";
-
-        return (
-          offerName.includes(lowercasedQuery) || userName.includes(lowercasedQuery)
-        );
+        return offerName.includes(lowercasedQuery) || userName.includes(lowercasedQuery);
       })
       .filter(
         (reservation) =>
@@ -160,41 +318,22 @@ const ReservationsList = () => {
 
     setFilteredReservations(filteredByDate);
     setPageIndex(0);
-  }, [
-    searchQuery,
-    reservations,
-    selectedStatus,
-    timeFilter,
-    selectedMonth,
-    selectedYear,
-  ]);
+  }, [searchQuery, reservations, selectedStatus, timeFilter, selectedMonth, selectedYear]);
 
   const updateReservationStatus = async (reservationId, status) => {
     try {
       await putData(`reservation/${reservationId}`, { status: status.toLowerCase() });
-      fetchReservations(); // Refresh data after updating
+      fetchReservations();
     } catch (error) {
-      console.error(
-        "Erreur lors de la mise à jour du statut de la réservation:",
-        error
-      );
-      alert(`Une erreur est survenue lors de la mise à jour du statut: ${error.message || 'Erreur inconnue'}`);
+      console.error("Erreur lors de la mise à jour du statut de la réservation:", error);
+      alert(`Une erreur est survenue lors de la mise à jour du statut: ${error.message || "Erreur inconnue"}`);
     }
   };
 
   const stats = useMemo(() => {
-    const base = {
-      total: reservations.length,
-      pending: 0,
-      accepted: 0,
-      rejected: 0,
-      cancelled: 0,
-      done: 0,
-    };
+    const base = { total: reservations.length, pending: 0, accepted: 0, rejected: 0, cancelled: 0, done: 0 };
     reservations.forEach((reservation) => {
-      if (base[reservation.status] !== undefined) {
-        base[reservation.status] += 1;
-      }
+      if (base[reservation.status] !== undefined) base[reservation.status] += 1;
     });
     return base;
   }, [reservations]);
@@ -205,51 +344,32 @@ const ReservationsList = () => {
   }, [filteredReservations, pageIndex, pageSize]);
 
   const handlePageSizeChange = (event) => {
-    const newSize = Number(event.target.value);
-    setPageSize(newSize);
-    setPageIndex(0); // Reset page index when changing page size
+    setPageSize(Number(event.target.value));
+    setPageIndex(0);
   };
 
   const getStatusDetails = (status) => {
     switch (status) {
       case "pending":
-        return {
-          icon: <IoEllipseOutline className="text-amber-400" />,
-          text: "En attente",
-          badge: "bg-amber-50 text-amber-700 border border-amber-200",
-        };
+        return { icon: <IoEllipseOutline className="text-amber-400" />, text: "En attente", badge: "bg-amber-50 text-amber-700 border border-amber-200" };
       case "accepted":
-        return {
-          icon: <IoCheckmarkCircleOutline className="text-[#4b8a74]" />,
-          text: "Validée",
-          badge: "bg-[#eef5f1] text-[#132A24] border-[#132A24]/15",
-        };
+        return { icon: <IoCheckmarkCircleOutline className="text-[#4b8a74]" />, text: "Validée", badge: "bg-[#eef5f1] text-[#132A24] border-[#132A24]/15" };
       case "rejected":
-        return {
-          icon: <IoCloseCircleOutline className="text-red-400" />,
-          text: "Refusée",
-          badge: "bg-black/5 text-[#879f98] border-black/5",
-        };
+        return { icon: <IoCloseCircleOutline className="text-red-400" />, text: "Refusée", badge: "bg-black/5 text-[#879f98] border-black/5" };
       case "cancelled":
-        return {
-          icon: <IoCloseCircleOutline className="text-red-400" />,
-          text: "Annulée",
-          badge: "bg-red-50 text-red-500 border-red-200",
-        };
+        return { icon: <IoCloseCircleOutline className="text-red-400" />, text: "Annulée", badge: "bg-red-50 text-red-500 border-red-200" };
       case "done":
-        return {
-          icon: <IoCheckmarkCircleOutline className="text-blue-500" />,
-          text: "Terminée",
-          badge: "bg-blue-50 text-blue-600 border-blue-200",
-        };
+        return { icon: <IoCheckmarkCircleOutline className="text-blue-500" />, text: "Terminée", badge: "bg-blue-50 text-blue-600 border-blue-200" };
       default:
-        return {
-          icon: <IoEllipseOutline className="text-[#879f98]" />,
-          text: status,
-          badge: "bg-black/5 text-[#879f98] border-black/5",
-        };
+        return { icon: <IoEllipseOutline className="text-[#879f98]" />, text: status, badge: "bg-black/5 text-[#879f98] border-black/5" };
     }
   };
+
+  const getClientName = (reservation) =>
+    [reservation.user?.firstname, reservation.user?.lastname].filter(Boolean).join(" ") ||
+    reservation.user?.username ||
+    reservation.manual_client_name ||
+    "Client";
 
   const hasMore = filteredReservations.length > paginatedReservations.length;
 
@@ -269,25 +389,33 @@ const ReservationsList = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-            {[
-              { label: "Totales", value: stats.total },
-              { label: "En attente", value: stats.pending },
-              { label: "Validées", value: stats.accepted },
-              { label: "Terminées", value: stats.done },
-              { label: "Annulées", value: stats.cancelled },
-              { label: "Refusées", value: stats.rejected },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-xl border border-black/5 bg-[#f5f7f6] px-3 py-2.5 text-sm"
-              >
-                <p className="text-[#879f98] text-xs font-light">{item.label}</p>
-                <p className="mt-0.5 text-lg font-light text-[#132A24]">
-                  {item.value}
-                </p>
-              </div>
-            ))}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+              {[
+                { label: "Totales", value: stats.total },
+                { label: "En attente", value: stats.pending },
+                { label: "Validées", value: stats.accepted },
+                { label: "Terminées", value: stats.done },
+                { label: "Annulées", value: stats.cancelled },
+                { label: "Refusées", value: stats.rejected },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-xl border border-black/5 bg-[#f5f7f6] px-3 py-2.5 text-sm"
+                >
+                  <p className="text-[#879f98] text-xs font-light">{item.label}</p>
+                  <p className="mt-0.5 text-lg font-light text-[#132A24]">{item.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowManualModal(true)}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#132A24] px-4 py-2.5 text-sm font-light text-white transition hover:bg-[#1b3b33] active:scale-[0.98] shrink-0"
+            >
+              <IoAddOutline className="text-base" />
+              Réservation manuelle
+            </button>
           </div>
         </div>
       </header>
@@ -392,6 +520,7 @@ const ReservationsList = () => {
                 baseDate && !Number.isNaN(baseDate.getTime())
                   ? baseDate.toLocaleDateString("fr-FR", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })
                   : "Date inconnue";
+              const isManual = !reservation.User_id && reservation.manual_client_name;
 
               return (
                 <div
@@ -415,21 +544,28 @@ const ReservationsList = () => {
                         </p>
                       )}
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-light border ${badge}`}>
-                      {icon}
-                      {text}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {isManual && (
+                        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-light bg-[#eef5f1] text-[#4b8a74] border border-[#132A24]/10">
+                          Manuel
+                        </span>
+                      )}
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-light border ${badge}`}>
+                        {icon}
+                        {text}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="mt-3 grid gap-2 text-xs text-[#879f98] font-light md:grid-cols-2">
                     <span className="inline-flex items-center gap-1.5">
                       <IoPersonOutline className="text-sm text-[#879f98]" />
-                      {[reservation.user?.firstname, reservation.user?.lastname].filter(Boolean).join(" ") || reservation.user?.username || "Client"}
+                      {getClientName(reservation)}
                     </span>
-                    {reservation.user?.email && (
+                    {(reservation.user?.email || reservation.manual_client_email) && (
                       <span className="inline-flex items-center gap-1.5">
                         <IoMailOutline className="text-sm text-[#879f98]" />
-                        {reservation.user.email}
+                        {reservation.user?.email || reservation.manual_client_email}
                       </span>
                     )}
                     <span className="inline-flex items-center gap-1.5">
@@ -512,9 +648,7 @@ const ReservationsList = () => {
               className="rounded-xl border border-black/5 bg-[#f5f7f6] px-3 py-2 text-sm text-[#132A24] font-light focus:border-[#132A24]/30 focus:outline-none"
             >
               {[8, 16, 24].map((size) => (
-                <option key={size} value={size}>
-                  {size} / page
-                </option>
+                <option key={size} value={size}>{size} / page</option>
               ))}
             </select>
           </div>
@@ -523,9 +657,16 @@ const ReservationsList = () => {
 
       {hasMore && (
         <div className="text-center text-xs text-[#879f98] font-light">
-          {filteredReservations.length} réservations au total · ajustez la taille
-          de page pour en afficher davantage.
+          {filteredReservations.length} réservations au total · ajustez la taille de page pour en afficher davantage.
         </div>
+      )}
+
+      {showManualModal && (
+        <ManualReservationModal
+          slug={slug}
+          onClose={() => setShowManualModal(false)}
+          onCreated={fetchReservations}
+        />
       )}
     </div>
   );

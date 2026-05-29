@@ -19,5 +19,6 @@ router.delete(
 );
 
 router.get("/reservations", reservationController.getEnterpriseReservationsForOwner);
+router.post("/reservations/manual", reservationController.createManualReservationForOwner);
 
 module.exports = router;

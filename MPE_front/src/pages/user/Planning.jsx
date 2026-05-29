@@ -553,9 +553,9 @@ export default function Planning() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {r.user && (
+                    {(r.user || r.manual_client_name) && (
                       <span className="text-xs text-[#879f98] font-light">
-                        {[r.user.firstname, r.user.lastname].filter(Boolean).join(" ") || r.user.username || ""}
+                        {[r.user?.firstname, r.user?.lastname].filter(Boolean).join(" ") || r.user?.username || r.manual_client_name || ""}
                       </span>
                     )}
                     <span className={`text-[11px] font-light px-2.5 py-0.5 rounded-full ${sc.cls}`}>
@@ -660,9 +660,9 @@ export default function Planning() {
               />
               <Row
                 label="Client"
-                value={[r.user?.firstname, r.user?.lastname].filter(Boolean).join(" ") || r.user?.username || "—"}
+                value={[r.user?.firstname, r.user?.lastname].filter(Boolean).join(" ") || r.user?.username || r.manual_client_name || "—"}
               />
-              {r.user?.email && <Row label="Email" value={r.user.email} />}
+              {(r.user?.email || r.manual_client_email) && <Row label="Email" value={r.user?.email || r.manual_client_email} />}
               {r.contact_phone && <Row label="Téléphone" value={r.contact_phone} />}
               {r.offer?.price && <Row label="Prix" value={`${r.offer.price} €`} />}
               {r.offer?.duration && (

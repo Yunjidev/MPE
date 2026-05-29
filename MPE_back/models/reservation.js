@@ -81,6 +81,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      manual_client_name: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      manual_client_email: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       sequelize,
