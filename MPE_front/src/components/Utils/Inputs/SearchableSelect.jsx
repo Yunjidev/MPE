@@ -11,8 +11,8 @@ export default function SearchableSelect({ id, value, onChange, options, placeho
 
   /* Filtrage */
   const filtered = query.trim()
-    ? options.filter((o) => o.name.toLowerCase().includes(query.toLowerCase()))
-    : options;
+    ? options.filter((o) => o.name?.toLowerCase().includes(query.toLowerCase()))
+    : options.filter((o) => o.name != null);
 
   /* Fermer si clic en dehors */
   useEffect(() => {
