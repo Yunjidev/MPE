@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getData, postData, putData, deleteData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
-import { IoAddOutline, IoCloseOutline, IoTrashOutline, IoPrintOutline, IoMailOutline, IoChevronBackOutline } from "react-icons/io5";
+import { IoAddOutline, IoTrashOutline, IoPrintOutline, IoMailOutline, IoChevronBackOutline, IoDownloadOutline } from "react-icons/io5";
 
 /* ─── helpers ──────────────────────────────────────────── */
 const inputCls = "w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition";
@@ -19,6 +19,189 @@ const STATUS_CONFIG = {
 const today = () => new Date().toISOString().split("T")[0];
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString("fr-FR", { day:"2-digit", month:"long", year:"numeric" }) : "—";
 const fmtAmt = (v) => v != null ? `${parseFloat(v).toFixed(2).replace(".", ",")} €` : "—";
+
+function generateQuotePDF(quote, enterpriseLogo) {
+  const d = (v) => v || "";
+  const amt = (v) => v != null && v !== "" ? `${parseFloat(v).toFixed(2).replace(".", ",")} €` : "—";
+  const dt = (v) => v ? new Date(v).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }) : "";
+
+  const validityDate = (() => {
+    const base = new Date(quote.quote_date);
+    base.setDate(base.getDate() + (parseInt(quote.validity_days) || 30));
+    return dt(base);
+  })();
+
+  const itemsRows = (quote.items || []).map((it) => {
+    const total = (parseFloat(it.quantity) || 0) * (parseFloat(it.unit_price) || 0);
+    return `<tr>
+      <td style="padding:9px 12px;border-bottom:1px solid #f0f0ee;">${d(it.description)}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #f0f0ee;text-align:center;">${it.quantity}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #f0f0ee;text-align:right;">${amt(it.unit_price)}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #f0f0ee;text-align:right;font-weight:500;">${amt(total)}</td>
+    </tr>`;
+  }).join("");
+
+  const logoHtml = enterpriseLogo
+    ? `<img src="${enterpriseLogo}" alt="Logo" style="max-height:56px;max-width:140px;object-fit:contain;border-radius:8px;" />`
+    : "";
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<title>Devis ${d(quote.quote_number)}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Helvetica Neue',Arial,sans-serif;color:#1a1a1a;background:#fff;font-size:13px;line-height:1.5}
+  .page{max-width:800px;margin:0 auto;padding:0}
+  .header{background:#132A24;color:#fff;padding:32px 40px;display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+  .header-left{display:flex;flex-direction:column;gap:12px}
+  .header-right{text-align:right;flex-shrink:0}
+  .label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;margin-bottom:4px}
+  .quote-num{font-size:22px;font-weight:300;letter-spacing:-.02em}
+  .dates{font-size:11px;color:#879f98;line-height:2}
+  .badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:10px;background:#eef5f1;color:#132A24;margin-top:6px}
+  .body{padding:32px 40px}
+  .parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
+  .party{background:#f9f9f7;border-radius:8px;padding:16px}
+  .party-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;margin-bottom:8px}
+  .party-name{font-size:14px;font-weight:500;color:#132A24;margin-bottom:4px}
+  .party-info{font-size:11px;color:#666;line-height:1.7}
+  .section-title{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#879f98;border-bottom:1px solid #eee;padding-bottom:7px;margin:24px 0 14px}
+  table{width:100%;border-collapse:collapse}
+  th{background:#f5f5f3;padding:8px 12px;text-align:left;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#879f98;font-weight:500}
+  th:last-child,td:last-child{text-align:right}th:nth-child(2),td:nth-child(2){text-align:center}
+  .totals{margin-top:20px;margin-left:auto;width:240px}
+  .totals-row{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#555}
+  .totals-ttc{border-top:2px solid #132A24;padding-top:10px;margin-top:6px;font-size:15px;font-weight:600;color:#132A24}
+  .conditions{background:#f9f9f7;border-radius:8px;padding:14px;margin-top:20px;font-size:12px;color:#555;line-height:1.7}
+  .bon-accord{border:2px dashed #ccc;border-radius:8px;padding:20px;margin-top:28px;text-align:center}
+  .bon-accord h3{font-size:14px;font-weight:500;color:#132A24;margin-bottom:6px}
+  .bon-accord p{font-size:11px;color:#879f98}
+  .sig-row{display:flex;justify-content:center;gap:60px;margin-top:20px}
+  .sig-block{text-align:center}
+  .sig-line{border-bottom:1px solid #999;width:160px;height:44px;display:block;margin:0 auto}
+  .sig-label{font-size:10px;color:#aaa;margin-bottom:8px}
+  .footer{text-align:center;padding:16px 40px;font-size:10px;color:#aaa;border-top:1px solid #eee;margin-top:24px}
+  .labor-box{background:#f9f9f7;border-radius:6px;padding:10px 14px;margin-top:10px;font-size:12px;color:#444}
+  @media print{
+    body{margin:0}
+    .page{max-width:100%}
+    .bon-accord{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-left">
+      ${logoHtml}
+      <div>
+        <div class="label">Devis</div>
+        <div class="quote-num">${d(quote.quote_number)}</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="dates">
+        Date : ${dt(quote.quote_date)}<br/>
+        Valable jusqu'au : ${validityDate}
+      </div>
+      <div class="badge">${quote.is_free ? "Devis gratuit" : "Devis payant"}</div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="parties">
+      <div class="party">
+        <div class="party-label">Prestataire</div>
+        <div class="party-name">${d(quote.ent_name)}</div>
+        <div class="party-info">
+          ${[quote.ent_legal_form, quote.ent_legal_status].filter(Boolean).join(" — ")}${[quote.ent_legal_form, quote.ent_legal_status].filter(Boolean).length ? "<br/>" : ""}
+          ${d(quote.ent_address)}${quote.ent_address ? "<br/>" : ""}
+          ${[quote.ent_zip, quote.ent_city].filter(Boolean).join(" ")}${[quote.ent_zip, quote.ent_city].filter(Boolean).length ? "<br/>" : ""}
+          ${quote.ent_siret ? `SIRET : ${quote.ent_siret}<br/>` : ""}
+          ${quote.ent_tva_number ? `TVA : ${quote.ent_tva_number}<br/>` : ""}
+          ${quote.ent_rcs ? `RCS : ${quote.ent_rcs}<br/>` : ""}
+          ${quote.ent_rm ? `RM : ${quote.ent_rm}<br/>` : ""}
+          ${[quote.ent_phone, quote.ent_email].filter(Boolean).join(" · ")}
+        </div>
+      </div>
+      <div class="party">
+        <div class="party-label">Client</div>
+        <div class="party-name">${[quote.client_name, quote.client_company].filter(Boolean).join(" — ")}</div>
+        <div class="party-info">
+          ${d(quote.client_address)}${quote.client_address ? "<br/>" : ""}
+          ${[quote.client_zip, quote.client_city].filter(Boolean).join(" ")}${[quote.client_zip, quote.client_city].filter(Boolean).length ? "<br/>" : ""}
+          ${quote.client_phone ? `Tél : ${quote.client_phone}<br/>` : ""}
+          ${d(quote.client_email)}
+        </div>
+      </div>
+    </div>
+
+    ${(quote.work_start_date || quote.work_duration) ? `
+    <div class="section-title">Détails de la prestation</div>
+    <p style="font-size:13px;color:#444;">
+      ${quote.work_start_date ? `Début prévu : <strong>${dt(quote.work_start_date)}</strong>` : ""}
+      ${quote.work_duration ? ` — Durée estimée : <strong>${quote.work_duration}</strong>` : ""}
+    </p>` : ""}
+
+    ${(quote.items?.length > 0 || quote.labor_description) ? `
+    <div class="section-title">Détail des prestations</div>
+    ${quote.items?.length > 0 ? `
+    <table>
+      <thead><tr>
+        <th>Description</th><th>Qté</th><th>Prix unit. HT</th><th>Total HT</th>
+      </tr></thead>
+      <tbody>${itemsRows}</tbody>
+    </table>` : ""}
+    ${quote.labor_description ? `
+    <div class="labor-box">
+      <strong>Main d'œuvre :</strong> ${d(quote.labor_description)}
+      ${quote.labor_price_type ? ` — ${quote.labor_price_type === "hourly" ? "Taux horaire" : "Forfait"} : ${amt(quote.labor_price)}` : ""}
+    </div>` : ""}
+    ${parseFloat(quote.travel_expenses) > 0 ? `<p style="margin-top:8px;font-size:12px;color:#555;">Frais de déplacement : ${amt(quote.travel_expenses)}</p>` : ""}
+    ` : ""}
+
+    <div class="totals">
+      <div class="totals-row"><span>Total HT</span><span>${amt(quote.total_ht)}</span></div>
+      <div class="totals-row"><span>TVA ${quote.tva_rate} %</span><span>${amt(quote.total_tva)}</span></div>
+      <div class="totals-row totals-ttc"><span>Total TTC</span><span>${amt(quote.total_ttc)}</span></div>
+    </div>
+
+    ${(quote.payment_conditions || quote.delivery_conditions || quote.sav_conditions) ? `
+    <div class="conditions">
+      ${quote.payment_conditions ? `<p><strong style="color:#132A24;">Paiement : </strong>${quote.payment_conditions}</p>` : ""}
+      ${quote.delivery_conditions ? `<p><strong style="color:#132A24;">Livraison : </strong>${quote.delivery_conditions}</p>` : ""}
+      ${quote.sav_conditions ? `<p><strong style="color:#132A24;">SAV : </strong>${quote.sav_conditions}</p>` : ""}
+    </div>` : ""}
+
+    ${quote.notes ? `
+    <div class="section-title">Notes</div>
+    <p style="font-size:12px;color:#555;line-height:1.7;">${quote.notes}</p>` : ""}
+
+    <div class="bon-accord">
+      <h3>Bon pour accord</h3>
+      <p>Lu et approuvé — Signature précédée de la mention « Bon pour accord »</p>
+      <div class="sig-row">
+        <div class="sig-block"><div class="sig-label">Date :</div><span class="sig-line"></span></div>
+        <div class="sig-block"><div class="sig-label">Signature :</div><span class="sig-line"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Devis émis via <strong>Proxilio</strong> — proxilio.fr · Valable jusqu'au ${validityDate}
+  </div>
+</div>
+<script>window.onload = () => { window.print(); }</script>
+</body>
+</html>`;
+
+  const win = window.open("", "_blank");
+  if (!win) { alert("Veuillez autoriser les popups pour exporter le PDF."); return; }
+  win.document.write(html);
+  win.document.close();
+}
 
 function computeTotals(items, laborPrice, laborPriceType, travel, tvaRate) {
   const itemsHT = items.reduce((s, it) => s + (parseFloat(it.quantity)||0) * (parseFloat(it.unit_price)||0), 0);
@@ -311,7 +494,7 @@ function QuoteForm({ enterprise, initial, onSaved, onCancel }) {
 }
 
 /* ─── QuoteDetail ───────────────────────────────────────── */
-function QuoteDetail({ quote, slug, onBack, onStatusChange, onDelete }) {
+function QuoteDetail({ quote, slug, enterpriseLogo, onBack, onStatusChange, onDelete }) {
   const [sendEmail, setSendEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -340,7 +523,7 @@ function QuoteDetail({ quote, slug, onBack, onStatusChange, onDelete }) {
     } catch { toast.error("Erreur lors de la suppression."); } finally { setDeleting(false); }
   };
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => generateQuotePDF(quote, enterpriseLogo);
 
   const { label: statusLabel, cls: statusCls } = STATUS_CONFIG[quote.status] || STATUS_CONFIG.draft;
   const validityDate = new Date(quote.quote_date);
@@ -367,8 +550,8 @@ function QuoteDetail({ quote, slug, onBack, onStatusChange, onDelete }) {
         </button>
         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-light border ${statusCls}`}>{statusLabel}</span>
         <div className="ml-auto flex flex-wrap gap-2">
-          <button onClick={handlePrint} className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 px-3 py-2 text-xs font-light text-[#132A24] hover:bg-[#eef5f1] transition">
-            <IoPrintOutline /> Imprimer / PDF
+          <button onClick={handlePrint} className="inline-flex items-center gap-1.5 rounded-xl border border-[#132A24]/20 bg-[#eef5f1] px-3 py-2 text-xs font-light text-[#132A24] hover:bg-[#132A24] hover:text-white transition">
+            <IoDownloadOutline /> Exporter PDF
           </button>
           <button onClick={handleDelete} disabled={deleting} className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 px-3 py-2 text-xs font-light text-red-500 hover:bg-red-50 transition disabled:opacity-60">
             <IoTrashOutline /> Supprimer
@@ -380,10 +563,15 @@ function QuoteDetail({ quote, slug, onBack, onStatusChange, onDelete }) {
       <div ref={printRef} className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] overflow-hidden print:shadow-none print:border-0 print:rounded-none">
         {/* Header */}
         <div className="bg-[#132A24] text-white px-8 py-6 print:px-10 print:py-8">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">Devis</p>
-              <p className="text-2xl font-light tracking-tight">{quote.quote_number}</p>
+          <div className="flex justify-between items-start gap-6">
+            <div className="flex items-center gap-4">
+              {enterpriseLogo && (
+                <img src={enterpriseLogo} alt="Logo" className="h-12 w-auto object-contain rounded-lg bg-white/10 p-1 shrink-0" />
+              )}
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">Devis</p>
+                <p className="text-2xl font-light tracking-tight">{quote.quote_number}</p>
+              </div>
             </div>
             <div className="text-right text-xs text-[#879f98] font-light space-y-1">
               <p>Date : {fmtDate(quote.quote_date)}</p>
@@ -611,7 +799,7 @@ export default function DevisPage() {
   if (view === "detail" && detailQuote) {
     return (
       <div className="mt-6">
-        <QuoteDetail quote={detailQuote} slug={slug} onBack={onBack} onStatusChange={onStatusChange} onDelete={onDelete} />
+        <QuoteDetail quote={detailQuote} slug={slug} enterpriseLogo={enterprise?.logo} onBack={onBack} onStatusChange={onStatusChange} onDelete={onDelete} />
       </div>
     );
   }
