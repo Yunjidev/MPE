@@ -58,11 +58,13 @@ const buildSlots = (disponibilities, reservations, manualBlocks, selectedDate, d
 
       if (slotStartDT.isBefore(now)) { cursor = slotEnd; continue; }
 
+      const slotStartStr = cursor.format("HH:mm");
+      const slotEndStr   = slotEnd.format("HH:mm");
       const overlaps = sameDayReservations.some((r) => {
-        const rStart = formatReservationDate(selectedDate, r.start_time);
-        const rEnd   = formatReservationDate(selectedDate, r.end_time);
-        return r.status !== "cancelled" && r.status !== "rejected" &&
-          slotStartDT.isBefore(rEnd) && slotEndDT.isAfter(rStart);
+        if (r.status === "cancelled" || r.status === "rejected") return false;
+        const rStart = r.start_time.substring(0, 5);
+        const rEnd   = r.end_time.substring(0, 5);
+        return slotStartStr < rEnd && slotEndStr > rStart;
       });
 
       if (!overlaps) {
