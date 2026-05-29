@@ -275,7 +275,7 @@ const EnterpriseShow = () => {
               className="flex items-center gap-2 px-4 py-2.5 border border-[#132A24]/20 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors"
             >
               <FiMail />
-              Message
+              Envoyer un message
             </button>
             {enterprise.isPremium ? (
               <button
