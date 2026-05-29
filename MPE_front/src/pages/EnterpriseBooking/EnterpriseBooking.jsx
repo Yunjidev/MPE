@@ -122,6 +122,7 @@ export default function EnterpriseBooking() {
           onClose={handleClose}
           onBooked={handleClose}
           offers={enterprise.offers || []}
+          multiBooking={!!enterprise.multi_booking}
         />
       )}
     </>

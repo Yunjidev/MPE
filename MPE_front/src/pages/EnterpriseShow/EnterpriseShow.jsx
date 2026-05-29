@@ -472,6 +472,7 @@ const EnterpriseShow = () => {
         onBooked={handleBookingSuccess}
         offers={enterprise.offers}
         initialOfferId={prefillOfferId}
+        multiBooking={!!enterprise.multi_booking}
       />
     </div>
     </>

@@ -157,6 +157,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      multi_booking: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
       premiumManualStart: {
         type: DataTypes.DATE,
         allowNull: true,

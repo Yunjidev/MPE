@@ -912,50 +912,27 @@ exports.createEnterpriseReservationByUser = async (req, res) => {
         .json({ error: "Ce créneau ne correspond à aucune disponibilité." });
     }
 
-    const overlapsReservation = await Reservation.findOne({
-      where: {
-        Enterprise_id: enterprise.id,
-        date: normalizedDate,
-        status: {
-          [Op.notIn]: ["cancelled", "rejected"],
-        },
-        [Op.or]: [
-          {
-            start_time: {
-              [Op.between]: [
-                startMoment.format("HH:mm"),
-                endMoment.format("HH:mm"),
-              ],
-            },
-          },
-          {
-            end_time: {
-              [Op.between]: [
-                startMoment.format("HH:mm"),
-                endMoment.format("HH:mm"),
-              ],
-            },
-          },
-          {
-            [Op.and]: [
-              {
-                start_time: {
-                  [Op.lte]: startMoment.format("HH:mm"),
-                },
-              },
-              {
-                end_time: {
-                  [Op.gte]: endMoment.format("HH:mm"),
-                },
-              },
-            ],
-          },
-        ],
-      },
-    });
+    if (!enterprise.multi_booking) {
+      const dayStart = moment.utc(normalizedDate, "YYYY-MM-DD").startOf("day").toDate();
+      const dayEnd   = moment.utc(normalizedDate, "YYYY-MM-DD").add(1, "day").startOf("day").toDate();
+      const slotStart = startMoment.format("HH:mm");
+      const slotEnd   = endMoment.format("HH:mm");
 
-    if (overlapsReservation) {
-      return res.status(409).json({ error: "Ce créneau est déjà réservé." });
+      const overlapsReservation = await Reservation.findOne({
+        where: {
+          Enterprise_id: enterprise.id,
+          date: { [Op.gte]: dayStart, [Op.lt]: dayEnd },
+          status: { [Op.notIn]: ["cancelled", "rejected"] },
+          [Op.and]: [
+            { start_time: { [Op.lt]: slotEnd } },
+            { end_time:   { [Op.gt]: slotStart } },
+          ],
+        },
+      });
+
+      if (overlapsReservation) {
+        return res.status(409).json({ error: "Ce créneau est déjà réservé." });
+      }
     }
 
     const overlapsManualBlock = enterprise.manualBlocks?.some((block) => {

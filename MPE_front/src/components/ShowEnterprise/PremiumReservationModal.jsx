@@ -22,14 +22,14 @@ const getDayLabel = (date) => {
 const formatReservationDate = (date, time) =>
   dayjs(date).hour(Number(time.split(":")[0])).minute(Number(time.split(":")[1]));
 
-const buildSlots = (disponibilities, reservations, manualBlocks, selectedDate, durationMinutes) => {
+const buildSlots = (disponibilities, reservations, manualBlocks, selectedDate, durationMinutes, multiBooking = false) => {
   if (!selectedDate || !durationMinutes) return [];
 
   const dayLabel = getDayLabel(selectedDate);
   const dayDisponibilities = disponibilities.filter((d) => d.day === dayLabel);
   if (dayDisponibilities.length === 0) return [];
 
-  const sameDayReservations = reservations.filter((r) =>
+  const sameDayReservations = multiBooking ? [] : reservations.filter((r) =>
     dayjs(r.date).isSame(selectedDate, "day")
   );
   const sameDayManualBlocks = manualBlocks
@@ -81,7 +81,7 @@ const buildSlots = (disponibilities, reservations, manualBlocks, selectedDate, d
   return slots;
 };
 
-const PremiumReservationModal = ({ enterpriseId, isOpen, onClose, onBooked, offers, initialOfferId }) => {
+const PremiumReservationModal = ({ enterpriseId, isOpen, onClose, onBooked, offers, initialOfferId, multiBooking = false }) => {
   const [disponibilities, setDisponibilities] = useState([]);
   const [reservations, setReservations]       = useState([]);
   const [manualBlocks, setManualBlocks]       = useState([]);
@@ -134,8 +134,8 @@ const PremiumReservationModal = ({ enterpriseId, isOpen, onClose, onBooked, offe
   const handleClose = () => { setSelectedSlot(null); setPhone(""); onClose(); };
 
   const availableSlots = useMemo(
-    () => buildSlots(disponibilities, reservations, manualBlocks, selectedDate, durationMinutes),
-    [disponibilities, reservations, manualBlocks, selectedDate, durationMinutes]
+    () => buildSlots(disponibilities, reservations, manualBlocks, selectedDate, durationMinutes, multiBooking),
+    [disponibilities, reservations, manualBlocks, selectedDate, durationMinutes, multiBooking]
   );
 
   const availableDayIndices = useMemo(() => {
@@ -407,6 +407,7 @@ PremiumReservationModal.propTypes = {
     })
   ),
   initialOfferId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  multiBooking: PropTypes.bool,
 };
 
 export default PremiumReservationModal;

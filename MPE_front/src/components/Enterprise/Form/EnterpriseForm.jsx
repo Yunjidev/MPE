@@ -37,6 +37,7 @@ export default function EnterpriseForm({
     website: "",
     Job_id: "",
     logo: null,
+    multi_booking: false,
   });
 
   // Banner géré séparément (prépendé en premier dans photos au submit)
@@ -95,6 +96,7 @@ export default function EnterpriseForm({
         removePhotos: [],
         logo: memoizedInitialData?.logo || "",
         photos: galleryPhotos,
+        multi_booking: memoizedInitialData?.multi_booking ?? false,
       }));
     }
   }, [memoizedInitialData, isEditMode]);
@@ -158,8 +160,12 @@ export default function EnterpriseForm({
 
     Object.keys(formData).forEach((key) => {
       const val = formData[key];
+      if (key === "photos") return; // géré plus bas
+      if (key === "multi_booking") {
+        formDataToSubmit.append(key, val ? "true" : "false");
+        return;
+      }
       if (val !== initialData[key] && val !== "" && val != null) {
-        if (key === "photos") return; // géré plus bas
         if (key === "logo") {
           formDataToSubmit.append("logo", val);
         } else {
@@ -311,6 +317,33 @@ export default function EnterpriseForm({
                 required
               />
             </div>
+
+            {/* ── Options planning ── */}
+            {isEditMode && (
+              <div className="border border-black/5 rounded-xl p-5 space-y-3">
+                <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">
+                  Options de réservation
+                </p>
+                <label className="flex items-start gap-4 cursor-pointer group">
+                  <div className="relative mt-0.5 shrink-0">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={formData.multi_booking}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, multi_booking: e.target.checked }))}
+                    />
+                    <div className="w-10 h-6 rounded-full bg-[#f5f7f6] border border-black/10 peer-checked:bg-[#132A24] transition-colors" />
+                    <div className="absolute top-1 left-1 w-4 h-4 rounded-full bg-[#879f98] peer-checked:bg-white peer-checked:translate-x-4 transition-all" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-light text-[#132A24]">Multi-réservation par créneau</p>
+                    <p className="text-xs text-[#879f98] font-light mt-0.5">
+                      Activez si vous avez plusieurs prestataires disponibles simultanément (ex : salon avec plusieurs coiffeurs). Plusieurs clients pourront réserver le même créneau.
+                    </p>
+                  </div>
+                </label>
+              </div>
+            )}
 
             {/* ── Submit ── */}
             <button

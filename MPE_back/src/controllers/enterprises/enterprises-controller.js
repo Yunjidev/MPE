@@ -119,6 +119,7 @@ exports.updateEnterprise = async (req, res) => {
       instagram,
       twitter,
       isValidate,
+      multi_booking,
       Job_id,
       Country_id,
       removeLogo,
@@ -141,6 +142,9 @@ exports.updateEnterprise = async (req, res) => {
     enterprise.twitter = twitter || enterprise.twitter;
     enterprise.Country_id = Country_id || enterprise.Country_id;
     enterprise.Job_id = Job_id || enterprise.Job_id;
+    if (multi_booking !== undefined) {
+      enterprise.multi_booking = multi_booking === true || multi_booking === "true";
+    }
 
     if (req.user.isAdmin) {
       const wasValidated = enterprise.isValidate;
