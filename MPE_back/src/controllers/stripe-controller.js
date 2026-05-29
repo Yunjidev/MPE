@@ -14,8 +14,8 @@ const getStripe = () => {
 };
 
 const PLANS = {
-  monthly: { unitAmount: 3000, interval: "month", label: "Mensuel — 30 €/mois", type: "monthly" },
-  yearly:  { unitAmount: 27000, interval: "year",  label: "Annuel — 270 €/an",  type: "yearly"  },
+  monthly: { unitAmount: 1000, interval: "month", label: "Mensuel — 10 €/mois", type: "monthly" },
+  yearly:  { unitAmount: 10000, interval: "year",  label: "Annuel — 100 €/an",  type: "yearly"  },
 };
 
 // ─── Création session Stripe ──────────────────────────────────────────────────

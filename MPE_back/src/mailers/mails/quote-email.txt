@@ -1,0 +1,24 @@
+DEVIS {{quote_number}}
+Date : {{quote_date}} — Valable jusqu'au : {{validity_date}}
+
+PRESTATAIRE
+{{ent_name}}
+{{ent_address}}
+SIRET : {{ent_siret}} | TVA : {{ent_tva_number}}
+{{ent_phone}} | {{ent_email}}
+
+CLIENT
+{{client_name}} {{client_company}}
+{{client_address}}
+{{client_phone}} | {{client_email}}
+
+TOTAL HT : {{total_ht}}
+TVA ({{tva_rate}}) : {{total_tva}}
+TOTAL TTC : {{total_ttc}}
+
+{{#payment_conditions}}Conditions de paiement : {{payment_conditions}}{{/payment_conditions}}
+
+BON POUR ACCORD — Signature du client requise.
+
+---
+Devis émis via Proxilio — proxilio.fr

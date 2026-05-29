@@ -6,7 +6,7 @@ const PLANS = [
   {
     key: "monthly",
     label: "Mensuel",
-    price: "30 €",
+    price: "10 €",
     period: "/mois",
     desc: "Facturation mensuelle, résiliable à tout moment.",
     badge: null,
@@ -14,10 +14,10 @@ const PLANS = [
   {
     key: "yearly",
     label: "Annuel",
-    price: "270 €",
+    price: "100 €",
     period: "/an",
-    desc: "3 mois offerts par rapport au mensuel.",
-    badge: "Économisez 90 €",
+    desc: "2 mois offerts par rapport au mensuel.",
+    badge: "Économisez 20 €",
   },
 ];
 

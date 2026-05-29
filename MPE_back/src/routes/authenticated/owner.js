@@ -19,6 +19,7 @@ const offersController = require("../../controllers/enterprises/offer-controller
 const subscriptionsController = require("../../controllers/enterprises/subscription-controller");
 const reservationsController = require("../../controllers/reservation-controller");
 const likeController = require("../../controllers/like-controller");
+const quoteController = require("../../controllers/quote-controller");
 
 // Route Enterprise
 const uploadFiles = files.upload("enterprises").fields([
@@ -85,6 +86,14 @@ router.get(
   "/reservations",
   reservationsController.getReservationsByEnterpriseId,
 );
+
+// Routes Devis
+router.get("/quotes", quoteController.listQuotes);
+router.post("/quotes", quoteController.createQuote);
+router.get("/quotes/:quoteId", quoteController.getQuote);
+router.put("/quotes/:quoteId", quoteController.updateQuote);
+router.delete("/quotes/:quoteId", quoteController.deleteQuote);
+router.post("/quotes/:quoteId/send", quoteController.sendQuoteByEmail);
 
 // Routes Like
 router.get("/enterprises/:id/likes", likeController.getLikeByEnterpriseId);

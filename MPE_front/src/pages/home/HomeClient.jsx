@@ -104,7 +104,7 @@ export default function HomeClient() {
         name: "Comment référencer mon entreprise sur Proxilio ?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Créez un compte professionnel gratuitement et soumettez votre dossier. Notre équipe valide votre profil sous 48 h. L'offre Premium (30 €/mois ou 270 €/an) débloque la réservation en ligne et les statistiques avancées.",
+          text: "Créez un compte professionnel gratuitement et soumettez votre dossier. Notre équipe valide votre profil sous 48 h. L'offre Premium (10 €/mois ou 100 €/an) débloque la réservation en ligne et les statistiques avancées.",
         },
       },
       {

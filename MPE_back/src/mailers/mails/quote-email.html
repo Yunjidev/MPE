@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Devis {{quote_number}}</title>
+<style>
+  body { margin:0; padding:0; background:#f5f5f3; font-family: 'Helvetica Neue', Arial, sans-serif; color:#1a1a1a; }
+  .wrapper { max-width:680px; margin:32px auto; background:#fff; border-radius:12px; overflow:hidden; border:1px solid #e5e5e3; }
+  .header { background:#132A24; color:#fff; padding:32px 40px 28px; }
+  .header-top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .label-devis { font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:#879f98; font-weight:400; margin-bottom:6px; }
+  .quote-number { font-size:22px; font-weight:300; letter-spacing:-0.02em; }
+  .header-dates { text-align:right; font-size:12px; color:#879f98; font-weight:300; line-height:1.8; }
+  .body { padding:32px 40px; }
+  .parties { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:32px; }
+  .party-block { background:#f9f9f7; border-radius:8px; padding:16px 20px; }
+  .party-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#879f98; font-weight:400; margin-bottom:10px; }
+  .party-name { font-size:15px; font-weight:500; color:#132A24; margin-bottom:4px; }
+  .party-detail { font-size:12px; color:#555; font-weight:300; line-height:1.7; }
+  .section-title { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:#879f98; font-weight:400; border-bottom:1px solid #eee; padding-bottom:8px; margin-bottom:16px; margin-top:28px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { background:#f5f5f3; padding:10px 12px; text-align:left; font-weight:500; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:#879f98; }
+  th:last-child, td:last-child { text-align:right; }
+  th:nth-child(2), td:nth-child(2) { text-align:center; }
+  td { padding:10px 12px; border-bottom:1px solid #f0f0ee; color:#333; }
+  .totals { margin-top:20px; margin-left:auto; max-width:260px; }
+  .totals-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; color:#555; font-weight:300; }
+  .totals-row.ttc { border-top:2px solid #132A24; padding-top:12px; margin-top:6px; font-size:16px; font-weight:500; color:#132A24; }
+  .conditions { background:#f9f9f7; border-radius:8px; padding:16px 20px; margin-top:24px; }
+  .conditions p { font-size:12px; color:#666; font-weight:300; line-height:1.7; margin:4px 0; }
+  .bon-accord { border:2px dashed #ccc; border-radius:8px; padding:20px 24px; margin-top:28px; text-align:center; }
+  .bon-accord p { font-size:13px; color:#555; font-weight:300; margin:4px 0; }
+  .bon-accord .signature-line { border-bottom:1px solid #999; width:180px; height:40px; display:inline-block; margin-top:16px; }
+  .footer { background:#f5f5f3; padding:20px 40px; text-align:center; font-size:11px; color:#aaa; border-top:1px solid #eee; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:99px; font-size:10px; font-weight:500; letter-spacing:0.05em; }
+  .badge-free { background:#eef5f1; color:#132A24; }
+  .badge-paid { background:#fff3e0; color:#e65100; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="label-devis">Devis</div>
+        <div class="quote-number">{{quote_number}}</div>
+      </div>
+      <div class="header-dates">
+        <div>Date : {{quote_date}}</div>
+        <div>Validité : {{validity_date}}</div>
+        {{#is_free_display}}<div style="margin-top:6px"><span class="badge badge-free">{{is_free}}</span></div>{{/is_free_display}}
+      </div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="parties">
+      <div class="party-block">
+        <div class="party-label">Prestataire</div>
+        <div class="party-name">{{ent_name}}</div>
+        <div class="party-detail">
+          {{#ent_legal_form}}{{ent_legal_form}} — {{/ent_legal_form}}{{ent_legal_status}}<br/>
+          {{ent_address}}<br/>
+          {{#ent_siret}}SIRET : {{ent_siret}}<br/>{{/ent_siret}}
+          {{#ent_tva_number}}TVA : {{ent_tva_number}}<br/>{{/ent_tva_number}}
+          {{#ent_rcs}}RCS : {{ent_rcs}}<br/>{{/ent_rcs}}
+          {{#ent_rm}}RM : {{ent_rm}}<br/>{{/ent_rm}}
+          {{ent_phone}} — {{ent_email}}
+        </div>
+      </div>
+      <div class="party-block">
+        <div class="party-label">Client</div>
+        <div class="party-name">{{client_name}}{{#client_company}} — {{client_company}}{{/client_company}}</div>
+        <div class="party-detail">
+          {{client_address}}<br/>
+          {{#client_phone}}Tél : {{client_phone}}<br/>{{/client_phone}}
+          {{#client_email}}{{client_email}}{{/client_email}}
+        </div>
+      </div>
+    </div>
+
+    {{#work_start_date}}
+    <div class="section-title">Détails de la prestation</div>
+    <div style="font-size:13px; color:#444; font-weight:300; line-height:1.7;">
+      {{#work_start_date}}Début prévu : <strong>{{work_start_date}}</strong>{{/work_start_date}}
+      {{#work_duration}} — Durée estimée : <strong>{{work_duration}}</strong>{{/work_duration}}
+    </div>
+    {{/work_start_date}}
+
+    <div class="section-title">Prestations détaillées</div>
+    {{#items_rows}}
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Qté</th>
+          <th>Prix unitaire HT</th>
+          <th>Total HT</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{{items_rows}}}
+      </tbody>
+    </table>
+    {{/items_rows}}
+
+    {{#labor_description}}
+    <div style="margin-top:16px; padding:12px 16px; background:#f9f9f7; border-radius:8px; font-size:13px; color:#444; font-weight:300;">
+      <strong style="font-weight:500; color:#132A24;">Main d'œuvre</strong><br/>
+      {{labor_description}}<br/>
+      {{#labor_price_type}}{{labor_price_type}} : {{labor_price}}{{/labor_price_type}}
+    </div>
+    {{/labor_description}}
+
+    {{#travel_expenses}}
+    <div style="margin-top:8px; font-size:13px; color:#555; font-weight:300;">
+      Frais de déplacement : <strong>{{travel_expenses}}</strong>
+    </div>
+    {{/travel_expenses}}
+
+    <div class="totals">
+      <div class="totals-row"><span>Total HT</span><span>{{total_ht}}</span></div>
+      <div class="totals-row"><span>TVA ({{tva_rate}})</span><span>{{total_tva}}</span></div>
+      <div class="totals-row ttc"><span>Total TTC</span><span>{{total_ttc}}</span></div>
+    </div>
+
+    {{#payment_conditions}}
+    <div class="conditions">
+      <p><strong style="font-weight:500; color:#132A24;">Conditions de paiement</strong></p>
+      <p>{{payment_conditions}}</p>
+    </div>
+    {{/payment_conditions}}
+
+    {{#notes}}
+    <div class="section-title">Notes</div>
+    <div style="font-size:13px; color:#555; font-weight:300; line-height:1.7;">{{notes}}</div>
+    {{/notes}}
+
+    <div class="bon-accord">
+      <p style="font-size:14px; font-weight:500; color:#132A24;">Bon pour accord</p>
+      <p>Lu et approuvé — Signature précédée de la mention « Bon pour accord »</p>
+      <p style="margin-top:8px; font-size:12px; color:#aaa;">Date : ___________________</p>
+      <div class="signature-line"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Devis émis via <strong>Proxilio</strong> — proxilio.fr · Ce devis est valable jusqu'au {{validity_date}}
+  </div>
+</div>
+</body>
+</html>

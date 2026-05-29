@@ -15,7 +15,7 @@ const FAQS = [
   },
   {
     q: "Comment référencer mon entreprise sur Proxilio ?",
-    a: "Créez un compte professionnel gratuitement, complétez votre fiche (services, photos, zone d'intervention) et soumettez votre demande. Notre équipe valide votre profil sous 48 h. L'offre Premium (30 €/mois ou 270 €/an) débloque la réservation en ligne, le calendrier de disponibilités et des statistiques détaillées.",
+    a: "Créez un compte professionnel gratuitement, complétez votre fiche (services, photos, zone d'intervention) et soumettez votre demande. Notre équipe valide votre profil sous 48 h. L'offre Premium (10 €/mois ou 100 €/an) débloque la réservation en ligne, le calendrier de disponibilités et des statistiques détaillées.",
   },
   {
     q: "Proxilio est-il gratuit pour les particuliers ?",

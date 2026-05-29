@@ -42,7 +42,7 @@ const UsagePolicies = () => (
           Les professionnels souhaitant référencer leur entreprise doivent soumettre un dossier. Proxilio se réserve le droit de valider ou refuser toute demande d'inscription, notamment en cas d'activité illégale, trompeuse ou contraire aux présentes CGU.
         </p>
         <p>
-          L'offre <strong className="font-normal">Premium</strong> (30 €/mois ou 270 €/an) donne accès à des fonctionnalités avancées : gestion du calendrier, prise de rendez-vous en ligne, statistiques. L'abonnement est souscrit via Stripe et renouvelé automatiquement jusqu'à résiliation.
+          L'offre <strong className="font-normal">Premium</strong> (10 €/mois ou 100 €/an) donne accès à des fonctionnalités avancées : gestion du calendrier, prise de rendez-vous en ligne, statistiques. L'abonnement est souscrit via Stripe et renouvelé automatiquement jusqu'à résiliation.
         </p>
       </Section>
 

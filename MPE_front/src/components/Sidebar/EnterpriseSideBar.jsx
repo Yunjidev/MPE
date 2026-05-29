@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import Dropdown from "./Dropdown";
-import { FaBuilding, FaCalendarAlt, FaBook, FaConciergeBell } from "react-icons/fa";
+import { FaBuilding, FaCalendarAlt, FaBook, FaConciergeBell, FaFileInvoiceDollar } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { useAtom } from "jotai";
 import { enterprisesAtom } from "../../store/enterprises";
@@ -18,6 +18,7 @@ export default function EnterpriseSideBar({ iconStyle, linkstyle, onClick }) {
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/planning`, icon: <FaCalendarAlt className={iconStyle} />, label: "Planning" },
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/reservations`, icon: <FaBook className={iconStyle} />, label: "Réservations" },
               { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/offers`, icon: <FaConciergeBell className={iconStyle} />, label: "Mes services" },
+              { to: `/dashboard/enterprise/${enterprise.slug || enterprise.id}/devis`, icon: <FaFileInvoiceDollar className={iconStyle} />, label: "Devis" },
             ]}
             label={enterprise.name}
             icon={
