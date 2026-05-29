@@ -328,37 +328,6 @@ export default function EnterpriseForm({
               />
             </div>
 
-            {/* ── Informations légales ── */}
-            {isEditMode && (
-              <div className="border border-black/5 rounded-xl p-5 space-y-4">
-                <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">
-                  Informations légales <span className="normal-case">(pré-remplies dans vos devis)</span>
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">Forme juridique</label>
-                    <input id="legal_form" value={formData.legal_form} onChange={handleInputChange} placeholder="SARL, SAS, Auto-entrepreneur…" className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">Statut juridique</label>
-                    <input id="legal_status" value={formData.legal_status} onChange={handleInputChange} placeholder="ex : Société à responsabilité limitée" className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">N° TVA intracommunautaire</label>
-                    <input id="tva_number" value={formData.tva_number} onChange={handleInputChange} placeholder="FR00123456789" className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">N° RCS (commerçants)</label>
-                    <input id="rcs_number" value={formData.rcs_number} onChange={handleInputChange} placeholder="RCS Paris B 123 456 789" className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition" />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">N° RM (artisans)</label>
-                    <input id="rm_number" value={formData.rm_number} onChange={handleInputChange} placeholder="123 456 789 RM 01" className="w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition" />
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* ── Options planning ── */}
             {isEditMode && (
               <div className="border border-black/5 rounded-xl p-5 space-y-3">
