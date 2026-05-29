@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Facture {invoice_number}</title></head>
+<body style="margin:0;padding:0;background-color:#f5f7f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f7f6;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+        <tr><td style="background-color:#132A24;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+          <p style="margin:0;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#879f98;font-weight:300;margin-bottom:12px;">Facture</p>
+          <h1 style="margin:0;font-size:24px;font-weight:300;color:#ffffff;letter-spacing:-0.5px;">{invoice_number}</h1>
+        </td></tr>
+        <tr><td style="background-color:#ffffff;padding:36px 40px 32px;">
+          <p style="margin:0 0 6px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#879f98;font-weight:300;">Bonjour {client_name},</p>
+          <p style="margin:16px 0 24px;font-size:15px;font-weight:300;color:#132A24;line-height:1.7;">
+            <strong style="font-weight:500;">{ent_name}</strong> vous a transmis une facture. Vous la retrouverez en pièce jointe de cet e-mail au format PDF.
+          </p>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f7f6;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+            <tr><td style="padding:5px 0;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#879f98;font-weight:300;">N° de facture</td><td style="padding:5px 0;font-size:13px;color:#132A24;font-weight:300;text-align:right;">{invoice_number}</td></tr>
+            <tr><td style="padding:5px 0;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#879f98;font-weight:300;">Date</td><td style="padding:5px 0;font-size:13px;color:#132A24;font-weight:300;text-align:right;">{invoice_date}</td></tr>
+            <tr><td style="padding:5px 0;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#879f98;font-weight:300;">Échéance</td><td style="padding:5px 0;font-size:13px;color:#132A24;font-weight:300;text-align:right;">{due_date}</td></tr>
+            <tr><td colspan="2" style="border-top:1px solid #e8e8e5;padding-top:10px;"></td></tr>
+            <tr><td style="padding:6px 0;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#879f98;font-weight:300;">Total TTC</td><td style="padding:6px 0;font-size:16px;color:#132A24;font-weight:500;text-align:right;">{total_ttc}</td></tr>
+          </table>
+          <p style="margin:0;font-size:13px;font-weight:300;color:#879f98;line-height:1.7;">Pour toute question, répondez directement à cet e-mail ou contactez <strong style="font-weight:400;color:#132A24;">{ent_name}</strong>.</p>
+        </td></tr>
+        <tr><td style="background-color:#f5f7f6;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;border-top:1px solid #eaede9;">
+          <p style="margin:0;font-size:11px;color:#aaa;font-weight:300;">Facture émise via <strong style="font-weight:400;">Proxilio</strong> — proxilio.fr</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

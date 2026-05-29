@@ -205,17 +205,6 @@ exports.sendQuoteByEmail = async (req, res) => {
     const validityDate = moment(quote.quote_date).add(quote.validity_days, "days").format("DD/MM/YYYY");
     const formatAmount = (v) => v != null ? `${parseFloat(v).toFixed(2).replace(".", ",")} €` : "—";
 
-    const itemsRows = (quote.items || []).map((item) => {
-      const ht = (parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0);
-      return `
-        <tr>
-          <td style="padding:8px 12px;border-bottom:1px solid #eee;">${item.description || ""}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;">${item.quantity || 0}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right;">${formatAmount(item.unit_price)}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right;">${formatAmount(ht)}</td>
-        </tr>`;
-    }).join("");
-
     const logoPath = enterprise.logo
       ? path.join(__dirname, "../../uploads/enterprises/logo", path.basename(enterprise.logo))
       : null;
@@ -225,39 +214,14 @@ exports.sendQuoteByEmail = async (req, res) => {
     await sendEmail(
       recipientEmail,
       `Devis ${quote.quote_number} — ${quote.ent_name || enterprise.name}`,
-      "quote-email",
+      "quote-notification",
       {
         quote_number: quote.quote_number,
         quote_date: moment(quote.quote_date).format("DD/MM/YYYY"),
         validity_date: validityDate,
         ent_name: quote.ent_name || enterprise.name,
-        ent_address: [quote.ent_address, quote.ent_zip, quote.ent_city].filter(Boolean).join(", "),
-        ent_phone: quote.ent_phone || "",
-        ent_email: quote.ent_email || "",
-        ent_siret: quote.ent_siret || "",
-        ent_tva_number: quote.ent_tva_number || "",
-        ent_legal_form: quote.ent_legal_form || "",
-        ent_rcs: quote.ent_rcs || "",
-        ent_rm: quote.ent_rm || "",
         client_name: quote.client_name,
-        client_company: quote.client_company || "",
-        client_address: [quote.client_address, quote.client_zip, quote.client_city].filter(Boolean).join(", "),
-        client_phone: quote.client_phone || "",
-        client_email: quote.client_email || "",
-        work_start_date: quote.work_start_date ? moment(quote.work_start_date).format("DD/MM/YYYY") : "",
-        work_duration: quote.work_duration || "",
-        items_rows: itemsRows,
-        labor_description: quote.labor_description || "",
-        labor_price_type: quote.labor_price_type === "hourly" ? "Taux horaire" : quote.labor_price_type === "fixed" ? "Forfait" : "",
-        labor_price: quote.labor_price ? formatAmount(quote.labor_price) : "",
-        travel_expenses: parseFloat(quote.travel_expenses) > 0 ? formatAmount(quote.travel_expenses) : "",
-        tva_rate: `${quote.tva_rate} %`,
-        total_ht: formatAmount(quote.total_ht),
-        total_tva: formatAmount(quote.total_tva),
         total_ttc: formatAmount(quote.total_ttc),
-        payment_conditions: quote.payment_conditions || "",
-        is_free: quote.is_free ? "Devis gratuit" : "Devis payant",
-        notes: quote.notes || "",
       },
       [
         {

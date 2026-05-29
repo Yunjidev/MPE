@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getData, postData, putData, deleteData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
-import { IoAddOutline, IoTrashOutline, IoPrintOutline, IoMailOutline, IoChevronBackOutline, IoDownloadOutline } from "react-icons/io5";
+import { IoAddOutline, IoTrashOutline, IoMailOutline, IoChevronBackOutline, IoDownloadOutline, IoDocumentTextOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 /* ─── helpers ──────────────────────────────────────────── */
 const inputCls = "w-full rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition";
@@ -85,9 +86,13 @@ function generateQuotePDF(quote, enterpriseLogo) {
   .footer{text-align:center;padding:16px 40px;font-size:10px;color:#aaa;border-top:1px solid #eee;margin-top:24px}
   .labor-box{background:#f9f9f7;border-radius:6px;padding:10px 14px;margin-top:10px;font-size:12px;color:#444}
   @media print{
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+    @page{size:A4;margin:0}
     body{margin:0}
-    .page{max-width:100%}
+    .page{max-width:100%;box-shadow:none}
+    .header{-webkit-print-color-adjust:exact!important}
     .bon-accord{break-inside:avoid}
+    .totals,.conditions{break-inside:avoid}
   }
 </style>
 </head>
@@ -495,9 +500,20 @@ function QuoteForm({ enterprise, initial, onSaved, onCancel }) {
 
 /* ─── QuoteDetail ───────────────────────────────────────── */
 function QuoteDetail({ quote, slug, enterpriseLogo, onBack, onStatusChange, onDelete }) {
+  const navigate = useNavigate();
   const [sendEmail, setSendEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const handleToInvoice = async () => {
+    try {
+      const { invoice } = await postData(`enterprise/${slug}/quotes/${quote.id}/to-invoice`, {});
+      toast.success(`Facture ${invoice.invoice_number} créée.`);
+      navigate(`/dashboard/enterprise/${slug}/factures`);
+    } catch (err) {
+      try { toast.error(JSON.parse(err.message).error || "Erreur."); } catch { toast.error("Erreur."); }
+    }
+  };
   const printRef = useRef(null);
 
   const handleSend = async () => {
@@ -552,6 +568,9 @@ function QuoteDetail({ quote, slug, enterpriseLogo, onBack, onStatusChange, onDe
         <div className="ml-auto flex flex-wrap gap-2">
           <button onClick={handlePrint} className="inline-flex items-center gap-1.5 rounded-xl border border-[#132A24]/20 bg-[#eef5f1] px-3 py-2 text-xs font-light text-[#132A24] hover:bg-[#132A24] hover:text-white transition">
             <IoDownloadOutline /> Exporter PDF
+          </button>
+          <button onClick={handleToInvoice} className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 px-3 py-2 text-xs font-light text-[#132A24] hover:bg-[#eef5f1] transition">
+            <IoDocumentTextOutline /> Convertir en facture
           </button>
           <button onClick={handleDelete} disabled={deleting} className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 px-3 py-2 text-xs font-light text-red-500 hover:bg-red-50 transition disabled:opacity-60">
             <IoTrashOutline /> Supprimer

@@ -19,7 +19,8 @@ const offersController = require("../../controllers/enterprises/offer-controller
 const subscriptionsController = require("../../controllers/enterprises/subscription-controller");
 const reservationsController = require("../../controllers/reservation-controller");
 const likeController = require("../../controllers/like-controller");
-const quoteController = require("../../controllers/quote-controller");
+const quoteController   = require("../../controllers/quote-controller");
+const invoiceController = require("../../controllers/invoice-controller");
 
 // Route Enterprise
 const uploadFiles = files.upload("enterprises").fields([
@@ -94,6 +95,15 @@ router.get("/quotes/:quoteId", quoteController.getQuote);
 router.put("/quotes/:quoteId", quoteController.updateQuote);
 router.delete("/quotes/:quoteId", quoteController.deleteQuote);
 router.post("/quotes/:quoteId/send", quoteController.sendQuoteByEmail);
+
+// Routes Factures
+router.get("/invoices", invoiceController.listInvoices);
+router.post("/invoices", invoiceController.createInvoice);
+router.get("/invoices/:invoiceId", invoiceController.getInvoice);
+router.put("/invoices/:invoiceId", invoiceController.updateInvoice);
+router.delete("/invoices/:invoiceId", invoiceController.deleteInvoice);
+router.post("/invoices/:invoiceId/send", invoiceController.sendInvoiceByEmail);
+router.post("/quotes/:quoteId/to-invoice", invoiceController.createFromQuote);
 
 // Routes Like
 router.get("/enterprises/:id/likes", likeController.getLikeByEnterpriseId);

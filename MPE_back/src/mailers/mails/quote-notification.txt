@@ -1,0 +1,15 @@
+Devis {quote_number} — {ent_name}
+
+Bonjour {client_name},
+
+{ent_name} vous a transmis le devis {quote_number} en pièce jointe (PDF).
+
+N° de devis  : {quote_number}
+Date         : {quote_date}
+Valable jusqu'au : {validity_date}
+Total TTC    : {total_ttc}
+
+Pour accepter ce devis, répondez à cet e-mail.
+
+---
+Devis émis via Proxilio — proxilio.fr

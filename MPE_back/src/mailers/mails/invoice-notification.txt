@@ -1,0 +1,13 @@
+Facture {invoice_number} — {ent_name}
+
+Bonjour {client_name},
+
+{ent_name} vous a transmis la facture {invoice_number} en pièce jointe (PDF).
+
+N° de facture : {invoice_number}
+Date          : {invoice_date}
+Échéance      : {due_date}
+Total TTC     : {total_ttc}
+
+---
+Facture émise via Proxilio — proxilio.fr
