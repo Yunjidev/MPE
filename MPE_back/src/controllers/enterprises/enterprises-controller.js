@@ -120,6 +120,7 @@ exports.updateEnterprise = async (req, res) => {
       twitter,
       isValidate,
       multi_booking,
+      tva_number, legal_form, legal_status, rcs_number, rm_number,
       Job_id,
       Country_id,
       removeLogo,
@@ -145,6 +146,11 @@ exports.updateEnterprise = async (req, res) => {
     if (multi_booking !== undefined) {
       enterprise.multi_booking = multi_booking === true || multi_booking === "true";
     }
+    if (tva_number   !== undefined) enterprise.tva_number   = tva_number   || null;
+    if (legal_form   !== undefined) enterprise.legal_form   = legal_form   || null;
+    if (legal_status !== undefined) enterprise.legal_status = legal_status || null;
+    if (rcs_number   !== undefined) enterprise.rcs_number   = rcs_number   || null;
+    if (rm_number    !== undefined) enterprise.rm_number    = rm_number    || null;
 
     if (req.user.isAdmin) {
       const wasValidated = enterprise.isValidate;

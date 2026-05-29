@@ -162,6 +162,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false,
       },
+      tva_number:   { type: DataTypes.STRING, allowNull: true },
+      legal_form:   { type: DataTypes.STRING, allowNull: true },
+      legal_status: { type: DataTypes.STRING, allowNull: true },
+      rcs_number:   { type: DataTypes.STRING, allowNull: true },
+      rm_number:    { type: DataTypes.STRING, allowNull: true },
       premiumManualStart: {
         type: DataTypes.DATE,
         allowNull: true,
