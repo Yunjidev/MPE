@@ -1,8 +1,19 @@
 "use strict";
 
-const fs   = require("fs");
-const path = require("path");
-const transporter = require("../../config/mailer");
+const fs           = require("fs");
+const path         = require("path");
+const nodemailer   = require("nodemailer");
+
+/* Transporter dédié Brevo — uniquement pour les emails marketing */
+const brevoTransporter = nodemailer.createTransport({
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.BREVO_SMTP_USER,
+    pass: process.env.BREVO_SMTP_PASS,
+  },
+});
 
 const TEMPLATES_FILE = path.join(__dirname, "../data/marketing-templates.json");
 
@@ -102,16 +113,24 @@ exports.sendMarketing = async (req, res) => {
 </body></html>`;
 
     const plain = body.replace(/[#*_\-`]/g, "").replace(/\n\n+/g, "\n\n");
+    const FROM = `"Proxilio" <contact@proxilio.fr>`;
+    const BATCH = 50;   // emails par batch
+    const DELAY = 2000; // ms entre chaque batch (évite le rate-limit Brevo)
+
     let sent = 0, failed = 0;
-    for (const email of list) {
-      try {
-        await transporter.sendMail({
-          from: `"Proxilio" <${process.env.EMAIL || "contact@proxilio.fr"}>`,
-          to: email, subject, html, text: plain,
-        });
-        sent++;
-      } catch { failed++; }
+
+    for (let i = 0; i < list.length; i += BATCH) {
+      const batch = list.slice(i, i + BATCH);
+      await Promise.allSettled(
+        batch.map((email) =>
+          brevoTransporter.sendMail({ from: FROM, to: email, subject, html, text: plain })
+            .then(() => { sent++; })
+            .catch(() => { failed++; })
+        )
+      );
+      if (i + BATCH < list.length) await new Promise((r) => setTimeout(r, DELAY));
     }
+
     return res.status(200).json({ message: `Email envoyé à ${sent} destinataire(s).`, sent, failed });
   } catch (error) {
     console.error(error);
