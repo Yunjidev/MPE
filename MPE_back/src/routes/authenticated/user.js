@@ -78,4 +78,9 @@ router.get("/user/messages/unread-count", messageController.getUserUnreadCount);
 router.get("/user/messages", messageController.listUserMessages);
 router.post("/user/messages/:messageId/reply", messageController.replyAsUser);
 
+const notifController = require("../../controllers/notification-controller");
+router.get("/user/notifications", notifController.listNotifications);
+router.put("/user/notifications/read-all", notifController.markAllAsRead);
+router.put("/user/notifications/:notifId/read", notifController.markAsRead);
+
 module.exports = router;

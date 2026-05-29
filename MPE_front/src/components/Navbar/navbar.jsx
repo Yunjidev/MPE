@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import { useResetAtom } from "jotai/utils";
 import { userAtom } from "../../store/user";
 import { AnimatePresence, motion } from "framer-motion";
 import { authSignOut } from "../../services/auth-fetch";
+import { getData, putData } from "../../services/data-fetch";
 import { toast } from "react-toastify";
 import logo from "../../../public/assets/img/logo.png";
 
@@ -36,20 +37,49 @@ const DropdownItem = ({ to, icon, children, onClick, danger }) => {
   );
 };
 
+const NOTIF_ICONS = {
+  message_received: "✉️",
+  message_reply:    "💬",
+  reservation_new:  "📅",
+  reservation_updated: "🔔",
+};
+const fmtRelative = (d) => {
+  if (!d) return "";
+  const diff = Math.floor((Date.now() - new Date(d)) / 1000);
+  if (diff < 60) return "À l'instant";
+  if (diff < 3600) return `Il y a ${Math.floor(diff/60)} min`;
+  if (diff < 86400) return `Il y a ${Math.floor(diff/3600)} h`;
+  return new Date(d).toLocaleDateString("fr-FR", { day:"2-digit", month:"short" });
+};
+
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotif, setUnreadNotif] = useState(0);
   const dropdownRef = useRef(null);
+  const notifRef    = useRef(null);
   const [user] = useAtom(userAtom);
   const resetUser = useResetAtom(userAtom);
   const location = useLocation();
   const navigate = useNavigate();
 
+  const fetchNotifications = useCallback(async () => {
+    if (!user?.isLogged) return;
+    try {
+      const res = await getData("user/notifications");
+      setNotifications(res.notifications || []);
+      setUnreadNotif(res.unread || 0);
+    } catch { /* silencieux */ }
+  }, [user?.isLogged]);
+
+  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsDropdownOpen(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setIsDropdownOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target)) setIsNotifOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -58,7 +88,20 @@ const Navbar = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsDropdownOpen(false);
+    setIsNotifOpen(false);
   }, [location.pathname]);
+
+  const handleOpenNotif = async () => {
+    setIsNotifOpen((p) => !p);
+    setIsDropdownOpen(false);
+    if (!isNotifOpen && unreadNotif > 0) {
+      try {
+        await putData("user/notifications/read-all", {});
+        setUnreadNotif(0);
+        setNotifications((p) => p.map((n) => ({ ...n, is_read: true })));
+      } catch { /* silencieux */ }
+    }
+  };
 
   const handleSignOut = async () => {
     try {
@@ -117,6 +160,57 @@ const Navbar = () => {
 
         {/* Right side */}
         <div className="flex items-center gap-3 sm:gap-4">
+          {/* Cloche notifications */}
+          {user.isLogged && (
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={handleOpenNotif}
+                className="relative p-2 rounded-xl border border-black/5 bg-white hover:bg-[#eef5f1] transition-colors"
+                aria-label="Notifications"
+              >
+                <svg className="w-5 h-5 text-[#132A24]" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+                {unreadNotif > 0 && (
+                  <span className="absolute -top-1 -right-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-medium">
+                    {unreadNotif > 99 ? "99+" : unreadNotif}
+                  </span>
+                )}
+              </button>
+
+              {isNotifOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-black/5 rounded-2xl shadow-xl z-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-black/5 flex items-center justify-between">
+                    <p className="text-sm font-light text-[#132A24]">Notifications</p>
+                    <button onClick={() => setIsNotifOpen(false)} className="text-[#879f98] hover:text-[#132A24] text-lg leading-none">×</button>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto overscroll-contain">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center text-sm text-[#879f98] font-light">Aucune notification</div>
+                    ) : (
+                      notifications.map((n) => (
+                        <Link
+                          key={n.id}
+                          to={n.link || "#"}
+                          onClick={() => setIsNotifOpen(false)}
+                          className={`flex items-start gap-3 px-4 py-3 hover:bg-[#f5f7f6] transition-colors border-b border-black/5 last:border-0 ${!n.is_read ? "bg-[#f5f7f6]" : ""}`}
+                        >
+                          <span className="text-lg shrink-0 mt-0.5">{NOTIF_ICONS[n.type] || "🔔"}</span>
+                          <div className="min-w-0 flex-1">
+                            <p className={`text-sm leading-tight ${!n.is_read ? "font-medium text-[#132A24]" : "font-light text-[#132A24]"}`}>{n.title}</p>
+                            {n.content && <p className="text-xs text-[#879f98] font-light mt-0.5 line-clamp-2">{n.content}</p>}
+                            <p className="text-[10px] text-[#879f98]/60 font-light mt-1">{fmtRelative(n.createdAt)}</p>
+                          </div>
+                          {!n.is_read && <span className="shrink-0 w-2 h-2 rounded-full bg-[#132A24] mt-1.5" />}
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {user.isLogged ? (
             <div className="relative" ref={dropdownRef}>
 

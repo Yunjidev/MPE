@@ -7,6 +7,7 @@ const Enterprise      = sequelize.models.Enterprise;
 const User            = sequelize.models.User;
 const transporter     = require("../../config/mailer");
 const rateLimit       = require("express-rate-limit");
+const { createNotification } = require("./notification-controller");
 
 const FREE_LIMIT = 5;
 
@@ -59,6 +60,15 @@ ${isUser ? '<p style="font-size:12px;background:#eef5f1;color:#132A24;padding:6p
         });
       } catch { /* ne pas bloquer */ }
     }
+
+    /* Notification pour le propriétaire de l'entreprise */
+    createNotification({
+      User_id: enterprise.User_id,
+      type: "message_received",
+      title: `Nouveau message de ${message.sender_name}`,
+      content: content.slice(0, 120),
+      link: `/dashboard/enterprise/${enterprise.slug}/messages`,
+    });
 
     return res.status(201).json({ message: "Message envoyé.", id: message.id });
   } catch (error) {
@@ -157,6 +167,17 @@ exports.replyToMessage = async (req, res) => {
       } catch { /* ne pas bloquer */ }
     }
 
+    /* Notification pour l'user Proxilio si applicable */
+    if (msg.User_id) {
+      createNotification({
+        User_id: msg.User_id,
+        type: "message_reply",
+        title: `${req.enterprise.name} vous a répondu`,
+        content: content.trim().slice(0, 120),
+        link: "/dashboard/user-messages",
+      });
+    }
+
     return res.status(201).json(reply);
   } catch (error) {
     console.error(error);
@@ -216,7 +237,7 @@ exports.replyAsUser = async (req, res) => {
 
     const msg = await Message.findOne({
       where: { id: req.params.messageId, User_id: req.user.id },
-      include: [{ model: Enterprise, as: "enterprise", attributes: ["name", "mail", "slug", "isPremium"] }],
+      include: [{ model: Enterprise, as: "enterprise", attributes: ["name", "mail", "slug", "isPremium", "User_id"] }],
     });
     if (!msg) return res.status(404).json({ error: "Message introuvable." });
 
@@ -238,6 +259,15 @@ exports.replyAsUser = async (req, res) => {
         });
       } catch { /* ne pas bloquer */ }
     }
+
+    /* Notification pour l'entreprise */
+    createNotification({
+      User_id: msg.enterprise?.User_id,
+      type: "message_received",
+      title: `${req.user.username} vous a répondu`,
+      content: content.trim().slice(0, 120),
+      link: `/dashboard/enterprise/${msg.enterprise?.slug}/messages`,
+    });
 
     return res.status(201).json(reply);
   } catch (error) {
