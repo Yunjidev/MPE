@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 const FALLBACK_LOGO = "/assets/img/logo.png";
 
 const PRINCIPLES = [
-  "Créez votre compte et complétez votre fiche entreprise avec vos services, photos et informations professionnelles. Votre profil est ensuite vérifié par notre équipe avant publication.",
-  "Partagez votre page et apparaissez dans les recherches locales selon votre métier, votre ville et votre zone d'intervention.",
-  "Passez en Premium pour débloquer plus de visibilité, un badge de confiance et des fonctionnalités avancées.",
-  "Profitez du système de réservation en ligne, gérez vos disponibilités et recevez vos demandes directement depuis votre espace professionnel.",
+  "Créez votre fiche en quelques minutes : services, photos, localisation. Notre équipe valide votre profil avant publication — seuls les vrais pros apparaissent.",
+  "Soyez trouvé par des clients locaux qui recherchent votre métier. Apparaissez dans les résultats selon votre ville, votre secteur et votre rayon d'intervention.",
+  "Passez Premium pour débloquer le calendrier de réservation en ligne, les devis & factures numériques, la messagerie illimitée et un badge de confiance.",
+  "Gérez toute votre activité depuis un seul espace : réservations, disponibilités, documents clients et échanges. Centralisé, simple, efficace.",
 ];
 
 function EnterpriseCard({ slug, id, name, job, city, logo, rating }) {
@@ -60,14 +60,14 @@ export default function WhyMpeSection({ premiumEnterprises }) {
 
               <div className="xl:col-span-5 rv-blur">
                 <p className="text-sm uppercase tracking-widest text-[#879f98] mb-6 flex items-center gap-2 font-light">
-                  <span className="w-6 h-px bg-[#879f98]" /> Entrepreneur ? POURQUOI PROXILIO ?
+                  <span className="w-6 h-px bg-[#879f98]" /> PROFESSIONNELS
                 </p>
                 <h2 className="font-light text-[40px] sm:text-[56px] leading-tight tracking-tight mb-6 text-[#132A24]">
-                  Développez votre activité<br />
+                  Développez votre clientèle<br />
                   <span className="text-[#274F44]">localement.</span>
                 </h2>
                 <p className="text-base sm:text-xl text-[#4b615a] font-light leading-relaxed tracking-tight">
-                  Une plateforme pensée pour aider les professionnels à gagner en visibilité et trouver de nouveaux clients près de chez eux.
+                  Proxilio connecte les particuliers aux professionnels de leur région. Créez votre fiche, gérez vos réservations et développez votre activité — tout en un.
                 </p>
               </div>
 

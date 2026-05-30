@@ -4,8 +4,8 @@ const FEATURES = [
   {
     col: "lg:col-span-6",
     dark: false,
-    title: "Entreprises vérifiées",
-    desc: "Chaque professionnel est validé manuellement avant son apparition sur la plateforme.",
+    title: "Pros vérifiés",
+    desc: "Chaque professionnel est contrôlé et validé manuellement par notre équipe avant publication. Zéro arnaque, zéro faux profil.",
     visual: (
       <div className="absolute bottom-0 left-0 w-full h-[220px] flex items-center justify-center">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#879f9815_1px,transparent_1px),linear-gradient(to_bottom,#879f9815_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_70%)] pointer-events-none" />
@@ -26,8 +26,8 @@ const FEATURES = [
   {
     col: "lg:col-span-6",
     dark: false,
-    title: "Avis authentiques",
-    desc: "Seuls les clients ayant effectué une réservation peuvent publier un avis.",
+    title: "Avis vérifiés",
+    desc: "Seuls les clients ayant réellement réservé peuvent laisser un avis. Des retours fiables, pas de faux commentaires.",
     visual: (
       <div className="absolute bottom-0 left-0 w-full h-[220px] flex items-center justify-center pointer-events-none translate-y-2">
         <div className="relative flex items-center justify-center transition-transform duration-700 group-hover:scale-105 pointer-events-auto">
@@ -85,8 +85,8 @@ const FEATURES = [
   {
     col: "lg:col-span-5",
     dark: false,
-    title: "Recherche locale intelligente",
-    desc: "Recherchez par métier, ville ou distance pour trouver les meilleurs professionnels autour de vous.",
+    title: "Trouvez près de chez vous",
+    desc: "Ostéopathe, plombier, coach, avocat… Recherchez par métier et par ville pour trouver le bon professionnel autour de vous en quelques secondes.",
     visual: (
       <div className="absolute bottom-0 left-0 w-full h-[220px] flex items-center justify-center">
         <div className="relative z-10 flex flex-col items-center transition-transform duration-700 group-hover:scale-105">
@@ -117,8 +117,8 @@ const FEATURES = [
   {
     col: "lg:col-span-7",
     dark: true,
-    title: "Réservation en ligne",
-    desc: "Prenez rendez-vous directement avec les entreprises Premium grâce au calendrier intégré.",
+    title: "Réservez en 2 clics",
+    desc: "Prenez rendez-vous 24h/24 avec les professionnels Premium depuis leur calendrier en ligne. Sans appel, sans email, sans attente.",
     visual: (
       <div className="absolute bottom-0 left-0 w-full h-[220px] flex items-end justify-center px-10">
         <div className="relative w-full max-w-sm h-[160px] flex items-end justify-between transition-transform duration-700 group-hover:scale-105 z-10 origin-bottom">
@@ -152,14 +152,14 @@ export default function FeaturesSection() {
     <section className="px-4 sm:px-8 lg:px-16 2xl:px-24 py-16 sm:py-40 w-full border-t border-black/5 overflow-hidden">
       <div className="text-center mb-12 sm:mb-28 rv-blur">
         <p className="text-sm uppercase tracking-widest text-[#879f98] mb-8 font-light flex items-center justify-center gap-2">
-          <span className="w-6 h-px bg-[#879f98]" /> FONCTIONNALITÉS <span className="w-6 h-px bg-[#879f98]" />
+          <span className="w-6 h-px bg-[#879f98]" /> PARTICULIERS <span className="w-6 h-px bg-[#879f98]" />
         </p>
         <h2 className="font-light text-[40px] sm:text-[64px] leading-tight text-[#132A24] tracking-tight mb-6 sm:mb-10">
-          Trouvez un professionnel en toute{" "}
-          <span className="text-[#274F44]">confiance.</span>
+          Trouvez le bon professionnel,{" "}
+          <span className="text-[#274F44]">sans risque.</span>
         </h2>
         <p className="text-base sm:text-2xl text-[#4b615a] font-light max-w-4xl mx-auto leading-relaxed tracking-tight">
-          Chaque fonctionnalité a été pensée pour vous aider à trouver rapidement des entreprises fiables près de chez vous.
+          Des pros vérifiés, des avis fiables, une réservation en ligne — tout ce qu'il faut pour choisir en confiance, près de chez vous.
         </p>
       </div>
 
