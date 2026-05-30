@@ -65,12 +65,13 @@ const EnterpriseShow = () => {
       } else if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareUrl);
       } else {
-        const el = document.createElement("textarea");
-        el.value = shareUrl;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand("copy");
-        document.body.removeChild(el);
+        const ta = Object.assign(document.createElement("textarea"), {
+          value: shareUrl, style: "position:fixed;opacity:0",
+        });
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        try { navigator.clipboard?.writeText(shareUrl); } catch { /* ignore */ }
+        document.body.removeChild(ta);
       }
       setShareStatus("success");
       setShareMessage("Lien copié !");
@@ -379,8 +380,8 @@ const EnterpriseShow = () => {
             </section>
           </div>
 
-          {/* Right — sidebar */}
-          <div className="space-y-5">
+          {/* Right — sidebar (order-last pour mobile : passe sous le contenu principal) */}
+          <div className="space-y-5 order-last lg:order-none">
 
             {/* Contact */}
             <div className="bg-white border border-black/5 rounded-2xl p-5 shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)]">

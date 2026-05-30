@@ -30,7 +30,6 @@ export default function Basic({ formData, jobOptions, onChange }) {
         placeholder="Secteur d'activité *"
         options={jobOptions}
         icon={<MdOutlineAreaChart />}
-        className="col-span-2"
       />
     </>
   );

@@ -295,16 +295,20 @@ export default function EnterpriseForm({
                 Informations
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <Basic
-                  formData={formData}
-                  jobOptions={memoizedJobOptions}
-                  onChange={handleInputChange}
-                />
-                <ContactEnterprise
-                  formData={formData}
-                  countryOptions={memoizedRegionOptions}
-                  onChange={handleInputChange}
-                />
+                <div className="flex flex-col gap-4">
+                  <Basic
+                    formData={formData}
+                    jobOptions={memoizedJobOptions}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <ContactEnterprise
+                    formData={formData}
+                    countryOptions={memoizedRegionOptions}
+                    onChange={handleInputChange}
+                  />
+                </div>
               </div>
             </div>
 
