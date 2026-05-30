@@ -1,4 +1,4 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import UserForm from "./UserForm";
 import { authSignInUp } from "../../services/auth-fetch";
 import { useAtom } from "jotai";
@@ -8,9 +8,12 @@ import { toast } from "react-toastify";
 export default function SignUp() {
   const navigate = useNavigate();
   const [, setUser] = useAtom(userAtom);
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref");
 
   const handleSubmit = async (formData) => {
     try {
+      if (refCode) formData.append("referral_code", refCode);
       const response = await authSignInUp("signup", formData, setUser);
       const userData = await response;
       setUser({

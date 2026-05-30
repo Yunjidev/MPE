@@ -85,4 +85,9 @@ router.get("/user/notifications", notifController.listNotifications);
 router.put("/user/notifications/read-all", notifController.markAllAsRead);
 router.put("/user/notifications/:notifId/read", notifController.markAsRead);
 
+// Parrainage
+const referralController = require("../../controllers/referral-controller");
+router.get("/user/referral",       referralController.getStats);
+router.post("/user/referral/claim", referralController.claimReferral);
+
 module.exports = router;

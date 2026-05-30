@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import NavLink from "../Utils/Link";
 import Dropdown from "./Dropdown";
-import { FaTachometerAlt, FaBuilding, FaCog, FaUnlockAlt, FaTrashAlt, FaEnvelope } from "react-icons/fa";
+import { FaTachometerAlt, FaBuilding, FaCog, FaUnlockAlt, FaTrashAlt, FaEnvelope, FaGift } from "react-icons/fa";
 
 const Badge = ({ count }) => count > 0 ? (
   <span className="ml-2 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-[#132A24] text-white text-[9px] font-medium leading-none">{count > 99 ? "99+" : count}</span>
@@ -11,6 +11,7 @@ export default function UserSideBar({ user, iconstyle, linkstyle, unreadMessages
   const navItems = [
     { to: "/dashboard/user-db", icon: <FaTachometerAlt className={iconstyle} />, label: "Mon profil" },
     { to: "/dashboard/user-messages", icon: <FaEnvelope className={iconstyle} />, label: <><span>Mes messages</span><Badge count={unreadMessages} /></> },
+    { to: "/dashboard/referral", icon: <FaGift className={iconstyle} />, label: "Parrainage" },
     { to: "/dashboard/register-company", icon: <FaBuilding className={iconstyle} />, label: "Création Entreprise" },
     {
       type: "dropdown",

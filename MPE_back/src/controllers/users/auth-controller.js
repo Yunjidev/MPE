@@ -1,5 +1,6 @@
 const { sequelize } = require("../../../models/index");
-const User = sequelize.models.User;
+const User     = sequelize.models.User;
+const Referral = sequelize.models.Referral;
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { generateAccessToken, generateRefreshToken } = require("../../../config/jwt");
@@ -11,7 +12,7 @@ const files = require("../../utils/files");
 // Fonction pour enrigistrer un nouvel utilisateur
 exports.signup = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, referral_code } = req.body;
     const avatar = req.file ? req.file.path : null;
     const hashedPassword = await bcrypt.hash(password, 10);
     const existingUser = await User.findOne({ where: { username } });
@@ -28,6 +29,24 @@ exports.signup = async (req, res) => {
       password: hashedPassword,
       avatar,
     });
+
+    /* Parrainage : créer un enregistrement pending si code valide */
+    if (referral_code) {
+      try {
+        const referrer = await User.findOne({ where: { referral_code } });
+        if (referrer && referrer.id !== user.id) {
+          const alreadyClaimed = await Referral.findOne({ where: { referred_email: email.toLowerCase() } });
+          if (!alreadyClaimed) {
+            await Referral.create({
+              referrer_id:      referrer.id,
+              referred_email:   email.toLowerCase(),
+              referred_user_id: user.id,
+              validated_at:     null, // sera validé après 48h + profil complet
+            });
+          }
+        }
+      } catch { /* silencieux — ne pas bloquer l'inscription */ }
+    }
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
     sendEmail(email, "Bienvenue sur Proxilio !", "welcome", {

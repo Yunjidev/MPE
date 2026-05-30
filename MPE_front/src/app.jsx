@@ -68,6 +68,7 @@ import DevisPage    from "./pages/DashboardEnterprise/DevisPage";
 import FacturesPage from "./pages/DashboardEnterprise/FacturesPage";
 import MessagesPage from "./pages/DashboardEnterprise/MessagesPage";
 import UserMessagesPage from "./pages/DashboardUser/UserMessagesPage";
+import ReferralPage from "./pages/DashboardUser/ReferralPage";
 
 function App() {
   useSocketIo();
@@ -136,6 +137,7 @@ function AppContent() {
               <Route index element={<User_db />} />
               <Route path="user-db" element={<User_db />} />
               <Route path="user-messages" element={<UserMessagesPage />} />
+              <Route path="referral" element={<ReferralPage />} />
               <Route path="register-company" element={<RegisterCompany />} />
               <Route path="update-password" element={<UpdatePassWord />} />
               <Route path="deleteAccount" element={<DeleteAccount />} />
