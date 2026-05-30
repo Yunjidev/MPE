@@ -136,9 +136,8 @@ export default function HeroSection() {
               className="mt-8 sm:mt-12 font-light text-4xl sm:text-5xl lg:text-6xl xl:text-7xl tracking-tight leading-[1.2] text-transparent bg-clip-text bg-gradient-to-r from-[#132A24] to-[#4b8a74] opacity-0 animate-[blurFadeUp_1.2s_cubic-bezier(0.22,1,0.36,1)_forwards]"
               style={{ animationDelay: "120ms" }}
             >
-              <span className="block sm:inline-block sm:whitespace-nowrap">Trouvez les bons professionnels,</span>
-              <br />
-              <span>développez votre activité.</span>
+              <span className="block">Trouvez un professionnel ou</span>
+              <span className="block">développez votre visibilité locale</span>
             </h1>
 
             <p

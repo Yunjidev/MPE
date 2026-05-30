@@ -26,6 +26,7 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         marquee: "marquee var(--duration) linear infinite",
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
+        ticker: "ticker 22s linear infinite",
       },
       keyframes: {
         "accordion-down": {
@@ -43,6 +44,10 @@ module.exports = {
         "marquee-vertical": {
           from: { transform: "translateY(0)" },
           to: { transform: "translateY(calc(-100% - var(--gap)))" },
+        },
+        ticker: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
         },
       },
     },
