@@ -7,7 +7,12 @@ const PLANS = [
     price: "0€", label: "/mois",
     color: "text-white",
     border: "border-white/10",
-    features: ["Créer son entreprise","Page d'entreprise","Statistiques","Dashboard"],
+    features: [
+      "Page d'entreprise",
+      "Dashboard",
+      "Statistiques de base",
+      "Messagerie (5 derniers messages)",
+    ],
     btn: "Commencer gratuitement", to: "/signup",
     btnStyle: "bg-white/10 hover:bg-white/20 text-white border border-white/15",
   },
@@ -16,7 +21,16 @@ const PLANS = [
     price: "10€", label: "/mois",
     color: "text-[#ea580c]",
     border: "border-[#ea580c]/40",
-    features: ["Tout le Basique","Mise en avant accueil","Priorisation recherches","Calendrier & réservations","Création de devis","Référencement prioritaire Google"],
+    features: [
+      "Tout le Basique",
+      "Mise en avant accueil",
+      "Badge de certification",
+      "Calendrier & réservations en ligne",
+      "Statistiques avancées",
+      "Devis & factures PDF",
+      "Messagerie illimitée + notifs email",
+      "Référencement prioritaire Google",
+    ],
     btn: "Passer Premium", to: "/subscribe?plan=monthly",
     btnStyle: "bg-[#ea580c] hover:bg-[#274F44] text-white shadow-lg",
   },
@@ -25,7 +39,12 @@ const PLANS = [
     price: "100€", label: "/an",
     color: "text-[#879f98]",
     border: "border-white/10",
-    features: ["Tout le Premium","2 mois offerts","Meilleur rapport qualité/prix"],
+    features: [
+      "Tout le Mensuel",
+      "2 mois offerts",
+      "Priorité maximale",
+      "Support prioritaire",
+    ],
     btn: "Passer Premium Annuel", to: "/subscribe?plan=yearly",
     btnStyle: "bg-white/10 hover:bg-white/20 text-white border border-white/15",
   },
@@ -84,7 +103,26 @@ export default function PricingSection() {
               ))}
             </div>
 
-            <div className="mt-8 text-center">
+            {/* Parrainage */}
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex items-center gap-3 flex-1">
+                <span className="text-2xl shrink-0">🎁</span>
+                <div>
+                  <p className="text-sm font-light text-white">Parrainage — Premium offert</p>
+                  <p className="text-xs text-[#879f98] font-light mt-0.5">
+                    Parrainez 5 amis qui s'inscrivent sur Proxilio → gagnez <strong className="text-white font-light">1 mois Premium gratuit</strong>. Cumulable sans limite.
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/signup"
+                className="shrink-0 text-xs font-light text-[#ea580c] hover:text-white border border-[#ea580c]/40 hover:border-white/20 px-4 py-2 rounded-xl transition-colors"
+              >
+                En profiter →
+              </Link>
+            </div>
+
+            <div className="mt-5 text-center">
               <Link to="/pricing" className="text-sm text-[#879f98] hover:text-[#ea580c] transition-colors font-light underline underline-offset-4 decoration-white/10 hover:decoration-[#ea580c]/40">
                 Voir toutes les fonctionnalités →
               </Link>
