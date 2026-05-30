@@ -95,7 +95,7 @@ export default function UserMessagesPage() {
             placeholder="Rechercher une conversation…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="sm:w-60 rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 transition"
+            className="w-full sm:w-60 rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 transition"
           />
         </div>
       </header>

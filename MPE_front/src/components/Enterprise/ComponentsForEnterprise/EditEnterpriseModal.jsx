@@ -9,7 +9,7 @@ export default function EditEnterpriseModal({ enterpriseId, onSave, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_-12px_rgba(0,0,0,0.15)] p-2 relative max-w-4xl w-full max-h-[80vh] overflow-y-auto"
+        className="bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_-12px_rgba(0,0,0,0.15)] p-2 relative max-w-4xl w-full h-[100dvh] sm:h-auto sm:max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <button

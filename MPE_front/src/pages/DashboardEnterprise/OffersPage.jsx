@@ -80,7 +80,7 @@ export default function OffersPage() {
   return (
     <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5 lg:p-6 mt-6 mb-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-8">
         <div>
           <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-0.5">
             Entreprise
@@ -170,8 +170,8 @@ export default function OffersPage() {
                 </div>
               </div>
 
-              {/* Actions overlay */}
-              <div className="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+              {/* Actions — hover overlay sur desktop, boutons fixes sur mobile */}
+              <div className="hidden sm:flex absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity items-center justify-center gap-3">
                 <button
                   onClick={() => setModalOffer(offer)}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl border border-black/10 bg-white text-[#132A24] text-sm font-light hover:bg-[#eef5f1] transition"
@@ -182,6 +182,22 @@ export default function OffersPage() {
                 <button
                   onClick={() => setConfirmDelete(offer)}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl border border-red-200 bg-red-50 text-red-500 text-sm font-light hover:bg-red-100 transition"
+                >
+                  <FaTrash />
+                  Supprimer
+                </button>
+              </div>
+              <div className="sm:hidden flex gap-2 px-4 pb-3">
+                <button
+                  onClick={() => setModalOffer(offer)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-black/10 bg-white text-[#132A24] text-xs font-light transition active:scale-95"
+                >
+                  <FaEdit />
+                  Modifier
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(offer)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-red-200 bg-red-50 text-red-500 text-xs font-light transition active:scale-95"
                 >
                   <FaTrash />
                   Supprimer

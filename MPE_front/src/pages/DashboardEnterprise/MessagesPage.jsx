@@ -123,7 +123,7 @@ export default function MessagesPage() {
             placeholder="Rechercher un message…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="mt-3 sm:mt-0 sm:w-60 rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 transition"
+            className="mt-3 sm:mt-0 w-full sm:w-60 rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-2 text-sm font-light text-[#132A24] placeholder:text-[#879f98] outline-none focus:border-[#132A24]/30 transition"
           />
         </div>
       </header>
@@ -186,7 +186,7 @@ export default function MessagesPage() {
             {selected ? (
               <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-6 space-y-4 sticky top-4">
                 {/* En-tête */}
-                <div className="flex items-start justify-between gap-4 pb-4 border-b border-black/5">
+                <div className="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-black/5">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-base font-light text-[#132A24]">{selected.sender_name}</p>

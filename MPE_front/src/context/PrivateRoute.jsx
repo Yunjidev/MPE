@@ -5,7 +5,7 @@ import { userAtom } from "../store/user";
 const PrivateRoute = () => {
   const [user] = useAtom(userAtom);
 
-  return user ? <Outlet /> : <Navigate to="/signin" />;
+  return user?.isLogged ? <Outlet /> : <Navigate to="/signin" />;
 };
 
 export default PrivateRoute;

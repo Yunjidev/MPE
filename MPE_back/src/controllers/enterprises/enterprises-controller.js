@@ -24,6 +24,10 @@ exports.createEnterprise = async (req, res) => {
       Job_id,
       Country_id,
     } = req.body;
+    const parseArr = (v) => { if (Array.isArray(v)) return v; try { return JSON.parse(v); } catch { return []; } };
+    const payment_methods = parseArr(req.body.payment_methods);
+    const service_types   = parseArr(req.body.service_types);
+    const languages       = parseArr(req.body.languages);
     const logo =
       req.files && req.files.logo && req.files.logo.length > 0
         ? req.files.logo[0].path
@@ -70,6 +74,9 @@ exports.createEnterprise = async (req, res) => {
       User_id: req.user.id,
       Job_id,
       Country_id,
+      payment_methods,
+      service_types,
+      languages,
     });
     let enterpriseData = {
       id: newEnterprise.id,

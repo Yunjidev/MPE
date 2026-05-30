@@ -25,33 +25,28 @@ export const kyInstance = ky.create({
     ],
     afterResponse: [
       async (request, options, response) => {
-        if (response.status === 401 && Cookies.get("mpe-auth")) {
+        if (response.status === 401) {
           const refreshToken = Cookies.get("mpe-refresh");
           if (refreshToken) {
             try {
               const refreshResponse = await ky.post(
                 `${BASE_URL}/refresh-token`,
-                {
-                  json: { refreshToken },
-                },
+                { json: { refreshToken } },
               );
-
-              const newAccessToken =
-                refreshResponse.headers.get("Authorization");
-              Cookies.set("mpe-auth", newAccessToken, {
-                secure: true,
-                sameSite: "strict",
-              });
+              const newAccessToken = refreshResponse.headers.get("Authorization");
+              Cookies.set("mpe-auth", newAccessToken, { secure: true, sameSite: "strict" });
               return kyInstance(request);
-            } catch (refreshError) {
+            } catch {
               Cookies.remove("mpe-auth");
               Cookies.remove("mpe-refresh");
+              localStorage.removeItem("user");
               window.location.href = "/signin";
               throw new Error("Vous devez vous reconnecter");
             }
           } else {
             Cookies.remove("mpe-auth");
             Cookies.remove("mpe-refresh");
+            localStorage.removeItem("user");
             window.location.href = "/signin";
             throw new Error("Vous devez vous reconnecter");
           }

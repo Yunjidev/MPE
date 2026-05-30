@@ -479,9 +479,9 @@ function InvoiceDetail({ invoice, slug, enterprise, enterpriseLogo, onBack, onDe
       {invoice.status !== "paid" && (
         <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-5">
           <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-3">Envoyer par e-mail</p>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input type="email" value={sendEmail} onChange={(e) => setSendEmail(e.target.value)} placeholder={invoice.client_email || "Email du client"} className={`flex-1 ${inputCls}`} />
-            <button onClick={handleSend} disabled={sending} className="inline-flex items-center gap-2 rounded-xl bg-[#132A24] px-4 py-2 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-60 shrink-0">
+            <button onClick={handleSend} disabled={sending} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#132A24] px-4 py-2 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-60 sm:shrink-0">
               <IoMailOutline /> {sending ? "Envoi…" : "Envoyer"}
             </button>
           </div>

@@ -299,7 +299,7 @@ function QuoteForm({ enterprise, initial, onSaved, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <button type="button" onClick={onCancel} className="inline-flex items-center gap-1.5 text-sm font-light text-[#879f98] hover:text-[#132A24] transition">
           <IoChevronBackOutline /> Annuler
         </button>
