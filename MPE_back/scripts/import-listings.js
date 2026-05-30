@@ -239,21 +239,21 @@ async function main() {
     await Enterprise.create({
       name,
       slug,
-      city:      city    || "",
-      adress:    "",
-      zip_code:  "",
-      mail:      "",
-      website:   website || null,
-      phone:     phone   || null,
+      city:        city    || "",
+      adress:      "",
+      zip_code:    "",
+      mail:        "",
+      website:     website || null,
+      phone:       phone   || null,
       description: "",
-      Job_id:    job?.id || null,
-      Country_id: france?.id || null,
+      Job_id:      job?.id || null,
+      Country_id:  france?.id || null,
       isValidate:        true,
       isPremium:         false,
       is_claimed:        false,
       is_public_listing: true,
       User_id:           null,
-    });
+    }, { validate: false });
 
     console.log(`  ✅ Créé : "${name}" (${jobRaw || "sans métier"}, ${city})`);
     created++;
