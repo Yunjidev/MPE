@@ -32,6 +32,11 @@ const EnterpriseShow = () => {
   const [msgSent, setMsgSent] = useState(false);
   const [currentUser] = useAtom(userAtom);
   const [msgForm, setMsgForm] = useState({ sender_name: "", sender_email: "", sender_phone: "", content: "" });
+  const [claimOpen, setClaimOpen]         = useState(false);
+  const [claimStep, setClaimStep]         = useState("init"); // "init" | "code"
+  const [claimSending, setClaimSending]   = useState(false);
+  const [claimCode, setClaimCode]         = useState("");
+  const [claimMailHint, setClaimMailHint] = useState("");
 
   const fetchEnterprise = useCallback(async () => {
     try {
@@ -84,6 +89,53 @@ const EnterpriseShow = () => {
   };
 
   const handleOpenBooking = (offerId = null) => { setPrefillOfferId(offerId); setIsBookingOpen(true); };
+
+  const handleOpenClaim = () => {
+    if (!currentUser?.isLogged) { setAuthPrompt(true); return; }
+    setClaimStep("init");
+    setClaimCode("");
+    setClaimMailHint("");
+    setClaimOpen(true);
+  };
+
+  const handleInitiateClaim = async () => {
+    try {
+      setClaimSending(true);
+      const r = await postData(`enterprise/${enterprise.slug}/initiate-claim`, {});
+      setClaimMailHint(r.mail_hint || "");
+      setClaimStep("code");
+      toast.info(`Code envoyé à ${r.mail_hint}`);
+    } catch (err) {
+      try { toast.error(JSON.parse(err.message).error || "Erreur."); }
+      catch { toast.error("Impossible d'envoyer le code."); }
+    } finally { setClaimSending(false); }
+  };
+
+  const handleVerifyClaim = async (e) => {
+    e.preventDefault();
+    if (!claimCode.trim()) return;
+    try {
+      setClaimSending(true);
+      await postData(`enterprise/${enterprise.slug}/verify-claim`, { code: claimCode.trim() });
+      toast.success("Fiche revendiquée avec succès !");
+      setClaimOpen(false);
+      fetchEnterprise(); // refresh pour enlever le badge
+    } catch (err) {
+      try { toast.error(JSON.parse(err.message).error || "Erreur."); }
+      catch { toast.error("Code incorrect ou expiré."); }
+    } finally { setClaimSending(false); }
+  };
+
+  const handleResendClaim = async () => {
+    try {
+      setClaimSending(true);
+      const r = await postData(`enterprise/${enterprise.slug}/resend-claim`, {});
+      toast.info(`Nouveau code envoyé à ${r.mail_hint}`);
+    } catch (err) {
+      try { toast.error(JSON.parse(err.message).error || "Erreur."); }
+      catch { toast.error("Impossible de renvoyer le code."); }
+    } finally { setClaimSending(false); }
+  };
 
   const handleOpenMsg = () => {
     if (!currentUser?.isLogged) { setAuthPrompt(true); return; }
@@ -200,6 +252,30 @@ const EnterpriseShow = () => {
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
     <div className="py-6 space-y-10">
+
+      {/* ── Bandeau fiche non revendiquée ── */}
+      {enterprise.is_public_listing && !enterprise.is_claimed && (
+        <div className="max-w-7xl mx-auto px-6 mt-4">
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-start gap-3 flex-1">
+              <span className="text-amber-500 text-xl shrink-0 mt-0.5">🟡</span>
+              <div>
+                <p className="text-sm font-medium text-amber-800">Fiche non revendiquée</p>
+                <p className="text-xs text-amber-700 font-light mt-0.5 leading-relaxed">
+                  Ces informations sont issues de sources publiques (sites web, annuaires professionnels, registres publics).
+                  Elles sont fournies à titre indicatif et peuvent être incomplètes ou obsolètes.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleOpenClaim}
+              className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-light px-4 py-2.5 transition active:scale-95"
+            >
+              👉 Revendiquer cette fiche
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Banner ── */}
       <div className="max-w-7xl mx-auto px-6 mt-8">
@@ -541,6 +617,28 @@ const EnterpriseShow = () => {
               )}
             </div>
 
+          {/* Bloc RGPD / signalement — fiches publiques uniquement */}
+          {enterprise.is_public_listing && (
+            <div className="bg-[#f5f7f6] border border-black/5 rounded-2xl p-4 space-y-2">
+              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Données publiques</p>
+              <p className="text-xs text-[#879f98] font-light leading-relaxed">
+                Informations issues de sources publiques en ligne. Elles peuvent être incomplètes ou obsolètes.
+              </p>
+              {!enterprise.is_claimed && (
+                <button onClick={handleOpenClaim}
+                  className="w-full mt-1 text-xs font-light text-amber-700 hover:text-amber-900 underline underline-offset-2 transition text-left">
+                  Propriétaire ? Revendiquez gratuitement →
+                </button>
+              )}
+              <a
+                href={`mailto:contact@proxilio.fr?subject=Signalement fiche ${encodeURIComponent(enterprise.name)}&body=Fiche : ${window.location.href}%0A%0ADescription du problème :`}
+                className="block text-xs font-light text-[#879f98] hover:text-[#132A24] underline underline-offset-2 transition"
+              >
+                Signaler une erreur
+              </a>
+            </div>
+          )}
+
           </div>
         </div>
       </div>
@@ -599,6 +697,67 @@ const EnterpriseShow = () => {
             <button onClick={() => setAuthPrompt(false)} className="text-xs text-[#879f98] hover:text-[#132A24] transition underline underline-offset-2">
               Annuler
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal revendication */}
+      {claimOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-light text-[#132A24]">Revendiquer {enterprise.name}</h2>
+              <button onClick={() => setClaimOpen(false)} className="text-[#879f98] hover:text-[#132A24] text-xl transition">×</button>
+            </div>
+
+            {claimStep === "init" ? (
+              <div className="space-y-4">
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800 font-light leading-relaxed">
+                  Un code de vérification sera envoyé à l&apos;adresse email professionnelle de cette entreprise.
+                  Seul le propriétaire ayant accès à cette boîte peut valider la revendication.
+                </div>
+                <p className="text-xs text-[#879f98] font-light leading-relaxed">
+                  En revendiquant cette fiche, vous confirmez être le représentant légal ou autorisé de <strong className="text-[#132A24] font-normal">{enterprise.name}</strong>.
+                </p>
+                <button
+                  onClick={handleInitiateClaim}
+                  disabled={claimSending}
+                  className="w-full rounded-xl bg-[#132A24] py-3 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-60"
+                >
+                  {claimSending ? "Envoi du code…" : "Envoyer le code de vérification"}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleVerifyClaim} className="space-y-4">
+                <div className="bg-[#eef5f1] border border-[#132A24]/10 rounded-xl px-4 py-3 text-sm text-[#132A24] font-light">
+                  ✉ Code envoyé à <strong>{claimMailHint || "l'email professionnel de l'entreprise"}</strong>. Vérifiez votre boîte (et les spams).
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">Code de vérification (6 chiffres)</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={claimCode}
+                    onChange={(e) => setClaimCode(e.target.value.replace(/\D/g, ""))}
+                    className="w-full text-center text-2xl tracking-[0.4em] rounded-xl bg-[#f5f7f6] border border-black/5 px-3 py-3 font-light text-[#132A24] outline-none focus:border-[#132A24]/30 focus:ring-2 focus:ring-[#132A24]/10 transition"
+                    required
+                  />
+                </div>
+                <button type="submit" disabled={claimSending || claimCode.length !== 6}
+                  className="w-full rounded-xl bg-[#132A24] py-3 text-sm font-light text-white hover:bg-[#1b3b33] transition disabled:opacity-60">
+                  {claimSending ? "Vérification…" : "Valider et revendiquer la fiche"}
+                </button>
+                <div className="flex items-center justify-center gap-1 text-xs text-[#879f98] font-light">
+                  Code non reçu ?
+                  <button type="button" onClick={handleResendClaim} disabled={claimSending}
+                    className="underline underline-offset-2 hover:text-[#132A24] transition">
+                    Renvoyer un code
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

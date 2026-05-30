@@ -7,6 +7,12 @@ const reservationController = require("../../controllers/reservation-controller"
 router.use(authMiddleware.isAuthenticated);
 // Routes pour les utilisateurs
 router.use("/", require("./user"));
+
+// Revendication de fiches publiques (pas besoin d'être propriétaire)
+const claimController = require("../../controllers/claim-controller");
+router.post("/enterprise/:slug/initiate-claim", claimController.initiateClaim);
+router.post("/enterprise/:slug/verify-claim",   claimController.verifyClaim);
+router.post("/enterprise/:slug/resend-claim",   claimController.resendClaim);
 router.post(
   "/enterprises/:slug/reservations",
   reservationController.createEnterpriseReservationByUser,

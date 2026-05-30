@@ -1,0 +1,11 @@
+Proxilio — Revendication de fiche
+
+{username} souhaite revendiquer la fiche "{enterprise}" sur Proxilio.
+
+Votre code de vérification : {code}
+
+Ce code est valable {expires}.
+
+Si vous n'avez pas demandé cette vérification, ignorez cet email.
+
+Proxilio — proxilio.fr

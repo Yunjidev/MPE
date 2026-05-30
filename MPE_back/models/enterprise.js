@@ -198,6 +198,28 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      is_claimed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      is_public_listing: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      claim_token: {
+        type: DataTypes.STRING(8),
+        allowNull: true,
+      },
+      claim_token_expires_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      claim_mail: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       latitude: {
         type: DataTypes.FLOAT,
         allowNull: true,
