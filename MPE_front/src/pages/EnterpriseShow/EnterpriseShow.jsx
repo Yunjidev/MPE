@@ -269,39 +269,22 @@ const EnterpriseShow = () => {
           </div>
 
           {/* CTA buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleOpenMsg}
-              className="flex items-center gap-2 px-4 py-2.5 border border-[#132A24]/20 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#132A24] hover:bg-[#1b3b33] text-white text-sm font-light rounded-xl transition-colors"
             >
               <FiMail />
               Envoyer un message
             </button>
-            {enterprise.isPremium ? (
+            {enterprise.isPremium && (
               <button
                 onClick={() => handleOpenBooking(null)}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#132A24] hover:bg-[#1b3b33] text-white text-sm font-light rounded-xl transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 border border-[#132A24]/20 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors"
               >
                 <FiCalendar />
                 Réserver
               </button>
-            ) : enterprise.mail ? (
-              <a
-                href={`mailto:${enterprise.mail}`}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#132A24] hover:bg-[#1b3b33] text-white text-sm font-light rounded-xl transition-colors"
-              >
-                <FiMail />
-                Contacter
-              </a>
-            ) : null}
-            {enterprise.phone && (
-              <a
-                href={`tel:${enterprise.phone}`}
-                className="flex items-center gap-2 px-4 py-2.5 border border-black/5 bg-[#f5f7f6] hover:bg-[#eef5f1] text-[#132A24] text-sm font-light rounded-xl transition-colors"
-              >
-                <FiPhone />
-                {enterprise.phone}
-              </a>
             )}
             <button
               onClick={handleShare}
@@ -313,6 +296,27 @@ const EnterpriseShow = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Contact rapide mobile (visible uniquement xs/sm) ── */}
+      {enterprise.phone && (
+        <div className="lg:hidden max-w-7xl mx-auto px-6 -mt-4">
+          <div className="flex items-center gap-3 bg-white border border-black/5 rounded-2xl px-4 py-3 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.06)]">
+            <span className="text-[#132A24] flex-shrink-0"><FiPhone /></span>
+            {phoneRevealed ? (
+              <a href={`tel:${enterprise.phone}`} className="text-sm font-light text-[#132A24] hover:underline flex-1">
+                {enterprise.phone}
+              </a>
+            ) : (
+              <button
+                onClick={() => setPhoneRevealed(true)}
+                className="text-sm font-light text-[#879f98] hover:text-[#132A24] transition-colors underline underline-offset-2 text-left flex-1"
+              >
+                Afficher le numéro de téléphone
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="border-t border-black/5" />
 

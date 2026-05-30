@@ -202,14 +202,14 @@ export default function EnterpriseForm({
   return (
     <div className="mt-6">
       <div className="w-full">
-        <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-6 lg:p-8">
+        <div className="bg-white border border-black/5 rounded-2xl shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)] p-4 sm:p-6 lg:p-8">
           <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-0.5 text-center">Entreprise</p>
           <h2 className="text-xl font-light text-[#132A24] tracking-tight text-center mb-6">{title}</h2>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
             {/* ── Section médias ── */}
-            <div className="border border-black/5 rounded-xl p-5 space-y-6">
+            <div className="border border-black/5 rounded-xl p-4 sm:p-5 space-y-6">
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">
                 Photos &amp; médias
               </p>
@@ -290,11 +290,11 @@ export default function EnterpriseForm({
             </div>
 
             {/* ── Section infos ── */}
-            <div className="border border-black/5 rounded-xl p-5 space-y-5">
+            <div className="border border-black/5 rounded-xl p-4 sm:p-5 space-y-5">
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">
                 Informations
               </p>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Basic
                   formData={formData}
                   jobOptions={memoizedJobOptions}
@@ -309,7 +309,7 @@ export default function EnterpriseForm({
             </div>
 
             {/* ── Section réseaux sociaux ── */}
-            <div className="border border-black/5 rounded-xl p-5 space-y-5">
+            <div className="border border-black/5 rounded-xl p-4 sm:p-5 space-y-5">
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">
                 Réseaux sociaux
               </p>
@@ -317,7 +317,7 @@ export default function EnterpriseForm({
             </div>
 
             {/* ── Description ── */}
-            <div className="border border-black/5 rounded-xl p-5 space-y-3">
+            <div className="border border-black/5 rounded-xl p-4 sm:p-5 space-y-3">
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">
                 Description
               </p>
@@ -358,7 +358,7 @@ export default function EnterpriseForm({
             )}
 
             {/* ── Moyens de paiement ── */}
-            <div className="border border-black/5 rounded-xl p-5 space-y-4">
+            <div className="border border-black/5 rounded-xl p-4 sm:p-5 space-y-4">
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">Moyens de paiement acceptés</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
@@ -383,7 +383,7 @@ export default function EnterpriseForm({
             </div>
 
             {/* ── Types de prestations ── */}
-            <div className="border border-black/5 rounded-xl p-5 space-y-4">
+            <div className="border border-black/5 rounded-xl p-4 sm:p-5 space-y-4">
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">Types de prestations</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
@@ -413,7 +413,7 @@ export default function EnterpriseForm({
             </div>
 
             {/* ── Langues parlées ── */}
-            <div className="border border-black/5 rounded-xl p-5 space-y-4">
+            <div className="border border-black/5 rounded-xl p-4 sm:p-5 space-y-4">
               <p className="text-[10px] font-light uppercase tracking-widest text-[#879f98]">Langues parlées</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {[

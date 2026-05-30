@@ -13,18 +13,18 @@ const Footer = () => {
       <div className="px-4 sm:px-8 lg:px-16 2xl:px-24 pt-16 pb-8 relative z-10">
 
         {/* Top section */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-16 pb-12 border-b border-white/10">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10 lg:gap-16 pb-12 border-b border-white/10">
 
           {/* Brand */}
           <div className="lg:col-span-1 flex flex-col items-center gap-5">
-            <img src={Logo} className="h-20 object-contain" alt="Logo Proxilio" />
+            <img src={Logo} className="h-16 sm:h-20 object-contain" alt="Logo Proxilio" />
             <p className="text-[#879f98] text-sm leading-relaxed font-light tracking-tight text-center max-w-xs">
               La plateforme qui connecte les particuliers aux meilleurs professionnels locaux.
             </p>
           </div>
 
           {/* Nav columns */}
-          <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-8 lg:pl-8">
+          <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 lg:pl-8">
             <div className="flex flex-col items-center">
               <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Plateforme</p>
               <div className="flex flex-col items-center gap-3">
