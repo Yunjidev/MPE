@@ -340,7 +340,7 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
         rater.dataValues.avatar = avatarUrl;
       }
     });
-    if (enterprise.entrepreneur.avatar) {
+    if (enterprise.entrepreneur && enterprise.entrepreneur.avatar) {
       const avatarUrl = files.getUrl(
         req,
         "users/avatar",
