@@ -380,8 +380,8 @@ const EnterpriseShow = () => {
             </section>
           </div>
 
-          {/* Right — sidebar (order-last pour mobile : passe sous le contenu principal) */}
-          <div className="space-y-5 order-last lg:order-none">
+          {/* Right — sidebar (order-first sur mobile, position naturelle sur desktop) */}
+          <div className="space-y-5 order-first lg:order-none">
 
             {/* Contact */}
             <div className="bg-white border border-black/5 rounded-2xl p-5 shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)]">
