@@ -56,6 +56,7 @@ import CreateJobsandCountry from "./pages/DashboardAdmin/CreateJobsandCountry";
 import AdminDashboard from "./pages/DashboardAdmin/Admin_db";
 import SubscriptionManagement from "./pages/DashboardAdmin/SubscriptionManagement";
 import MarketingPage from "./pages/DashboardAdmin/MarketingPage";
+import BannerPage from "./pages/DashboardAdmin/BannerPage";
 
 // Protected Routes
 import AuthenticatedRoute from "./context/AuthenticatedRoute";
@@ -160,6 +161,7 @@ function AppContent() {
                 <Route path="admin-db" element={<Admindb />} />
                 <Route path="subscriptionmanagement" element={<SubscriptionManagement />} />
                 <Route path="marketing" element={<MarketingPage />} />
+                <Route path="banner" element={<BannerPage />} />
               </Route>
             </Route>
           </Route>

@@ -17,6 +17,10 @@ const countryController = require("../../controllers/static/country-controller")
 const jobsController = require("../../controllers/static/job-controller");
 const searchController = require("../../controllers/static/search-controller");
 const statsController = require("../../controllers/stats-controller");
+const settingsController = require("../../controllers/settings-controller");
+
+// Public settings
+router.get("/settings/banner", settingsController.getBanner);
 
 // Enterprise routes
 router.get("/enterprises/nearby", nearbyController.getNearbyEnterprises);

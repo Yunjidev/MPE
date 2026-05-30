@@ -146,4 +146,8 @@ router.put("/marketing/templates/:id", marketingController.updateTemplate);
 router.delete("/marketing/templates/:id", marketingController.deleteTemplate);
 router.post("/marketing/send", marketingController.sendMarketing);
 
+// Routes Settings
+const settingsController = require("../../controllers/settings-controller");
+router.put("/settings/banner", settingsController.updateBanner);
+
 module.exports = router;

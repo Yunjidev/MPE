@@ -33,10 +33,14 @@ export default function HomeClient() {
   useReveal();
 
   const [premiumEnterprises, setPremiumEnterprises] = useState([]);
+  const [banner, setBanner] = useState({ enabled: false, text: "" });
 
   useEffect(() => {
     getData("enterprises/premium")
       .then((data) => { if (Array.isArray(data)) setPremiumEnterprises(data); })
+      .catch(() => {});
+    getData("settings/banner")
+      .then((d) => setBanner(d))
       .catch(() => {});
   }, []);
 
@@ -145,21 +149,23 @@ export default function HomeClient() {
     <div className="text-[#132A24] antialiased overflow-x-hidden">
       <HeroSection />
 
-      {/* ── Bandeau défilant offre de lancement ── */}
-      <div className="w-full bg-[#132A24] overflow-hidden py-3 select-none">
-        <div className="flex whitespace-nowrap animate-ticker">
-          {[0, 1].map((group) => (
-            <div key={group} className="flex shrink-0">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <span key={i} className="inline-flex items-center gap-3 px-10 text-sm font-light text-white/90 tracking-wide">
-                  🎉 Offre de lancement : les 10 premiers professionnels bénéficient du Premium gratuitement pendant 1 mois.
-                  <span className="text-white/30 text-lg" aria-hidden="true">·</span>
-                </span>
-              ))}
-            </div>
-          ))}
+      {/* ── Bandeau défilant (conditionnel) ── */}
+      {banner.enabled && banner.text && (
+        <div className="w-full bg-[#132A24] overflow-hidden py-3 select-none">
+          <div className="flex whitespace-nowrap animate-ticker">
+            {[0, 1].map((group) => (
+              <div key={group} className="flex shrink-0">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <span key={i} className="inline-flex items-center gap-3 px-10 text-sm font-light text-white/90 tracking-wide">
+                    {banner.text}
+                    <span className="text-white/30 text-lg" aria-hidden="true">·</span>
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="w-full h-px bg-black/5" />
       <WhyMpeSection premiumEnterprises={premiumEnterprises} />
