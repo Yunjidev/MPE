@@ -154,7 +154,7 @@ export default function HeroSection() {
               <div className="relative inline-flex items-center justify-center group">
                 <div className="absolute transition-all duration-200 rounded-full -inset-px bg-gradient-to-r from-[#132A24] to-[#4b8a74] group-hover:shadow-lg group-hover:shadow-[#132A24]/30" />
                 <Link
-                  to="/searchentreprise"
+                  to="/professionnels"
                   className="relative inline-flex items-center justify-center gap-2 px-8 py-3.5 text-base font-light text-[#132A24] bg-[#f5f7f6] border border-transparent rounded-full tracking-tight hover:bg-[#eef5f1] transition-colors"
                 >
                   Rechercher un pro

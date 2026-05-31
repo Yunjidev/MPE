@@ -11,9 +11,9 @@ import logo from "../../../public/assets/img/logo.png";
 
 const NAV_LINKS = [
   { label: "Accueil", to: "/" },
-  { label: "Recherche", to: "/searchentreprise" },
+  { label: "Recherche", to: "/professionnels" },
   { label: "Tarifs", to: "/pricing" },
-  { label: "FAQ", to: "/FAQ" },
+  { label: "FAQ", to: "/faq" },
   { label: "Contact", to: "/contact" },
 ];
 

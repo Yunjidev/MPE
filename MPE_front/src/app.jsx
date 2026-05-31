@@ -99,7 +99,7 @@ function AppContent() {
   useEffect(() => {
     setIsDashboardRoute(location.pathname.startsWith("/dashboard"));
     setIsFullWidthRoute(
-      location.pathname === "/" || location.pathname === "/searchentreprise"
+      location.pathname === "/" || location.pathname === "/professionnels"
     );
   }, [location.pathname]);
 
@@ -119,12 +119,15 @@ function AppContent() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/searchentreprise" element={<SearchEntreprise />} />
+          <Route path="/professionnels" element={<SearchEntreprise />} />
+          <Route path="/searchentreprise" element={<Navigate to="/professionnels" replace />} />
           <Route path="/cookie-policies" element={<CookiePolicies />} />
           <Route path="/legal-notices" element={<LegalNotices />} />
-          <Route path="/condifentiality-policies" element={<ConfidentialityPolicies />} />
+          <Route path="/confidentiality-policies" element={<ConfidentialityPolicies />} />
+          <Route path="/condifentiality-policies" element={<Navigate to="/confidentiality-policies" replace />} />
           <Route path="/usage-policies" element={<UsagePolicies />} />
-          <Route path="/FAQ" element={<FAQ />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/FAQ" element={<Navigate to="/faq" replace />} />
           <Route path="/pricing" element={<Pricing_page />} />
           <Route path="/subscribe" element={<SubscribePage />} />
           <Route path="/subscribe/success" element={<SubscribeSuccess />} />

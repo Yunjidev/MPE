@@ -69,7 +69,7 @@ export default function Contact() {
             <p className="text-base sm:text-xl text-[#4b615a] font-light leading-relaxed tracking-tight max-w-md">
               Notre équipe est disponible pour répondre à toutes vos questions.
               Consultez aussi notre{" "}
-              <Link to="/FAQ" className="text-[#132A24] underline decoration-1 underline-offset-4 decoration-[#132A24]/30 hover:decoration-[#132A24] transition-colors">
+              <Link to="/faq" className="text-[#132A24] underline decoration-1 underline-offset-4 decoration-[#132A24]/30 hover:decoration-[#132A24] transition-colors">
                 FAQ
               </Link>{" "}
               pour une réponse immédiate.

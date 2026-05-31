@@ -105,7 +105,7 @@ export default function UserMessagesPage() {
           <div className="text-4xl mb-4">💬</div>
           <p className="text-sm text-[#879f98] font-light">Vous n'avez pas encore envoyé de message.</p>
           <p className="text-xs text-[#879f98] font-light mt-1">Trouvez un professionnel et contactez-le directement depuis sa fiche.</p>
-          <Link to="/searchentreprise" className="inline-block mt-4 rounded-xl bg-[#132A24] px-5 py-2.5 text-sm font-light text-white hover:bg-[#1b3b33] transition">
+          <Link to="/professionnels" className="inline-block mt-4 rounded-xl bg-[#132A24] px-5 py-2.5 text-sm font-light text-white hover:bg-[#1b3b33] transition">
             Trouver un professionnel
           </Link>
         </div>

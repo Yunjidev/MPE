@@ -2,9 +2,9 @@ const { sequelize } = require("../../models/index");
 
 const STATIC_URLS = [
   { loc: "/",                           changefreq: "weekly",  priority: "1.0" },
-  { loc: "/searchentreprise",           changefreq: "daily",   priority: "0.9" },
+  { loc: "/professionnels",             changefreq: "daily",   priority: "0.9" },
   { loc: "/pricing",                    changefreq: "monthly", priority: "0.7" },
-  { loc: "/FAQ",                        changefreq: "monthly", priority: "0.6" },
+  { loc: "/faq",                        changefreq: "monthly", priority: "0.6" },
   { loc: "/contact",                    changefreq: "yearly",  priority: "0.5" },
   { loc: "/signup",                     changefreq: "yearly",  priority: "0.5" },
   { loc: "/signin",                     changefreq: "yearly",  priority: "0.4" },

@@ -29,7 +29,7 @@ export default function NotFound() {
             Retour à l&apos;accueil
           </Link>
           <Link
-            to="/searchentreprise"
+            to="/professionnels"
             className="px-6 py-3 rounded-xl border border-black/10 text-[#132A24] text-sm font-light tracking-tight hover:bg-[#eef5f1] transition-colors"
           >
             Rechercher un professionnel

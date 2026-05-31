@@ -28,8 +28,8 @@ const Footer = () => {
             <div className="flex flex-col items-center">
               <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Plateforme</p>
               <div className="flex flex-col items-center gap-3">
-                <Link to="/searchentreprise" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Rechercher un pro</Link>
-                <Link to="/FAQ" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">FAQ</Link>
+                <Link to="/professionnels" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Rechercher un pro</Link>
+                <Link to="/faq" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">FAQ</Link>
                 <Link to="/" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Accueil</Link>
               </div>
             </div>
@@ -44,7 +44,7 @@ const Footer = () => {
               <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Légal</p>
               <div className="flex flex-col items-center gap-3">
                 <Link to="/usage-policies" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">CGU</Link>
-                <Link to="/condifentiality-policies" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Confidentialité</Link>
+                <Link to="/confidentiality-policies" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Confidentialité</Link>
                 <Link to="/legal-notices" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Mentions légales</Link>
                 <Link to="/cookie-policies" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Cookies</Link>
               </div>

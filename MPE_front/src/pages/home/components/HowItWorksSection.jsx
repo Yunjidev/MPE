@@ -205,7 +205,7 @@ export default function HowItWorksSection() {
       {/* Explore CTA */}
       <div className="w-full flex justify-center py-16 rv-up rv-d3">
         <Link
-          to="/searchentreprise"
+          to="/professionnels"
           className="bg-[#1b2e28] text-white px-10 py-5 rounded-full text-base sm:text-2xl hover:bg-[#132A24] transition-colors duration-300 font-light shadow-md tracking-tight w-full sm:w-auto flex justify-center items-center gap-3 group"
         >
           Explorer les entreprises

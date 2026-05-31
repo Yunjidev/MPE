@@ -81,7 +81,7 @@ const SearchEntreprise = () => {
   const resetAll = useCallback(() => {
     setSelectedJobs([]); setSelectedCountries([]); setSelectedCities([]);
     setMinRating(null); setOnlyPremium(false); setSearchTerm("");
-    navigate("/searchentreprise", { replace: true });
+    navigate("/professionnels", { replace: true });
     setEntreprises(sortEnterprises(allEnterprises));
   }, [allEnterprises, navigate, sortEnterprises]);
 
@@ -94,9 +94,9 @@ const SearchEntreprise = () => {
     <Helmet>
       <title>Trouver un professionnel local vérifié | Proxilio</title>
       <meta name="description" content="Recherchez parmi des centaines de professionnels locaux vérifiés : plombiers, électriciens, artisans et plus. Filtrez par métier, région et note. Réservez en ligne." />
-      <link rel="canonical" href="https://proxilio.fr/searchentreprise" />
+      <link rel="canonical" href="https://proxilio.fr/professionnels" />
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://proxilio.fr/searchentreprise" />
+      <meta property="og:url" content="https://proxilio.fr/professionnels" />
       <meta property="og:title" content="Trouver un professionnel local vérifié | Proxilio" />
       <meta property="og:description" content="Recherchez parmi des centaines de professionnels locaux vérifiés : plombiers, électriciens, artisans et plus." />
       <meta property="og:image" content="https://proxilio.fr/assets/img/og-default.jpg" />

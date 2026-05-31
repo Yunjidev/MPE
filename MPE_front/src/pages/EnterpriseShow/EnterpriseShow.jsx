@@ -254,7 +254,7 @@ const EnterpriseShow = () => {
       <meta name="twitter:image" content={pageImage} />
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
-    <div className="py-6 space-y-10">
+    <div className="py-6 space-y-10 lg:pb-0 pb-20">
 
       {/* ── Bandeau fiche non revendiquée ── */}
       {enterprise.is_public_listing && !enterprise.is_claimed && (
@@ -828,6 +828,19 @@ const EnterpriseShow = () => {
         </div>
       )}
     </div>
+
+    {/* Sticky CTA mobile — visible uniquement sur petits écrans */}
+    {enterprise.isPremium && (
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-sm border-t border-black/5 px-4 py-3 safe-area-pb">
+        <button
+          onClick={() => handleOpenBooking(null)}
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#132A24] py-3.5 text-sm font-light text-white hover:bg-[#1b3b33] transition-colors"
+        >
+          <FiCalendar className="text-base" />
+          Réserver avec {enterprise.name}
+        </button>
+      </div>
+    )}
     </>
   );
 };
