@@ -153,8 +153,11 @@ export default function EnterpriseForm({
       const newPhotos = [...prev.photos];
       newPhotos.splice(index, 1);
       const photosToRemove = [...prev.removePhotos];
-      if (initialData?.photos && index < initialData.photos.length) {
-        photosToRemove.push(index);
+      // photos[0] = bannière, galerie commence à photos[1]
+      // l'index d'affichage `index` correspond à initialData.photos[index + 1]
+      const actualIndex = index + 1;
+      if (initialData?.photos && actualIndex < initialData.photos.length) {
+        photosToRemove.push(actualIndex);
       }
       return { ...prev, photos: newPhotos, removePhotos: photosToRemove };
     });
@@ -186,11 +189,15 @@ export default function EnterpriseForm({
       }
     });
 
-    // Bannière en premier, puis galerie
+    // Bannière = champ séparé "banner", galerie = "photos" (max 3)
     if (bannerFile) {
-      formDataToSubmit.append("photos", bannerFile);
+      formDataToSubmit.append("banner", bannerFile);
     }
     formData.photos.forEach((p) => formDataToSubmit.append("photos", p));
+    // Envoyer les indices de suppression (seulement si non vides)
+    if (formData.removePhotos.length > 0) {
+      formDataToSubmit.append("removePhotos", formData.removePhotos.join(","));
+    }
 
     if (removeBanner) {
       formDataToSubmit.append("removeBanner", "true");

@@ -24,8 +24,9 @@ const invoiceController = require("../../controllers/invoice-controller");
 
 // Route Enterprise
 const uploadFiles = files.upload("enterprises").fields([
-  { name: "photos", maxCount: 4, folder: "photos" },
-  { name: "logo", maxCount: 1, folder: "logo" },
+  { name: "banner", maxCount: 1, folder: "photos" },  // photo de couverture
+  { name: "photos", maxCount: 3, folder: "photos" },  // galerie (max 3)
+  { name: "logo",   maxCount: 1, folder: "logo"   },
 ]);
 
 router.put(

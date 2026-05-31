@@ -192,42 +192,46 @@ exports.updateEnterprise = async (req, res) => {
       files.deleteFile(enterprise.logo);
       enterprise.logo = null;
     }
-    // Gestion des nouvelles photos
-    const rawNewPhotos = req.files?.photos?.map((f) => f.path) || [];
-    const newPhotos = await Promise.all(rawNewPhotos.map((p) => files.toWebP(p)));
-    if (newPhotos.length > 0) {
-      if (enterprise.photos) {
-        const maxPhotos = 3;
-        const currentPhotos = enterprise.photos.length;
-        if (currentPhotos + newPhotos.length > maxPhotos) {
-          const photosToDeleteCount =
-            currentPhotos + newPhotos.length - maxPhotos;
-          const photosToDelete = enterprise.photos.slice(
-            0,
-            photosToDeleteCount,
-          );
-          photosToDelete.forEach((photo) => {
-            files.deleteFile(photo);
-          });
-          enterprise.photos = enterprise.photos.slice(photosToDeleteCount);
-        }
-      }
-      enterprise.photos = [...enterprise.photos, ...newPhotos];
-    }
+    // ── Gestion des photos (bannière + galerie séparées) ──────────────────
+    // Structure : photos[0] = bannière, photos[1-3] = galerie (max 3)
+    let currentPhotos = [...(enterprise.photos || [])];
+
+    // Étape 1 : supprimer les photos individuelles demandées (avant ajout)
     if (removePhotos) {
-      const photosToRemove = removePhotos.split(",").map(Number);
-      const photosToDelete = photosToRemove.map(
-        (index) => enterprise.photos[index],
-      );
-      enterprise.photos = enterprise.photos.filter(
-        (photo, index) => !photosToRemove.includes(index),
-      );
-      photosToDelete.forEach((photo) => {
-        if (photo) {
-          files.deleteFile(photo);
-        }
+      const indicesToRemove = removePhotos.split(",").map(Number).filter((n) => !isNaN(n));
+      indicesToRemove.forEach((i) => {
+        if (currentPhotos[i]) { files.deleteFile(currentPhotos[i]); currentPhotos[i] = null; }
       });
+      currentPhotos = currentPhotos.filter(Boolean);
     }
+
+    // Étape 2 : bannière (champ "banner" séparé)
+    const rawBanner = req.files?.banner?.[0]?.path || null;
+    const newBanner = rawBanner ? await files.toWebP(rawBanner) : null;
+    if (newBanner) {
+      if (currentPhotos[0]) files.deleteFile(currentPhotos[0]);
+      currentPhotos[0] = newBanner;
+    } else if (removeBanner === "true") {
+      if (currentPhotos[0]) { files.deleteFile(currentPhotos[0]); currentPhotos[0] = null; }
+      currentPhotos = currentPhotos.filter(Boolean);
+    }
+
+    // Étape 3 : galerie (champ "photos", max 3)
+    const rawGallery = req.files?.photos?.map((f) => f.path) || [];
+    const newGallery = await Promise.all(rawGallery.map((p) => files.toWebP(p)));
+    if (newGallery.length > 0) {
+      const banner  = currentPhotos[0] || null;
+      const gallery = currentPhotos.slice(1);
+      const MAX_GALLERY = 3;
+      const combined = [...gallery, ...newGallery];
+      if (combined.length > MAX_GALLERY) {
+        combined.slice(0, combined.length - MAX_GALLERY).forEach((p) => files.deleteFile(p));
+      }
+      const finalGallery = combined.slice(-MAX_GALLERY);
+      currentPhotos = banner ? [banner, ...finalGallery] : finalGallery;
+    }
+
+    enterprise.photos = currentPhotos;
     const enterpriseData = {
       id: enterprise.id,
       slug: enterprise.slug,
