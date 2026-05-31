@@ -128,6 +128,7 @@ exports.updateEnterprise = async (req, res) => {
       Country_id,
       removeLogo,
       removePhotos,
+      removeBanner,
     } = req.body;
 
     if (name && name !== enterprise.name) {
