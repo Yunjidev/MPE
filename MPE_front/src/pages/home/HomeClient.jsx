@@ -27,7 +27,7 @@ function useReveal() {
   }, []);
 }
 
-const BASE_URL = "https://proxilio.fr";
+const BASE_URL = "https://www.proxilio.fr";
 
 export default function HomeClient() {
   useReveal();
@@ -36,12 +36,12 @@ export default function HomeClient() {
   const [banner, setBanner] = useState({ enabled: false, text: "" });
 
   useEffect(() => {
-    getData("enterprises/premium")
-      .then((data) => { if (Array.isArray(data)) setPremiumEnterprises(data); })
-      .catch(() => {});
-    getData("settings/banner")
-      .then((d) => setBanner(d))
-      .catch(() => {});
+    Promise.allSettled([
+      getData("enterprises/premium").then((data) => { if (Array.isArray(data)) setPremiumEnterprises(data); }),
+      getData("settings/banner").then((d) => setBanner(d)),
+    ]).finally(() => {
+      if (typeof window !== "undefined") window.prerenderReady = true;
+    });
   }, []);
 
   const organizationJsonLd = {

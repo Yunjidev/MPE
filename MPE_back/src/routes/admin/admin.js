@@ -138,6 +138,10 @@ router.post("/condition", conditionsController.createCondition);
 router.put("/condition/:id", conditionsController.updateCondition);
 router.delete("/condition/:id", conditionsController.deleteCondition);
 
+// Routes Referral Admin
+const adminReferralController = require("../../controllers/admin-referral-controller");
+router.get("/referrals", adminReferralController.getReferralStats);
+
 // Routes Marketing
 const marketingController = require("../../controllers/marketing-controller");
 router.get("/marketing/templates", marketingController.getTemplates);

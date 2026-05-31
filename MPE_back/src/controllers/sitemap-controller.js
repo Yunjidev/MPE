@@ -1,17 +1,17 @@
 const { sequelize } = require("../../models/index");
 
 const STATIC_URLS = [
-  { loc: "/",                changefreq: "weekly",  priority: "1.0" },
-  { loc: "/searchentreprise", changefreq: "daily",   priority: "0.9" },
-  { loc: "/pricing",          changefreq: "monthly", priority: "0.7" },
-  { loc: "/FAQ",              changefreq: "monthly", priority: "0.6" },
-  { loc: "/contact",          changefreq: "yearly",  priority: "0.5" },
-  { loc: "/signup",           changefreq: "yearly",  priority: "0.5" },
-  { loc: "/signin",           changefreq: "yearly",  priority: "0.4" },
-  { loc: "/privacy",          changefreq: "yearly",  priority: "0.3" },
-  { loc: "/terms",            changefreq: "yearly",  priority: "0.3" },
-  { loc: "/legal",            changefreq: "yearly",  priority: "0.3" },
-  { loc: "/cookies",          changefreq: "yearly",  priority: "0.3" },
+  { loc: "/",                           changefreq: "weekly",  priority: "1.0" },
+  { loc: "/searchentreprise",           changefreq: "daily",   priority: "0.9" },
+  { loc: "/pricing",                    changefreq: "monthly", priority: "0.7" },
+  { loc: "/FAQ",                        changefreq: "monthly", priority: "0.6" },
+  { loc: "/contact",                    changefreq: "yearly",  priority: "0.5" },
+  { loc: "/signup",                     changefreq: "yearly",  priority: "0.5" },
+  { loc: "/signin",                     changefreq: "yearly",  priority: "0.4" },
+  { loc: "/condifentiality-policies",   changefreq: "yearly",  priority: "0.3" },
+  { loc: "/usage-policies",             changefreq: "yearly",  priority: "0.3" },
+  { loc: "/legal-notices",              changefreq: "yearly",  priority: "0.3" },
+  { loc: "/cookie-policies",            changefreq: "yearly",  priority: "0.3" },
 ];
 
 const BASE_URL = "https://www.proxilio.fr";

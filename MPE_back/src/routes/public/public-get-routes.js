@@ -17,6 +17,7 @@ const countryController = require("../../controllers/static/country-controller")
 const jobsController = require("../../controllers/static/job-controller");
 const searchController = require("../../controllers/static/search-controller");
 const statsController = require("../../controllers/stats-controller");
+const sitemapController = require("../../controllers/sitemap-controller");
 const settingsController = require("../../controllers/settings-controller");
 
 // Public settings
@@ -72,5 +73,8 @@ router.get("/search", searchController.search);
 
 // Routes Stats
 router.get("/stats", statsController.getAllStats);
+
+// Sitemap
+router.get("/sitemap", sitemapController.getSitemap);
 
 module.exports = router;

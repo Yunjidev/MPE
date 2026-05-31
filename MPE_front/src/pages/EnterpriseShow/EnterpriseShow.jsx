@@ -42,8 +42,11 @@ const EnterpriseShow = () => {
     try {
       const data = await getData(`enterprise/${slug}`);
       setEnterprise(data);
+      // Signal prerender que le contenu est prêt (headless Chrome peut prendre le snapshot)
+      if (typeof window !== "undefined") window.prerenderReady = true;
     } catch (error) {
       console.error("Error fetching enterprise:", error);
+      if (typeof window !== "undefined") window.prerenderReady = true;
     }
   }, [slug]);
 

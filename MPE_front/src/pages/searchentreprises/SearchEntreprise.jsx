@@ -94,12 +94,12 @@ const SearchEntreprise = () => {
     <Helmet>
       <title>Trouver un professionnel local vérifié | Proxilio</title>
       <meta name="description" content="Recherchez parmi des centaines de professionnels locaux vérifiés : plombiers, électriciens, artisans et plus. Filtrez par métier, région et note. Réservez en ligne." />
-      <link rel="canonical" href="https://proxilio.fr/searchentreprise" />
+      <link rel="canonical" href="https://www.proxilio.fr/searchentreprise" />
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://proxilio.fr/searchentreprise" />
+      <meta property="og:url" content="https://www.proxilio.fr/searchentreprise" />
       <meta property="og:title" content="Trouver un professionnel local vérifié | Proxilio" />
       <meta property="og:description" content="Recherchez parmi des centaines de professionnels locaux vérifiés : plombiers, électriciens, artisans et plus." />
-      <meta property="og:image" content="https://proxilio.fr/assets/img/og-default.jpg" />
+      <meta property="og:image" content="https://www.proxilio.fr/assets/img/og-default.jpg" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:site" content="@Proxilioapp" />
     </Helmet>

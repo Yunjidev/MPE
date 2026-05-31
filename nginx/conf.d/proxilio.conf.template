@@ -1,24 +1,49 @@
 # ── Phase 2 : HTTPS complet (après SSL obtenu) ─────────────────────────────
 # Renommer en proxilio.conf après init-ssl.sh
 
-# Redirect HTTP → HTTPS
+# ── Détection des bots pour prerendering ────────────────────────────────────
+# Les crawlers reçoivent le HTML rendu par headless Chrome (prerender)
+# HeadlessChrome est EXCLU pour éviter la boucle infinie prerender→nginx→prerender
+map $http_user_agent $is_bot {
+    default                                                         0;
+    ~*(googlebot|bingbot|yandex|baiduspider|duckduckbot)           1;
+    ~*(twitterbot|facebookexternalhit|linkedinbot|whatsapp)        1;
+    ~*(slackbot|telegrambot|discordbot|embedly|ia_archiver)        1;
+    ~*(applebot|googlebot-image|adsbot-google|rogerbot|showyoubot) 1;
+    ~*(outbrain|pinterest|vkShare|W3C_Validator|redditbot)         1;
+}
+
+# Redirect HTTP → HTTPS (non-www et www)
 server {
     listen 80;
-    server_name proxilio.fr;
+    server_name proxilio.fr www.proxilio.fr;
 
     location /.well-known/acme-challenge/ {
         root /var/www/certbot;
     }
 
     location / {
-        return 301 https://$host$request_uri;
+        return 301 https://www.proxilio.fr$request_uri;
     }
 }
 
-# HTTPS
+# Redirect HTTPS non-www → www
 server {
     listen 443 ssl;
     server_name proxilio.fr;
+    http2 on;
+
+    ssl_certificate     /etc/letsencrypt/live/proxilio.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/proxilio.fr/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    return 301 https://www.proxilio.fr$request_uri;
+}
+
+# HTTPS www (canonical)
+server {
+    listen 443 ssl;
+    server_name www.proxilio.fr;
     http2 on;
 
     # SSL
@@ -62,6 +87,16 @@ server {
         proxy_read_timeout 86400s;
     }
 
+    # ── Sitemap XML (proxy vers le backend, caché 1h) ───────────────────────
+    location = /sitemap.xml {
+        proxy_pass         http://backend:3000/api/sitemap;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        add_header         Cache-Control "public, max-age=3600";
+    }
+
     # ── API Backend ─────────────────────────────────────────────────────────
     location /api {
         proxy_pass         http://backend:3000;
@@ -83,12 +118,27 @@ server {
         access_log off;
     }
 
-    # ── Frontend React ──────────────────────────────────────────────────────
+    # ── Frontend React + Prerender pour bots ────────────────────────────────
+    # Les bots reçoivent le HTML rendu côté serveur via prerender (headless Chrome).
+    # Les humains reçoivent le SPA React normal.
+    # Prerender rend http://frontend:80{uri} en interne → pas de boucle nginx.
     location / {
-        proxy_pass         http://frontend:80;
+        # Calcul de la cible selon le type de client
+        set $proxy_target  http://frontend:80;
+        set $proxy_path    $request_uri;
+
+        if ($is_bot = 1) {
+            set $proxy_target http://prerender:3000;
+            set $proxy_path   /http://frontend:80$request_uri;
+        }
+
+        proxy_pass         $proxy_target$proxy_path;
         proxy_set_header   Host $host;
         proxy_set_header   X-Real-IP $remote_addr;
         proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header   X-Forwarded-Proto $scheme;
+
+        # Transmettre le code HTTP retourné par prerender (404, 301…)
+        proxy_pass_header  X-Prerender-Status-Code;
     }
 }
