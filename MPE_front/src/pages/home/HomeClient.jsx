@@ -27,7 +27,7 @@ function useReveal() {
   }, []);
 }
 
-const BASE_URL = "https://www.proxilio.fr";
+const BASE_URL = "https://proxilio.fr";
 
 export default function HomeClient() {
   useReveal();
