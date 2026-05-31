@@ -26,6 +26,7 @@ import ProfessionnelsByJob from "./pages/Professionnels/ProfessionnelsByJob";
 import ProfessionnelsByJobCity from "./pages/Professionnels/ProfessionnelsByJobCity";
 import BlogIndex from "./pages/Blog/BlogIndex";
 import BlogArticle from "./pages/Blog/BlogArticle";
+import AboutPage from "./pages/About/AboutPage";
 import FAQ from "./pages/FAQ/FAQ";
 import RegisterCompany from "./pages/user/registercompany";
 import EnterprisePage from "./pages/EnterpriseShow/EnterpriseShow";
@@ -129,6 +130,7 @@ function AppContent() {
           <Route path="/searchentreprise" element={<Navigate to="/professionnels" replace />} />
           <Route path="/blog" element={<BlogIndex />} />
           <Route path="/blog/:slug" element={<BlogArticle />} />
+          <Route path="/a-propos" element={<AboutPage />} />
           <Route path="/cookie-policies" element={<CookiePolicies />} />
           <Route path="/legal-notices" element={<LegalNotices />} />
           <Route path="/confidentiality-policies" element={<ConfidentialityPolicies />} />

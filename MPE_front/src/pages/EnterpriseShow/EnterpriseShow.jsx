@@ -280,6 +280,19 @@ const EnterpriseShow = () => {
       <meta name="twitter:description" content={pageDescription} />
       <meta name="twitter:image" content={pageImage} />
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      {/* Reviews individuels (max 5 les plus récents pour ne pas surcharger) */}
+      {enterprise.offers?.flatMap((o) => o.ratings || []).slice(0, 5).map((r, i) => r.comment && (
+        <script key={i} type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Review",
+          itemReviewed: { "@type": jsonLd["@type"], name: enterprise.name, url: pageUrl },
+          reviewRating: { "@type": "Rating", ratingValue: String(r.note), bestRating: "5", worstRating: "1" },
+          author: { "@type": "Person", name: r.rater?.username || "Client vérifié" },
+          reviewBody: r.comment,
+          datePublished: r.createdAt ? new Date(r.createdAt).toISOString().split("T")[0] : undefined,
+          publisher: { "@type": "Organization", name: "Proxilio", url: "https://proxilio.fr" },
+        })}</script>
+      ))}
     </Helmet>
     <div className="py-6 space-y-10 lg:pb-0 pb-20">
 

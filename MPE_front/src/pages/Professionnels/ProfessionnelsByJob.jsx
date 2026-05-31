@@ -47,6 +47,28 @@ export default function ProfessionnelsByJob() {
     ],
   };
 
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `Comment trouver un bon ${jobName.toLowerCase()} ?`,
+        acceptedAnswer: { "@type": "Answer", text: `Sur Proxilio, chaque ${jobName.toLowerCase()} est vérifié manuellement avant publication. Consultez les avis laissés après réservation confirmée pour choisir en confiance.` },
+      },
+      {
+        "@type": "Question",
+        name: `Peut-on réserver un ${jobName.toLowerCase()} en ligne ?`,
+        acceptedAnswer: { "@type": "Answer", text: `Oui. Les professionnels Premium proposent la réservation en ligne directement depuis leur fiche, 24h/24, sans avoir à téléphoner.` },
+      },
+      {
+        "@type": "Question",
+        name: `Les avis sur les ${jobName.toLowerCase()}s sont-ils fiables ?`,
+        acceptedAnswer: { "@type": "Answer", text: `Oui. Seuls les clients ayant effectué une réservation confirmée peuvent déposer un avis sur Proxilio, garantissant des retours authentiques.` },
+      },
+    ],
+  };
+
   return (
     <>
       <Helmet>
@@ -58,6 +80,7 @@ export default function ProfessionnelsByJob() {
         <meta property="og:url" content={canonical} />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqLd)}</script>
       </Helmet>
 
       <div className="max-w-7xl mx-auto px-6 py-10 space-y-8">

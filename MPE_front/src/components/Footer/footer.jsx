@@ -37,6 +37,7 @@ const Footer = () => {
             <div className="flex flex-col items-center">
               <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Entreprise</p>
               <div className="flex flex-col items-center gap-3">
+                <Link to="/a-propos" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">À propos</Link>
                 <Link to="/pricing" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Tarifs</Link>
                 <Link to="/contact" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Contact</Link>
               </div>
