@@ -7,13 +7,17 @@ try { sharp = require("sharp"); } catch { sharp = null; }
 
 const SAFE_FIELDNAME = /^[a-zA-Z0-9_-]+$/;
 
+// banner et photos vont dans le même sous-dossier pour que getUrl("enterprises/photos") fonctionne
+const FIELDNAME_SUBFOLDER = { banner: "photos" };
+
 // Stockage temporaire — la conversion WebP se fait après réception
 const storage = (folder) =>
   multer.diskStorage({
     destination: (req, file, cb) => {
       let uploadPath = path.join(__dirname, `../../uploads/${folder}`);
-      if (file.fieldname && SAFE_FIELDNAME.test(file.fieldname)) {
-        uploadPath = path.join(uploadPath, file.fieldname);
+      const subfolder = FIELDNAME_SUBFOLDER[file.fieldname] ?? file.fieldname;
+      if (subfolder && SAFE_FIELDNAME.test(subfolder)) {
+        uploadPath = path.join(uploadPath, subfolder);
       }
       fs.mkdirSync(uploadPath, { recursive: true });
       cb(null, uploadPath);

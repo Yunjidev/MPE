@@ -178,9 +178,12 @@ export default function EnterpriseForm({
     const formDataToSubmit = new FormData();
 
     const ARRAY_FIELDS = ["payment_methods", "service_types", "languages"];
+    // removePhotos géré séparément ci-dessous pour éviter le double envoi
+    const SKIP_FIELDS = new Set(["photos", "removePhotos"]);
+
     Object.keys(formData).forEach((key) => {
       const val = formData[key];
-      if (key === "photos") return;
+      if (SKIP_FIELDS.has(key)) return;
       if (key === "multi_booking") { formDataToSubmit.append(key, val ? "true" : "false"); return; }
       if (ARRAY_FIELDS.includes(key)) { formDataToSubmit.append(key, JSON.stringify(val || [])); return; }
       if (val !== initialData[key] && val !== "" && val != null) {
@@ -193,8 +196,10 @@ export default function EnterpriseForm({
     if (bannerFile) {
       formDataToSubmit.append("banner", bannerFile);
     }
-    formData.photos.forEach((p) => formDataToSubmit.append("photos", p));
-    // Envoyer les indices de suppression (seulement si non vides)
+    // N'envoyer que les nouvelles photos (File objects), pas les URLs existantes
+    formData.photos.forEach((p) => { if (p instanceof File) formDataToSubmit.append("photos", p); });
+
+    // Indices de suppression (envoyés une seule fois)
     if (formData.removePhotos.length > 0) {
       formDataToSubmit.append("removePhotos", formData.removePhotos.join(","));
     }

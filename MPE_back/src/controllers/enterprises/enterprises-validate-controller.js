@@ -312,7 +312,11 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
     }
     if (enterprise.photos) {
       enterprise.photos = enterprise.photos.map((photo) => {
-        return files.getUrl(req, "enterprises/photos", photo);
+        // rétrocompat : certaines bannières ont été sauvées dans enterprises/banner/
+        const folder = photo.includes("/enterprises/banner/")
+          ? "enterprises/banner"
+          : "enterprises/photos";
+        return files.getUrl(req, folder, photo);
       });
     }
     if (enterprise.job.picture) {
