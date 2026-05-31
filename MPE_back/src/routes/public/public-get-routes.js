@@ -68,6 +68,11 @@ router.get("/countries", countryController.getAllCountries);
 // Routes Job
 router.get("/jobs", jobsController.getAllJobs);
 
+// Routes pages métier programmatiques
+const byJobController = require("../../controllers/enterprises/by-job-controller");
+router.get("/jobs-with-count",          byJobController.getJobsWithCount);
+router.get("/enterprises/by-job/:jobSlug", byJobController.getByJob);
+
 // Routes Search
 router.get("/search", searchController.search);
 

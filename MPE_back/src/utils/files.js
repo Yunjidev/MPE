@@ -2,8 +2,12 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+let sharp;
+try { sharp = require("sharp"); } catch { sharp = null; }
+
 const SAFE_FIELDNAME = /^[a-zA-Z0-9_-]+$/;
 
+// Stockage temporaire — la conversion WebP se fait après réception
 const storage = (folder) =>
   multer.diskStorage({
     destination: (req, file, cb) => {
@@ -21,37 +25,39 @@ const storage = (folder) =>
   });
 
 const fileFilter = (req, file, cb) => {
-  const allowedFileTypes = ["image/jpeg", "image/jpg", "image/png"];
-  if (allowedFileTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Format non supporté"));
-  }
+  const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+  if (allowed.includes(file.mimetype)) cb(null, true);
+  else cb(new Error("Format non supporté"));
 };
 
 const upload = (folder) =>
-  multer({
-    storage: storage(folder),
-    fileFilter: fileFilter,
-    limits: { fileSize: 1024 * 1024 * 5 },
-  });
+  multer({ storage: storage(folder), fileFilter, limits: { fileSize: 1024 * 1024 * 5 } });
+
+// Convertit le fichier uploadé en WebP (max 1400px, qualité 80) si sharp est disponible.
+// Retourne le chemin du fichier final.
+async function toWebP(filePath) {
+  if (!sharp) return filePath;
+  if (filePath.endsWith(".webp")) return filePath;
+  const outPath = filePath.replace(/\.[^.]+$/, ".webp");
+  try {
+    await sharp(filePath)
+      .resize({ width: 1400, withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toFile(outPath);
+    fs.unlink(filePath, () => {});
+    return outPath;
+  } catch {
+    return filePath;
+  }
+}
 
 const deleteFile = (filePath) => {
-  fs.stat(filePath, (error) => {
-    if (error) {
-      console.log("File not found");
-    } else {
-      fs.unlink(filePath, (error) => {
-        if (error) {
-          console.log("Error deleting file");
-        }
-      });
-    }
+  fs.stat(filePath, (err) => {
+    if (!err) fs.unlink(filePath, () => {});
   });
 };
 
-const getUrl = (req, folder, file) => {
-  return `${req.protocol}://${req.get("host")}/app/uploads/${folder}/${path.basename(file)}`;
-};
+const getUrl = (req, folder, file) =>
+  `${req.protocol}://${req.get("host")}/app/uploads/${folder}/${path.basename(file)}`;
 
-module.exports = { upload, deleteFile, getUrl };
+module.exports = { upload, deleteFile, getUrl, toWebP };

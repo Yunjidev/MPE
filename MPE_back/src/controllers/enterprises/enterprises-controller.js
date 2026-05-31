@@ -28,14 +28,10 @@ exports.createEnterprise = async (req, res) => {
     const payment_methods = parseArr(req.body.payment_methods);
     const service_types   = parseArr(req.body.service_types);
     const languages       = parseArr(req.body.languages);
-    const logo =
-      req.files && req.files.logo && req.files.logo.length > 0
-        ? req.files.logo[0].path
-        : null;
-    const photos =
-      req.files && req.files.photos && req.files.photos.length > 0
-        ? req.files.photos.map((file) => file.path)
-        : [];
+    const rawLogo = req.files?.logo?.[0]?.path || null;
+    const rawPhotos = req.files?.photos?.map((f) => f.path) || [];
+    const logo   = rawLogo            ? await files.toWebP(rawLogo)             : null;
+    const photos = await Promise.all(rawPhotos.map((p) => files.toWebP(p)));
     const job = await Job.findByPk(Job_id);
     if (!job) {
       return res.status(404).json({ errors: "Pas de job trouvé" });
@@ -187,21 +183,18 @@ exports.updateEnterprise = async (req, res) => {
       }
     }
     // Gestion du logo
-    const logo = req.files.logo ? req.files.logo[0].path : null;
+    const rawNewLogo = req.files?.logo?.[0]?.path || null;
+    const logo = rawNewLogo ? await files.toWebP(rawNewLogo) : null;
     if (logo) {
-      if (enterprise.logo) {
-        files.deleteFile(enterprise.logo);
-      }
-
+      if (enterprise.logo) files.deleteFile(enterprise.logo);
       enterprise.logo = logo;
     } else if (removeLogo === "true" && enterprise.logo) {
       files.deleteFile(enterprise.logo);
       enterprise.logo = null;
     }
     // Gestion des nouvelles photos
-    const newPhotos = req.files.photos
-      ? req.files.photos.map((file) => file.path)
-      : [];
+    const rawNewPhotos = req.files?.photos?.map((f) => f.path) || [];
+    const newPhotos = await Promise.all(rawNewPhotos.map((p) => files.toWebP(p)));
     if (newPhotos.length > 0) {
       if (enterprise.photos) {
         const maxPhotos = 3;

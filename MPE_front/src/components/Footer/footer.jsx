@@ -29,6 +29,7 @@ const Footer = () => {
               <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-5">Plateforme</p>
               <div className="flex flex-col items-center gap-3">
                 <Link to="/professionnels" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Rechercher un pro</Link>
+                <Link to="/blog" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Blog & Guides</Link>
                 <Link to="/faq" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">FAQ</Link>
                 <Link to="/" className="text-white/60 hover:text-white text-sm font-light transition-colors tracking-tight">Accueil</Link>
               </div>

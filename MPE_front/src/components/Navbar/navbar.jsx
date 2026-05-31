@@ -12,6 +12,7 @@ import logo from "../../../public/assets/img/logo.png";
 const NAV_LINKS = [
   { label: "Accueil", to: "/" },
   { label: "Recherche", to: "/professionnels" },
+  { label: "Blog", to: "/blog" },
   { label: "Tarifs", to: "/pricing" },
   { label: "FAQ", to: "/faq" },
   { label: "Contact", to: "/contact" },

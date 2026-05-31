@@ -205,12 +205,31 @@ const EnterpriseShow = () => {
   const pageDescription = enterprise.description
     ? enterprise.description.replace(/[#*_[\]]/g, "").slice(0, 155)
     : `${enterprise.name} est un professionnel vérifié sur Proxilio${enterprise.city ? ` à ${enterprise.city}` : ""}. Consultez la fiche, les avis et réservez en ligne.`;
-  const pageUrl = `https://www.proxilio.fr/enterprise/${enterprise.slug || enterprise.id}`;
-  const pageImage = enterprise.photos?.[0] || enterprise.logo || "https://www.proxilio.fr/assets/img/logo.png";
+  const pageUrl = `https://proxilio.fr/enterprise/${enterprise.slug || enterprise.id}`;
+  const pageImage = enterprise.photos?.[0] || enterprise.logo || "https://proxilio.fr/assets/img/logo.png";
+
+  // Mapping métier → type Schema.org officiel
+  const SCHEMA_TYPE_MAP = {
+    "Plombier": "Plumber", "Électricien": "Electrician", "Electricien": "Electrician",
+    "Avocat": "Attorney", "Médecin": "Physician", "Dentiste": "Dentist",
+    "Vétérinaire": "AnimalShelter", "Pharmacien": "Pharmacy",
+    "Architecte": "Architect", "Comptable": "AccountingService",
+    "Coiffeur": "HairSalon", "Esth��ticienne": "BeautySalon", "Spa": "DaySpa",
+    "Restaurant": "Restaurant", "Boulangerie": "Bakery", "Épicerie": "GroceryStore",
+    "Serrurier": "LocksmithService", "Maçon": "GeneralContractor",
+    "Peintre": "PainterService", "Menuisier": "GeneralContractor",
+    "Jardinier": "LandscapeService", "Déménageur": "MovingCompany",
+    "Taxi": "TaxiService", "Auto-école": "DrivingSchool",
+  };
+  const schemaType = SCHEMA_TYPE_MAP[enterprise.job?.name] || "LocalBusiness";
+
+  const jobSlug = enterprise.job?.name
+    ? enterprise.job.name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+    : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": schemaType,
     name: enterprise.name,
     description: pageDescription,
     url: pageUrl,
@@ -225,7 +244,6 @@ const EnterpriseShow = () => {
       ...(enterprise.zip_code && { postalCode: enterprise.zip_code }),
       addressCountry: "FR",
     },
-    ...(enterprise.job?.name && { "@type": "LocalBusiness", additionalType: enterprise.job.name }),
     ...(totalReviews > 0 && {
       aggregateRating: {
         "@type": "AggregateRating",
@@ -235,6 +253,15 @@ const EnterpriseShow = () => {
         worstRating: "1",
       },
     }),
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Accueil", item: "https://proxilio.fr/" },
+        { "@type": "ListItem", position: 2, name: "Professionnels", item: "https://proxilio.fr/professionnels" },
+        ...(jobSlug ? [{ "@type": "ListItem", position: 3, name: enterprise.job.name, item: `https://proxilio.fr/professionnels/${jobSlug}` }] : []),
+        { "@type": "ListItem", position: jobSlug ? 4 : 3, name: enterprise.name, item: pageUrl },
+      ],
+    },
   };
 
   return (
@@ -286,7 +313,9 @@ const EnterpriseShow = () => {
           {coverPhoto && (
             <img
               src={coverPhoto}
-              alt="Couverture"
+              alt={`${enterprise.name} — photo de couverture`}
+              width={1200}
+              height={400}
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               onClick={() => openPopup(coverPhoto)}
             />
@@ -303,7 +332,9 @@ const EnterpriseShow = () => {
           {enterprise.logo ? (
             <img
               src={enterprise.logo}
-              alt={`${enterprise.name} logo`}
+              alt={`Logo ${enterprise.name}`}
+              width={96}
+              height={96}
               className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border border-black/5 object-cover shadow-[0_4px_16px_-8px_rgba(0,0,0,0.1)] flex-shrink-0"
             />
           ) : (
@@ -409,7 +440,11 @@ const EnterpriseShow = () => {
                     >
                       <img
                         src={photo}
-                        alt={`${enterprise.name} photo ${i + 2}`}
+                        alt={`${enterprise.name} — photo ${i + 2}`}
+                        width={400}
+                        height={400}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                       />
                     </div>

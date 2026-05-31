@@ -22,6 +22,10 @@ import Pricing_page from "./components/pricing_page/pricing_page";
 import HomeClient from "./pages/home/HomeClient";
 import Contact from "./pages/contact/contact";
 import SearchEntreprise from "./pages/searchentreprises/SearchEntreprise";
+import ProfessionnelsByJob from "./pages/Professionnels/ProfessionnelsByJob";
+import ProfessionnelsByJobCity from "./pages/Professionnels/ProfessionnelsByJobCity";
+import BlogIndex from "./pages/Blog/BlogIndex";
+import BlogArticle from "./pages/Blog/BlogArticle";
 import FAQ from "./pages/FAQ/FAQ";
 import RegisterCompany from "./pages/user/registercompany";
 import EnterprisePage from "./pages/EnterpriseShow/EnterpriseShow";
@@ -120,7 +124,11 @@ function AppContent() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/professionnels" element={<SearchEntreprise />} />
+          <Route path="/professionnels/:jobSlug/:citySlug" element={<ProfessionnelsByJobCity />} />
+          <Route path="/professionnels/:jobSlug" element={<ProfessionnelsByJob />} />
           <Route path="/searchentreprise" element={<Navigate to="/professionnels" replace />} />
+          <Route path="/blog" element={<BlogIndex />} />
+          <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/cookie-policies" element={<CookiePolicies />} />
           <Route path="/legal-notices" element={<LegalNotices />} />
           <Route path="/confidentiality-policies" element={<ConfidentialityPolicies />} />
