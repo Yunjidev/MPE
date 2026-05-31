@@ -14,4 +14,4 @@ Disallow: /reset-password/
 
 Allow: /
 
-Sitemap: https://www.proxilio.fr/sitemap.xml
+Sitemap: https://proxilio.fr/sitemap.xml
