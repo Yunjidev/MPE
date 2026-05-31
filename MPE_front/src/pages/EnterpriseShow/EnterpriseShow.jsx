@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import {
   FiShare2, FiCheck, FiMapPin, FiPhone, FiMail, FiGlobe, FiCalendar,
@@ -362,9 +362,12 @@ const EnterpriseShow = () => {
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-2">
               {enterprise.job?.name && (
-                <span className="px-3 py-1 rounded-full text-xs font-light bg-[#eef5f1] text-[#132A24] border border-[#132A24]/10">
+                <Link
+                  to={`/professionnels/${jobSlug}`}
+                  className="px-3 py-1 rounded-full text-xs font-light bg-[#eef5f1] text-[#132A24] border border-[#132A24]/10 hover:bg-[#132A24] hover:text-white transition-colors"
+                >
                   {enterprise.job.name}
-                </span>
+                </Link>
               )}
               {enterprise.isPremium && (
                 <span className="px-3 py-1 rounded-full text-xs font-light bg-[#132A24] text-white">

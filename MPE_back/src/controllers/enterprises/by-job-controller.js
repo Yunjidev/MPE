@@ -51,7 +51,7 @@ exports.getByJob = async (req, res) => {
         { model: sequelize.models.Country, as: "country", attributes: ["name"] },
         {
           model: sequelize.models.Offer, as: "offers",
-          include: [{ model: sequelize.models.Rating, as: "ratings", attributes: ["rating"] }],
+          include: [{ model: sequelize.models.Rating, as: "ratings", attributes: ["note"] }],
           attributes: ["id"],
           required: false,
         },
