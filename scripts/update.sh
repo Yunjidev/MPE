@@ -28,6 +28,8 @@ sleep 5
 docker compose up -d --no-deps frontend
 sleep 3
 docker compose up -d --no-deps nginx
+# Reload nginx pour re-résoudre les IPs Docker après restart des containers
+docker exec proxilio-nginx nginx -s reload 2>/dev/null || true
 
 echo "▶ [5/5] Nettoyage images orphelines..."
 docker image prune -f
