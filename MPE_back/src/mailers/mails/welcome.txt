@@ -1,11 +1,32 @@
 Bienvenue sur Proxilio, {user} !
 
-Votre compte a bien été créé. Nous sommes ravis de vous accueillir dans la communauté Proxilio.
+Votre compte a bien été créé. Nous sommes ravis de vous accueillir sur Proxilio.
 
-Par où commencer ?
+─────────────────────────────
+Vous êtes professionnel ?
+─────────────────────────────
 01 — Complétez votre profil
+     Ajoutez vos informations et une photo
+
 02 — Créez votre entreprise
+     Inscrivez votre activité sur la plateforme
+
 03 — Trouvez vos premiers clients
+     Soyez visible localement dès aujourd'hui
+
+─────────────────────────────
+Vous êtes particulier ?
+─────────────────────────────
+01 — Recherchez des professionnels
+     Trouvez des artisans et prestataires près de chez vous
+
+02 — Comparez les avis et les offres
+     Consultez les profils, avis clients et tarifs
+
+03 — Contactez et réservez
+     Envoyez une demande de devis ou réservez directement
+
+─────────────────────────────
 
 Accédez à votre compte : {url}
 
