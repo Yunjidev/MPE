@@ -150,6 +150,7 @@ router.post("/marketing/templates", marketingController.createTemplate);
 router.put("/marketing/templates/:id", marketingController.updateTemplate);
 router.delete("/marketing/templates/:id", marketingController.deleteTemplate);
 router.post("/marketing/send", marketingController.sendMarketing);
+router.post("/marketing/test-template", marketingController.sendTestTemplate);
 
 // Routes Settings
 const settingsController = require("../../controllers/settings-controller");

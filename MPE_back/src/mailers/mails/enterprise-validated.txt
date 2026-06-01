@@ -6,13 +6,25 @@ Votre entreprise "{enterprise}" vient d'être validée et est maintenant visible
 
 Ce qui est maintenant actif :
 - Visible dans les recherches par métier et ville
-- Réservations en ligne depuis votre dashboard
+- Messagerie clients intégrée
 - Statistiques et suivi de performances
 
 Voir votre page entreprise : {url}
 
----
-Passez Premium pour apparaître en tête des résultats : {url}/pricing (à partir de 30 €/mois)
+─────────────────────────────
+Passez Premium — 10 €/mois ou 100 €/an (2 mois offerts)
+─────────────────────────────
+🔝 Mise en avant sur la page d'accueil
+🏆 Position prioritaire dans les résultats de recherche
+🏅 Badge de certification officiel
+📅 Réservations en ligne 24h/24
+💬 Messagerie illimitée + alertes email à chaque message
+📊 Statistiques avancées
+📄 Devis & factures PDF professionnels
+🌐 Référencement prioritaire sur Google
 
+Découvrir l'offre Premium : {url}/pricing
+
+─────────────────────────────
 Des questions ? contact@proxilio.fr
 © 2025 Proxilio — Tous droits réservés

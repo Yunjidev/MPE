@@ -68,6 +68,21 @@ exports.deleteTemplate = (req, res) => {
   return res.status(200).json({ message: "Template supprimé." });
 };
 
+/* ── Test template ── */
+
+exports.sendTestTemplate = async (req, res) => {
+  try {
+    const { email, templateName, data } = req.body;
+    if (!email || !templateName) return res.status(400).json({ error: "email et templateName sont requis." });
+    const sendEmail = require("../mailers/email-service");
+    await sendEmail(email, `[TEST] ${templateName}`, templateName, data || {});
+    return res.status(200).json({ message: `Email de test envoyé à ${email}.` });
+  } catch (error) {
+    console.error("[Marketing] sendTestTemplate:", error);
+    return res.status(500).json({ error: error.message || "Erreur lors de l'envoi." });
+  }
+};
+
 /* ── Segments ── */
 
 exports.getUsersWithoutEnterprise = async (req, res) => {
