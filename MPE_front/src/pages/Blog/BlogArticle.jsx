@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { getArticle, ARTICLES } from "../../data/blog-articles";
 
 /* ── Composants de rendu Markdown ─────────────────────────────────── */
@@ -174,7 +175,7 @@ export default function BlogArticle() {
 
         {/* Contenu Markdown */}
         <article className="min-w-0">
-          <ReactMarkdown components={mdComponents}>
+          <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
             {article.content}
           </ReactMarkdown>
         </article>
