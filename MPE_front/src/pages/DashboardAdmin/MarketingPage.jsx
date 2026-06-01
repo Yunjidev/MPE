@@ -43,6 +43,7 @@ export default function MarketingPage() {
   const [emailInput, setEmailInput] = useState("");
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loadingSegment, setLoadingSegment] = useState(false);
 
   const fetchTemplates = useCallback(async () => {
     try {
@@ -111,6 +112,17 @@ export default function MarketingPage() {
 
   const parseEmails = (raw) =>
     raw.split(/[\n,;]+/).map((e) => e.trim()).filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+
+  const handlePrefillWithoutEnterprise = async () => {
+    try {
+      setLoadingSegment(true);
+      const data = await getData("admin/marketing/users-without-enterprise");
+      if (!data.emails?.length) { toast.info("Aucun utilisateur sans entreprise."); return; }
+      setEmailInput(data.emails.join("\n"));
+      toast.success(`${data.emails.length} destinataire(s) chargé(s).`);
+    } catch { toast.error("Impossible de charger les utilisateurs."); }
+    finally { setLoadingSegment(false); }
+  };
 
   const handleSend = async () => {
     const emails = parseEmails(emailInput);
@@ -251,7 +263,15 @@ export default function MarketingPage() {
 
           {/* Destinataires */}
           <div className="bg-white border border-black/5 rounded-2xl p-5 space-y-4">
-            <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Destinataires & Envoi</p>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Destinataires & Envoi</p>
+              <button
+                onClick={handlePrefillWithoutEnterprise}
+                disabled={loadingSegment}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 px-3 py-1.5 text-xs font-light text-[#879f98] hover:text-[#132A24] hover:bg-[#f5f7f6] transition disabled:opacity-50">
+                {loadingSegment ? "Chargement…" : "Pré-remplir : sans entreprise"}
+              </button>
+            </div>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">
                 Emails <span className="normal-case tracking-normal text-[#879f98]">(un par ligne, ou séparés par virgule/point-virgule)</span>

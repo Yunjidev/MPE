@@ -3,6 +3,7 @@
 const fs           = require("fs");
 const path         = require("path");
 const nodemailer   = require("nodemailer");
+const { sequelize } = require("../../../models/index");
 
 /* Transporter dédié Brevo — uniquement pour les emails marketing */
 const brevoTransporter = nodemailer.createTransport({
@@ -65,6 +66,23 @@ exports.deleteTemplate = (req, res) => {
   if (filtered.length === templates.length) return res.status(404).json({ error: "Template introuvable." });
   writeTemplates(filtered);
   return res.status(200).json({ message: "Template supprimé." });
+};
+
+/* ── Segments ── */
+
+exports.getUsersWithoutEnterprise = async (req, res) => {
+  try {
+    const User = sequelize.models.User;
+    const users = await User.findAll({
+      attributes: ["email"],
+      include: [{ model: sequelize.models.Enterprise, as: "enterprises", attributes: ["id"] }],
+    });
+    const emails = users.filter((u) => u.enterprises.length === 0).map((u) => u.email);
+    return res.status(200).json({ emails });
+  } catch (error) {
+    console.error("[Marketing] getUsersWithoutEnterprise:", error);
+    return res.status(500).json({ error: "Erreur serveur." });
+  }
 };
 
 /* ── Envoi marketing ── */
