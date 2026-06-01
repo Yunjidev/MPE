@@ -34,8 +34,9 @@ router.delete("/users/delete", authController.deleteUser);
 
 // Routes Enterprise
 const uploadFiles = files.upload("enterprises").fields([
-  { name: "logo", maxCount: 1, folder: "logo" },
-  { name: "photos", maxCount: 4, folder: "photos" },
+  { name: "banner", maxCount: 1, folder: "photos" }, // photo de couverture
+  { name: "photos", maxCount: 3, folder: "photos" }, // galerie (max 3)
+  { name: "logo",   maxCount: 1, folder: "logo"   },
 ]);
 
 router.post(
