@@ -21,7 +21,7 @@ const LegalNotices = () => (
       <Section title="1. Éditeur du site">
         <p><strong className="font-normal">Raison sociale :</strong> Proxilio</p>
         <p><strong className="font-normal">Forme juridique :</strong> Auto-entrepreneur</p>
-        <p><strong className="font-normal">Directeur de la publication :</strong> Florian Van Camp</p>
+        <p><strong className="font-normal">Directeur de la publication :</strong> Proxilio</p>
         <p><strong className="font-normal">Adresse e-mail :</strong> <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a></p>
         <p><strong className="font-normal">Site web :</strong> <a href="https://www.proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">www.proxilio.fr</a></p>
       </Section>

@@ -24,7 +24,7 @@ const UsagePolicies = () => (
           Proxilio est une plateforme de mise en relation entre des particuliers et des professionnels locaux. Elle permet aux utilisateurs de trouver, contacter et réserver les services de professionnels vérifiés dans leur zone géographique.
         </p>
         <p>
-          Éditeur : Proxilio, représenté par Florian Van Camp — <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a>
+          Éditeur : Proxilio — <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a>
         </p>
       </Section>
 

@@ -21,7 +21,7 @@ const ConfidentialityPolicies = () => (
 
       <Section title="1. Responsable du traitement">
         <p>Le responsable du traitement des données personnelles collectées sur <strong className="font-normal">www.proxilio.fr</strong> est :</p>
-        <p><strong className="font-normal">Proxilio</strong> — représenté par Florian Van Camp</p>
+        <p><strong className="font-normal">Proxilio</strong></p>
         <p>Contact : <a href="mailto:contact@proxilio.fr" className="underline underline-offset-4 hover:text-[#4b8a74] transition-colors">contact@proxilio.fr</a></p>
       </Section>
 
