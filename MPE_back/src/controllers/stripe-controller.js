@@ -114,7 +114,7 @@ exports.verifySession = async (req, res) => {
 
     const owner = await User.findByPk(enterprise.User_id);
     if (owner) {
-      const planLabels = { monthly: "Mensuel — 30 €/mois", yearly: "Annuel — 300 €/an" };
+      const planLabels = { monthly: "Mensuel — 10 €/mois", yearly: "Annuel — 100 €/an" };
       sendEmail(
         owner.email,
         "Votre abonnement Premium est actif — Proxilio",
