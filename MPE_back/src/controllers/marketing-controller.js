@@ -3,7 +3,7 @@
 const fs           = require("fs");
 const path         = require("path");
 const nodemailer   = require("nodemailer");
-const { sequelize } = require("../../../models/index");
+const { sequelize } = require("../../models/index");
 
 /* Transporter dédié Brevo — uniquement pour les emails marketing */
 const brevoTransporter = nodemailer.createTransport({
