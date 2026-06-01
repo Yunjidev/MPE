@@ -83,7 +83,7 @@ const EnterpriseDetails = ({ enterprise }) => {
               {enterprise.siret_number && (
                 <li className="flex items-start gap-2">
                   <IoBusinessOutline className="mt-0.5 text-neutral-400 shrink-0" />
-                  <span>{enterprise.siret_number}</span>
+                  <span><span className="text-neutral-400 mr-1">SIRET</span>{enterprise.siret_number}</span>
                 </li>
               )}
 
