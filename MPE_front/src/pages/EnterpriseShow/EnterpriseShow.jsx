@@ -529,6 +529,12 @@ const EnterpriseShow = () => {
                     )}
                   </div>
                 )}
+                {enterprise.siret_number && (
+                  <div className="flex items-start gap-3 text-sm text-[#879f98]">
+                    <span className="mt-0.5 text-[#132A24] flex-shrink-0"><FiMapPin /></span>
+                    <span><span className="mr-1">SIRET</span>{enterprise.siret_number}</span>
+                  </div>
+                )}
               </div>
               {enterprise.phone && phoneRevealed && (
                 <a href={`tel:${enterprise.phone}`} className="mt-5 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#132A24] hover:bg-[#1b3b33] text-white text-sm font-light rounded-xl transition-colors">
