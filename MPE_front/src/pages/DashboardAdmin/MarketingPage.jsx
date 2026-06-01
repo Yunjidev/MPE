@@ -55,13 +55,21 @@ export default function MarketingPage() {
 
   useEffect(() => { fetchTemplates(); }, [fetchTemplates]);
 
-  const applyTemplate = (tpl) => {
+  const applyTemplate = async (tpl) => {
     setSelected(tpl.id);
     setName(tpl.name);
     setSubject(tpl.subject);
     setBody(tpl.body);
     setIsDirty(false);
     setIsNew(false);
+    if (tpl.name === "Rappel — Créer son entreprise") {
+      try {
+        setLoadingSegment(true);
+        const data = await getData("admin/marketing/users-without-enterprise");
+        if (data.emails?.length) setEmailInput(data.emails.join("\n"));
+      } catch { /* silencieux */ }
+      finally { setLoadingSegment(false); }
+    }
   };
 
   const handleNew = () => {
