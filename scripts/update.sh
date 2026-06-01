@@ -27,7 +27,7 @@ docker compose up -d --no-deps backend
 sleep 5
 docker compose up -d --no-deps frontend
 sleep 3
-docker compose up -d --no-deps nginx
+docker compose up -d --force-recreate --no-deps nginx
 
 echo "▶ [5/5] Nettoyage images orphelines..."
 docker image prune -f
