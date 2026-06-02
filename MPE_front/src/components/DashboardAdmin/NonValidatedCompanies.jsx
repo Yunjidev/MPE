@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo } from "react";
-import { getData, putData } from "../../services/data-fetch";
+import { getData, putData, deleteData } from "../../services/data-fetch";
 import { useSocketIo } from "../../services/UseSocketIo";
 import { useAtom } from "jotai";
 import { enterprisesAtom } from "../../store/enterprises";
@@ -101,9 +101,7 @@ const NonValidatedCompanies = () => {
 
   const rejectCompany = async (companyId) => {
     try {
-      const formData = new FormData();
-      formData.append("isValidate", "false");
-      await putData(`enterprise/${companyId}`, formData);
+      await deleteData(`admin/enterprises/${companyId}`);
 
       // MAJ locale
       setCompanies((prev) => prev.filter((c) => c.id !== companyId));

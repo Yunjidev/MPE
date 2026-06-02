@@ -46,10 +46,6 @@ exports.createEnterprise = async (req, res) => {
         .json({ errors: "Veuillez renseigner votre nom et votre prénom" });
     }
 
-    if (!req.user.isEntrepreneur) {
-      req.user.isEntrepreneur = true;
-      await req.user.save();
-    }
     const slug = await ensureUniqueSlug(name, Enterprise);
     const newEnterprise = await Enterprise.create({
       name,
@@ -74,6 +70,11 @@ exports.createEnterprise = async (req, res) => {
       service_types,
       languages,
     });
+    if (!req.user.isEntrepreneur) {
+      req.user.isEntrepreneur = true;
+      await req.user.save();
+    }
+
     let enterpriseData = {
       id: newEnterprise.id,
       slug: newEnterprise.slug,
@@ -285,6 +286,33 @@ exports.deleteEnterprise = async (req, res) => {
     res.status(200).json({ message: "enterprises supprimée" });
   } catch (error) {
     res.status(500).json({ errors: error.errors });
+  }
+};
+
+exports.deleteEnterpriseAdmin = async (req, res) => {
+  try {
+    const enterprise = await Enterprise.findByPk(req.params.id);
+    if (!enterprise) return res.status(404).json({ errors: "Entreprise introuvable." });
+
+    if (enterprise.logo) files.deleteFile(enterprise.logo);
+    if (enterprise.photos?.length) enterprise.photos.forEach((p) => files.deleteFile(p));
+
+    const user = await User.findByPk(enterprise.User_id);
+    if (user) {
+      const remaining = await user.getEnterprises();
+      if (remaining.length === 1) {
+        user.isEntrepreneur = false;
+        await user.save();
+      }
+    }
+
+    await enterprise.destroy();
+    const io = getIo();
+    if (io) io.emit("enterpriseDeleted", { enterprises: enterprise.id });
+
+    res.status(200).json({ message: "Entreprise supprimée." });
+  } catch (error) {
+    res.status(500).json({ errors: error.message });
   }
 };
 

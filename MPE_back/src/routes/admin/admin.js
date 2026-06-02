@@ -45,6 +45,7 @@ router.get(
   enterpriseNotValidateController.getAllEnterprisesNotValidate,
 );
 router.get("/enterprises/:id", enterpriseGetController.getEnterpriseById);
+router.delete("/enterprises/:id", enterpriseController.deleteEnterpriseAdmin);
 router.patch(
   "/enterprises/:id/premium",
   enterprisePremiumController.updateEnterprisePremiumStatus,
