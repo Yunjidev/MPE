@@ -45,7 +45,7 @@ const enterpriseValidationRules = (isUpdate = false) => {
         .trim()
         .isLength({ min: 10 })
         .withMessage("Le numéro de téléphone doit contenir au moins 10 chiffres"),
-      body("adress").optional({ checkFalsy: true }).bail().trim().escape(),
+      body("adress").optional({ checkFalsy: true }).bail().trim(),
       body("city").optional({ checkFalsy: true }).trim(),
       body("zip_code")
         .optional({ checkFalsy: true })
