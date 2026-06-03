@@ -57,10 +57,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          notEmpty: true,
-        },
+        allowNull: true,
+      },
+      google_id: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
       },
       resetPasswordToken: {
         type: DataTypes.STRING,

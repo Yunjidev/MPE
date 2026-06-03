@@ -1,5 +1,6 @@
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import UserForm from "./UserForm";
+import GoogleAuthButton from "./GoogleAuthButton";
 import { authSignInUp } from "../../services/auth-fetch";
 import { useAtom } from "jotai";
 import { userAtom } from "../../store/user";
@@ -41,6 +42,7 @@ export default function SignUp() {
 
       <div className="w-full max-w-md">
         <UserForm onSubmit={handleSubmit} mode="Inscription" />
+        <GoogleAuthButton redirectTo="/dashboard/user-db" />
         <p className="mt-5 text-center text-sm font-light text-[#879f98]">
           Déjà un compte ?{" "}
           <Link to="/signin" className="text-[#132A24] underline underline-offset-4 hover:text-[#4b8a74] transition-colors">

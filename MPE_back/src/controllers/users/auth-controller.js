@@ -8,6 +8,9 @@ const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 const sendEmail = require("../../mailers/email-service");
 const files = require("../../utils/files");
+const { OAuth2Client } = require("google-auth-library");
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Fonction pour enrigistrer un nouvel utilisateur
 exports.signup = async (req, res) => {
@@ -303,6 +306,94 @@ exports.refreshToken = async (req, res) => {
     res.status(200).json({ message: "Token refresh" });
   } catch (error) {
     return res.status(401).json({ message: "Token Invalide" });
+  }
+};
+
+exports.googleAuth = async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ errors: "Token Google manquant" });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, given_name, family_name, picture } = payload;
+
+    // Cherche d'abord par google_id, puis par email
+    let user = await User.findOne({ where: { google_id: googleId } });
+
+    if (!user) {
+      user = await User.findOne({ where: { email } });
+      if (user) {
+        // Compte existant → liaison Google
+        user.google_id = googleId;
+        await user.save();
+      } else {
+        // Nouveau compte Google → génération d'un username unique
+        const baseUsername = `${given_name || "user"}${family_name ? family_name.charAt(0) : ""}`
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "")
+          .slice(0, 16);
+
+        let username = baseUsername || "user";
+        let exists = await User.findOne({ where: { username } });
+        while (exists) {
+          username = `${baseUsername}${Math.floor(1000 + Math.random() * 9000)}`;
+          exists = await User.findOne({ where: { username } });
+        }
+
+        user = await User.create({
+          username,
+          email,
+          password: null,
+          google_id: googleId,
+          firstname: given_name || null,
+          lastname: family_name || null,
+          avatar: picture || null,
+        });
+
+        sendEmail(email, "Bienvenue sur Proxilio !", "welcome", {
+          user: username,
+          url: `${process.env.CLIENT_URL}`,
+        });
+      }
+    }
+
+    const enterprises = await user.getEnterprises();
+    const enterprisesData = enterprises.map((e) => {
+      const entry = { id: e.id, slug: e.slug, name: e.name, isValidate: e.isValidate, isPremium: e.isPremium };
+      if (e.logo) entry.logo = files.getUrl(req, "enterprises/logo", e.logo);
+      return entry;
+    });
+
+    const userData = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      isAdmin: user.isAdmin,
+      isEntrepreneur: user.isEntrepreneur,
+      avatar: user.avatar,
+    };
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    res.setHeader("Authorization", `${accessToken}`);
+    res.status(200).json({
+      user: userData,
+      enterprises: enterprisesData,
+      refreshToken,
+      message: "Authentification Google réussie",
+    });
+  } catch (error) {
+    console.error("❌ ERREUR DANS /auth/google :", error);
+    res.status(401).json({ errors: "Token Google invalide" });
   }
 };
 

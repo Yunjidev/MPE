@@ -23,6 +23,27 @@ export async function authSignInUp(object, data) {
   }
 }
 
+export async function authGoogle(credential) {
+  try {
+    const response = await kyInstance.post(BASE_URL + "auth/google", {
+      json: { credential },
+    });
+    Cookies.set("mpe-auth", response.headers.get("Authorization"), {
+      secure: true,
+      sameSite: "strict",
+    });
+    const userData = await response.json();
+    Cookies.set("mpe-refresh", userData.refreshToken, {
+      secure: true,
+      sameSite: "strict",
+    });
+    return userData;
+  } catch (error) {
+    let errorData = await error.responseData;
+    throw new Error(JSON.stringify(errorData));
+  }
+}
+
 export async function authSignOut() {
   try {
     const accessToken = Cookies.get("mpe-auth");

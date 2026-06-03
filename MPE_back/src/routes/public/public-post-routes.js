@@ -35,6 +35,8 @@ router.post("/signin", authLimiter, authController.login);
 router.post("/refresh-token", authController.refreshToken);
 router.post("/validate-refresh-token", authController.validateRefreshToken);
 
+router.post("/auth/google", authLimiter, authController.googleAuth);
+
 router.post("/forgot-password", forgotPasswordLimiter, authController.forgotPassword);
 router.post("/reset-password/:token", forgotPasswordLimiter, authController.resetPassword);
 
