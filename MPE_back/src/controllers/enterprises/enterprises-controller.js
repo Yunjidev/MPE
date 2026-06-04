@@ -28,10 +28,14 @@ exports.createEnterprise = async (req, res) => {
     const payment_methods = parseArr(req.body.payment_methods);
     const service_types   = parseArr(req.body.service_types);
     const languages       = parseArr(req.body.languages);
-    const rawLogo = req.files?.logo?.[0]?.path || null;
-    const rawPhotos = req.files?.photos?.map((f) => f.path) || [];
-    const logo   = rawLogo            ? await files.toWebP(rawLogo)             : null;
-    const photos = await Promise.all(rawPhotos.map((p) => files.toWebP(p)));
+    const rawLogo    = req.files?.logo?.[0]?.path || null;
+    const rawBanner  = req.files?.banner?.[0]?.path || null;
+    const rawPhotos  = req.files?.photos?.map((f) => f.path) || [];
+    const logo       = rawLogo   ? await files.toWebP(rawLogo)   : null;
+    const banner     = rawBanner ? await files.toWebP(rawBanner) : null;
+    const gallery    = await Promise.all(rawPhotos.map((p) => files.toWebP(p)));
+    // photos[0] = bannière, photos[1-3] = galerie
+    const photos     = banner ? [banner, ...gallery] : gallery;
     const job = await Job.findByPk(Job_id);
     if (!job) {
       return res.status(404).json({ errors: "Pas de job trouvé" });
