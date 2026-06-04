@@ -192,17 +192,22 @@ const PremiumReservationModal = ({ enterpriseId, isOpen, onClose, onBooked, offe
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 py-8">
-      <div className="w-full max-w-3xl bg-white rounded-2xl border border-black/5 shadow-[0_24px_60px_-12px_rgba(0,0,0,0.15)] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm sm:px-4 sm:py-8">
+      <div className="w-full sm:max-w-3xl bg-white rounded-t-2xl sm:rounded-2xl border-0 sm:border border-black/5 shadow-[0_-8px_40px_-4px_rgba(0,0,0,0.12)] sm:shadow-[0_24px_60px_-12px_rgba(0,0,0,0.15)] flex flex-col max-h-[92vh] sm:max-h-[88vh]">
+
+        {/* Handle mobile */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-10 h-1 rounded-full bg-black/10" />
+        </div>
 
         {/* Header */}
-        <div className="px-6 pt-6 pb-5 border-b border-black/5 flex items-start justify-between gap-4">
+        <div className="px-5 sm:px-6 pt-4 sm:pt-6 pb-4 sm:pb-5 border-b border-black/5 flex items-start justify-between gap-4 flex-shrink-0">
           <div>
             <p className="text-[10px] uppercase tracking-widest text-[#4b615a] font-light mb-1">Réservation</p>
-            <h3 className="text-xl font-light text-[#132A24] tracking-tight">
+            <h3 className="text-lg sm:text-xl font-light text-[#132A24] tracking-tight">
               Réserver une prestation
             </h3>
-            <p className="text-sm text-[#4b615a] font-light mt-1">
+            <p className="text-sm text-[#4b615a] font-light mt-0.5 hidden sm:block">
               Sélectionnez une prestation puis choisissez un créneau.
             </p>
           </div>
@@ -214,7 +219,7 @@ const PremiumReservationModal = ({ enterpriseId, isOpen, onClose, onBooked, offe
           </button>
         </div>
 
-        <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
 
           {/* Offers */}
           <div>
@@ -374,17 +379,17 @@ const PremiumReservationModal = ({ enterpriseId, isOpen, onClose, onBooked, offe
         </div>
 
         {/* Footer actions */}
-        <div className="px-6 py-4 border-t border-black/5 flex items-center justify-end gap-3">
+        <div className="px-5 sm:px-6 py-4 border-t border-black/5 flex items-center gap-3 flex-shrink-0 bg-white safe-area-pb">
           <button
             onClick={handleClose}
-            className="px-5 py-2.5 rounded-xl border border-black/5 text-sm font-light text-[#879f98] hover:bg-[#f5f7f6] hover:text-[#132A24] transition-colors"
+            className="px-4 sm:px-5 py-2.5 rounded-xl border border-black/5 text-sm font-light text-[#879f98] hover:bg-[#f5f7f6] hover:text-[#132A24] transition-colors"
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={!selectedSlot || !selectedOffer || isSubmitting}
-            className="px-5 py-2.5 rounded-xl bg-[#132A24] text-white text-sm font-light hover:bg-[#1b3b33] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-1 sm:flex-none sm:px-5 py-2.5 rounded-xl bg-[#132A24] text-white text-sm font-light hover:bg-[#1b3b33] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Envoi…" : "Confirmer la réservation"}
           </button>
