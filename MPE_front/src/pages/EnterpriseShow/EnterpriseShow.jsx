@@ -303,6 +303,19 @@ const EnterpriseShow = () => {
       <button onClick={handleOpenMsg} className="mt-3 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors border border-[#132A24]/10">
         ✉ Envoyer un message
       </button>
+      {socialLinks.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-black/5">
+          <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-2">Réseaux sociaux</p>
+          <div className="flex flex-wrap gap-2">
+            {socialLinks.map((social) => (
+              <a key={social.key} href={social.url} target="_blank" rel="noopener noreferrer" title={social.label}
+                className="flex items-center justify-center h-9 w-9 rounded-xl border border-black/5 bg-[#f5f7f6] text-[#879f98] hover:bg-[#132A24] hover:text-white hover:border-transparent transition-all duration-200 text-base">
+                {social.icon}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -360,20 +373,6 @@ const EnterpriseShow = () => {
               </div>
             </div>
           )}
-        </div>
-      )}
-
-      {socialLinks.length > 0 && (
-        <div className="bg-white border border-black/5 rounded-2xl p-5 shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)]">
-          <h3 className="text-sm font-light text-[#132A24] tracking-tight mb-3">Suivre sur les réseaux</h3>
-          <div className="flex flex-wrap gap-2">
-            {socialLinks.map((social) => (
-              <a key={social.key} href={social.url} target="_blank" rel="noopener noreferrer" title={social.label}
-                className="flex items-center justify-center h-10 w-10 rounded-xl border border-black/5 bg-[#f5f7f6] text-[#879f98] hover:bg-[#132A24] hover:text-white hover:border-transparent transition-all duration-200 text-lg">
-                {social.icon}
-              </a>
-            ))}
-          </div>
         </div>
       )}
 
