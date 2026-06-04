@@ -295,11 +295,6 @@ const EnterpriseShow = () => {
           <FiPhone /> Appeler
         </a>
       )}
-      {enterprise.mail && (
-        <a href={`mailto:${enterprise.mail}`} className="mt-3 flex w-full items-center justify-center gap-2 px-4 py-2.5 border border-black/10 hover:bg-[#f5f7f6] text-[#132A24] text-sm font-light rounded-xl transition-colors">
-          <FiMail /> Envoyer un email
-        </a>
-      )}
       <button onClick={handleOpenMsg} className="mt-3 flex w-full items-center justify-center gap-2 px-4 py-2.5 bg-[#eef5f1] hover:bg-[#132A24] hover:text-white text-[#132A24] text-sm font-light rounded-xl transition-colors border border-[#132A24]/10">
         ✉ Envoyer un message
       </button>
