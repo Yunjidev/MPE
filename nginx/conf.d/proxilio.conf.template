@@ -63,7 +63,7 @@ server {
     add_header X-Content-Type-Options nosniff always;
 
     # Upload size (photos entreprise)
-    client_max_body_size 10M;
+    client_max_body_size 25M;
 
     # Gzip
     gzip on;
