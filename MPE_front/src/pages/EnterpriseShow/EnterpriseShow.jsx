@@ -34,7 +34,6 @@ const EnterpriseShow = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [prefillOfferId, setPrefillOfferId] = useState(null);
   const [shareStatus, setShareStatus] = useState(null);
-  const [shareMessage, setShareMessage] = useState("");
   const [phoneRevealed, setPhoneRevealed] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState(false);
@@ -87,9 +86,9 @@ const EnterpriseShow = () => {
         try { navigator.clipboard?.writeText(shareUrl); } catch { /* ignore */ }
         document.body.removeChild(ta);
       }
-      setShareStatus("success"); setShareMessage("Lien copié !");
+      setShareStatus("success");
     } catch {
-      setShareStatus("error"); setShareMessage("Impossible de partager le lien");
+      setShareStatus("error");
     } finally {
       setTimeout(() => { setShareStatus(null); setShareMessage(""); }, 3000);
     }
@@ -377,21 +376,6 @@ const EnterpriseShow = () => {
           </div>
         </div>
       )}
-
-      <div className="bg-white border border-black/5 rounded-2xl p-5 shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)]">
-        <h3 className="text-sm font-light text-[#132A24] tracking-tight mb-1">Partager cette page</h3>
-        <p className="text-xs text-[#879f98] font-light mb-3">Copiez le lien de la landing page</p>
-        <button onClick={handleShare}
-          className="flex w-full items-center justify-center gap-2 px-4 py-2.5 border border-black/5 bg-[#f5f7f6] hover:bg-[#eef5f1] text-[#879f98] hover:text-[#132A24] text-sm font-light rounded-xl transition-colors">
-          {shareStatus === "success" ? <FiCheck className="text-[#132A24]" /> : <FiShare2 />}
-          {shareStatus === "success" ? "Lien copié !" : "Copier le lien"}
-        </button>
-        {shareMessage && (
-          <p className={`mt-2 text-xs text-center font-light ${shareStatus === "error" ? "text-red-500" : "text-[#132A24]"}`}>
-            {shareMessage}
-          </p>
-        )}
-      </div>
 
       {enterprise.is_public_listing && (
         <div className="bg-[#f5f7f6] border border-black/5 rounded-2xl p-4 space-y-2">
