@@ -132,6 +132,17 @@ export default function MarketingPage() {
     finally { setLoadingSegment(false); }
   };
 
+  const handlePrefillAllUsers = async () => {
+    try {
+      setLoadingSegment(true);
+      const data = await getData("admin/marketing/all-users");
+      if (!data.emails?.length) { toast.info("Aucun utilisateur trouvé."); return; }
+      setEmailInput(data.emails.join("\n"));
+      toast.success(`${data.emails.length} utilisateur(s) chargé(s).`);
+    } catch { toast.error("Impossible de charger les utilisateurs."); }
+    finally { setLoadingSegment(false); }
+  };
+
   const handleSend = async () => {
     const emails = parseEmails(emailInput);
     if (!emails.length) { toast.error("Ajoutez au moins une adresse e-mail valide."); return; }
@@ -273,12 +284,20 @@ export default function MarketingPage() {
           <div className="bg-white border border-black/5 rounded-2xl p-5 space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light">Destinataires & Envoi</p>
-              <button
-                onClick={handlePrefillWithoutEnterprise}
-                disabled={loadingSegment}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 px-3 py-1.5 text-xs font-light text-[#879f98] hover:text-[#132A24] hover:bg-[#f5f7f6] transition disabled:opacity-50">
-                {loadingSegment ? "Chargement…" : "Pré-remplir : sans entreprise"}
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={handlePrefillWithoutEnterprise}
+                  disabled={loadingSegment}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 px-3 py-1.5 text-xs font-light text-[#879f98] hover:text-[#132A24] hover:bg-[#f5f7f6] transition disabled:opacity-50">
+                  {loadingSegment ? "Chargement…" : "Pré-remplir : sans entreprise"}
+                </button>
+                <button
+                  onClick={handlePrefillAllUsers}
+                  disabled={loadingSegment}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 px-3 py-1.5 text-xs font-light text-[#879f98] hover:text-[#132A24] hover:bg-[#f5f7f6] transition disabled:opacity-50">
+                  {loadingSegment ? "Chargement…" : "Pré-remplir : tous les utilisateurs"}
+                </button>
+              </div>
             </div>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-1">

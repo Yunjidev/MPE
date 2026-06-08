@@ -146,6 +146,7 @@ router.get("/referrals", adminReferralController.getReferralStats);
 // Routes Marketing
 const marketingController = require("../../controllers/marketing-controller");
 router.get("/marketing/users-without-enterprise", marketingController.getUsersWithoutEnterprise);
+router.get("/marketing/all-users", marketingController.getAllUsers);
 router.get("/marketing/templates", marketingController.getTemplates);
 router.post("/marketing/templates", marketingController.createTemplate);
 router.put("/marketing/templates/:id", marketingController.updateTemplate);

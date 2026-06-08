@@ -100,6 +100,17 @@ exports.getUsersWithoutEnterprise = async (req, res) => {
   }
 };
 
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await sequelize.models.User.findAll({ attributes: ["email"] });
+    const emails = users.map((u) => u.email).filter(Boolean);
+    return res.status(200).json({ emails });
+  } catch (error) {
+    console.error("[Marketing] getAllUsers:", error);
+    return res.status(500).json({ error: "Erreur serveur." });
+  }
+};
+
 /* ── Envoi marketing ── */
 
 function mdToHtml(md) {
