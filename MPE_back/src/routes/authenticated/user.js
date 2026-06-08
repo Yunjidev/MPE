@@ -17,6 +17,7 @@ const enterprisesController = require("../../controllers/enterprises/enterprises
 const ratingController = require("../../controllers/rating-controller");
 const reservationsController = require("../../controllers/reservation-controller");
 const likeController = require("../../controllers/like-controller");
+const recommendationController = require("../../controllers/recommendation-controller");
 
 // Route User
 router.get("/user/profile", userController.getUserProfile);
@@ -66,6 +67,14 @@ router.put(
   "/reservation/:id",
   authMiddleware.isAuthorizedReservation,
   reservationsController.updateReservation,
+);
+
+// Routes Recommendation
+router.post("/enterprise/:slug/recommendation", recommendationController.createRecommendation);
+router.delete(
+  "/recommendation/:id",
+  authMiddleware.isOwner("Recommendation"),
+  recommendationController.deleteRecommendation,
 );
 
 // Routes Like

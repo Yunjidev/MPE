@@ -73,6 +73,7 @@ import ReservationsList from "./components/DashboardEnterprise/ReservationsList"
 import DevisPage    from "./pages/DashboardEnterprise/DevisPage";
 import FacturesPage from "./pages/DashboardEnterprise/FacturesPage";
 import MessagesPage from "./pages/DashboardEnterprise/MessagesPage";
+import RecommendationsPage from "./pages/DashboardEnterprise/RecommendationsPage";
 import UserMessagesPage from "./pages/DashboardUser/UserMessagesPage";
 import ReferralPage from "./pages/DashboardUser/ReferralPage";
 
@@ -166,6 +167,7 @@ function AppContent() {
                 <Route path="enterprise/:slug/messages" element={<MessagesPage />} />
                 <Route path="enterprise/:slug/dashboard" element={<StatsEnterprises />} />
                 <Route path="enterprise/:slug/offers" element={<OffersPage />} />
+                <Route path="enterprise/:slug/recommendations" element={<RecommendationsPage />} />
               </Route>
               {/* Routes protégées pour les administrateurs */}
               <Route element={<AdminRoute />}>

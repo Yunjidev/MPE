@@ -13,6 +13,7 @@ import { useAtom } from "jotai";
 import { userAtom } from "../../store/user";
 import OfferList from "../../components/ShowEnterprise/OfferList";
 import CommentList from "../../components/ShowEnterprise/CommentList";
+import RecommendationList from "../../components/ShowEnterprise/RecommendationList";
 import PremiumReservationModal from "../../components/ShowEnterprise/PremiumReservationModal";
 
 const formatDuration = (minutes) => {
@@ -246,10 +247,13 @@ const EnterpriseShow = () => {
     },
   };
 
+  const totalRecommendations = enterprise?.recommendations?.length || 0;
+
   const tabs = [
-    { id: "about",    label: "À propos"  },
-    { id: "services", label: "Services"  },
-    { id: "reviews",  label: "Avis"      },
+    { id: "about",           label: "À propos"  },
+    { id: "services",        label: "Services"  },
+    { id: "reviews",         label: "Avis"      },
+    { id: "recommendations", label: totalRecommendations > 0 ? `Recommandations (${totalRecommendations})` : "Recommandations" },
     ...(galleryPhotos.length > 0 ? [{ id: "photos", label: "Photos" }] : []),
   ];
 
@@ -642,6 +646,26 @@ const EnterpriseShow = () => {
                 )}
               </div>
               <CommentList offers={enterprise.offers} />
+            </div>
+          )}
+
+          {/* ── Recommandations ── */}
+          {activeTab === "recommendations" && (
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <h2 className="text-lg font-semibold text-[#132A24]">Recommandations</h2>
+                {totalRecommendations > 0 && (
+                  <span className="px-3 py-1 bg-[#eef5f1] border border-[#132A24]/10 rounded-full text-sm text-[#132A24] font-light">
+                    {totalRecommendations} recommandation{totalRecommendations > 1 ? "s" : ""}
+                  </span>
+                )}
+              </div>
+              <RecommendationList
+                recommendations={enterprise.recommendations || []}
+                enterpriseSlug={enterprise.slug || enterprise.id}
+                currentUser={currentUser}
+                onUpdate={fetchEnterprise}
+              />
             </div>
           )}
 

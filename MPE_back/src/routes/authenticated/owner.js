@@ -110,6 +110,11 @@ router.delete("/invoices/:invoiceId", invoiceController.deleteInvoice);
 router.post("/invoices/:invoiceId/send", invoiceController.sendInvoiceByEmail);
 router.post("/quotes/:quoteId/to-invoice", invoiceController.createFromQuote);
 
+// Routes Recommandations
+const recommendationController = require("../../controllers/recommendation-controller");
+router.get("/recommendations", recommendationController.getEnterpriseRecommendations);
+router.delete("/recommendations/:id", recommendationController.deleteRecommendation);
+
 // Routes Like
 router.get("/enterprises/:id/likes", likeController.getLikeByEnterpriseId);
 

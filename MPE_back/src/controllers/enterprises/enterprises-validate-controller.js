@@ -264,6 +264,16 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
           },
         },
         {
+          model: sequelize.models.Recommendation,
+          as: "recommendations",
+          attributes: ["id", "content", "createdAt", "User_id"],
+          include: [{
+            model: sequelize.models.User,
+            as: "user",
+            attributes: ["id", "username", "avatar"],
+          }],
+        },
+        {
           model: sequelize.models.ManualBlock,
           as: "manualBlocks",
           attributes: ["id", "date", "start_time", "end_time", "reason"],
@@ -342,6 +352,12 @@ exports.getEnterpriseByIdValidate = async (req, res) => {
       if (rater.avatar) {
         const avatarUrl = files.getUrl(req, "users/avatar", rater.avatar);
         rater.dataValues.avatar = avatarUrl;
+      }
+    });
+    const recommenders = (enterprise.recommendations || []).map((r) => r.user);
+    recommenders.forEach((u) => {
+      if (u && u.avatar) {
+        u.dataValues.avatar = files.getUrl(req, "users/avatar", u.avatar);
       }
     });
     if (enterprise.entrepreneur && enterprise.entrepreneur.avatar) {
