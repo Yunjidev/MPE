@@ -274,22 +274,24 @@ exports.deleteEnterprise = async (req, res) => {
         files.deleteFile(photo);
       });
     }
-    const user = await User.findByPk(enterprise.User_id);
-    const userEnterprises = await user.getEnterprises();
-    if (userEnterprises.length === 1) {
-      user.isEntrepreneur = false;
-      await user.save();
+    if (enterprise.User_id) {
+      const user = await User.findByPk(enterprise.User_id);
+      if (user) {
+        const userEnterprises = await user.getEnterprises();
+        if (userEnterprises.length === 1) {
+          user.isEntrepreneur = false;
+          await user.save();
+        }
+      }
     }
     await enterprise.destroy();
     const io = getIo();
     if (io) {
       io.emit("enterpriseDeleted", { enterprises: enterprise.id });
-    } else {
-      console.log("io not defined");
     }
     res.status(200).json({ message: "enterprises supprimée" });
   } catch (error) {
-    res.status(500).json({ errors: error.errors });
+    res.status(500).json({ errors: error.message });
   }
 };
 
