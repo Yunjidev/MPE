@@ -530,10 +530,10 @@ const EnterpriseShow = () => {
 
         {/* Tab navigation */}
         <div className="max-w-5xl mx-auto px-4 mt-8 lg:mt-10">
-          <div className="flex border-b border-black/5">
+          <div className="flex border-b border-black/5 overflow-x-auto scrollbar-none">
             {tabs.map((tab) => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 lg:flex-none lg:px-8 py-3 text-sm transition-colors border-b-2 ${
+                className={`flex-none whitespace-nowrap px-4 lg:px-8 py-3 text-sm transition-colors border-b-2 ${
                   activeTab === tab.id
                     ? "border-[#132A24] text-[#132A24] font-medium"
                     : "border-transparent text-[#879f98] font-light hover:text-[#132A24]"
