@@ -1,6 +1,7 @@
 // pages/Dashboard/Dashboard.js
 import { Outlet } from "react-router-dom";
 import Sidebar from "../../components/Sidebar/Sidebar";
+import ErrorBoundary from "../../components/Utils/ErrorBoundary";
 
 const Dashboard = () => {
   return (
@@ -8,7 +9,9 @@ const Dashboard = () => {
       <div className="flex lg:flex-row">
         <Sidebar />
         <div className="flex-1 p-4 min-w-0">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </div>
     </div>
