@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import NavLink from "../Utils/Link";
-import { FaTachometerAlt, FaBuilding, FaUsers, FaPenFancy, FaEuroSign, FaEnvelope, FaBullhorn, FaUserFriends } from "react-icons/fa";
+import { FaTachometerAlt, FaBuilding, FaUsers, FaPenFancy, FaEuroSign, FaEnvelope, FaBullhorn, FaUserFriends, FaThumbsUp } from "react-icons/fa";
 
 export default function AdminSideBar({ user, iconstyle, linkstyle, onClick }) {
   if (!user?.isAdmin) return null;
@@ -13,6 +13,7 @@ export default function AdminSideBar({ user, iconstyle, linkstyle, onClick }) {
     { to: "/dashboard/jobsandcountrycreate", icon: <FaPenFancy className={iconstyle} />, label: "Gestion des métiers" },
     { to: "/dashboard/subscriptionmanagement", icon: <FaEuroSign className={iconstyle} />, label: "Gestion des abonnements" },
     { to: "/dashboard/referrals", icon: <FaUserFriends className={iconstyle} />, label: "Parrainages" },
+    { to: "/dashboard/admin-recommendations", icon: <FaThumbsUp className={iconstyle} />, label: "Recommandations" },
     { to: "/dashboard/marketing", icon: <FaEnvelope className={iconstyle} />, label: "Marketing — Emails" },
     { to: "/dashboard/banner", icon: <FaBullhorn className={iconstyle} />, label: "Bandeau défilant" },
   ];

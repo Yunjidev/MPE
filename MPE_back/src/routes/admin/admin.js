@@ -143,6 +143,11 @@ router.delete("/condition/:id", conditionsController.deleteCondition);
 const adminReferralController = require("../../controllers/admin-referral-controller");
 router.get("/referrals", adminReferralController.getReferralStats);
 
+// Routes Recommendations Admin
+const recommendationController = require("../../controllers/recommendation-controller");
+router.get("/recommendations", recommendationController.getAllRecommendationsAdmin);
+router.delete("/recommendations/:id", recommendationController.deleteRecommendation);
+
 // Routes Marketing
 const marketingController = require("../../controllers/marketing-controller");
 router.get("/marketing/users-without-enterprise", marketingController.getUsersWithoutEnterprise);

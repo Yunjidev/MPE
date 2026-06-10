@@ -63,6 +63,7 @@ import SubscriptionManagement from "./pages/DashboardAdmin/SubscriptionManagemen
 import MarketingPage from "./pages/DashboardAdmin/MarketingPage";
 import BannerPage from "./pages/DashboardAdmin/BannerPage";
 import ReferralAdminPage from "./pages/DashboardAdmin/ReferralAdminPage";
+import AdminRecommendationsPage from "./pages/DashboardAdmin/AdminRecommendationsPage";
 
 // Protected Routes
 import AuthenticatedRoute from "./context/AuthenticatedRoute";
@@ -181,6 +182,7 @@ function AppContent() {
                 <Route path="marketing" element={<MarketingPage />} />
                 <Route path="banner" element={<BannerPage />} />
                 <Route path="referrals" element={<ReferralAdminPage />} />
+                <Route path="admin-recommendations" element={<AdminRecommendationsPage />} />
               </Route>
             </Route>
           </Route>

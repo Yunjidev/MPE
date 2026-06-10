@@ -87,3 +87,26 @@ exports.deleteRecommendation = async (req, res) => {
     res.status(500).json({ errors: error.message });
   }
 };
+
+exports.getAllRecommendationsAdmin = async (req, res) => {
+  try {
+    const recommendations = await sequelize.models.Recommendation.findAll({
+      include: [
+        {
+          model: sequelize.models.User,
+          as: "user",
+          attributes: ["id", "username", "avatar"],
+        },
+        {
+          model: sequelize.models.Enterprise,
+          as: "enterprise",
+          attributes: ["id", "name", "slug"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(recommendations);
+  } catch (error) {
+    res.status(500).json({ errors: error.message });
+  }
+};
