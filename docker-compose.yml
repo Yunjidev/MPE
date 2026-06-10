@@ -35,7 +35,7 @@ services:
   # ── Backend Node.js ─────────────────────────────────────────────────────────
   backend:
     build:
-      context: ./MPE_back
+      context: ./proxilio_back
       dockerfile: Dockerfile
     container_name: proxilio-backend
     restart: unless-stopped
@@ -55,7 +55,7 @@ services:
   # ── Frontend React (nginx:alpine) ───────────────────────────────────────────
   frontend:
     build:
-      context: ./MPE_front
+      context: ./proxilio_front
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL}
