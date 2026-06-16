@@ -70,6 +70,14 @@ const Footer = () => {
                 <BsLinkedin size={17} />
               </a>
             </div>
+          <a
+            href="https://blfdeveloppement.fr/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#879f98] hover:text-white text-xs font-light tracking-tight transition-colors duration-200"
+          >
+            Site officiel réalisé par BLF DEVELOPPEMENT
+          </a>
         </div>
 
       </div>
