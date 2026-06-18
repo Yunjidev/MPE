@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { BsInstagram, BsFacebook, BsTwitterX, BsLinkedin } from "react-icons/bs";
+import { BsFacebook, BsTwitterX, BsLinkedin } from "react-icons/bs";
 
 const CONTACT_ITEMS = [
   {
@@ -96,10 +96,9 @@ export default function Contact() {
             <p className="text-[10px] uppercase tracking-widest text-[#879f98] font-light mb-4">Nous suivre</p>
             <div className="flex items-center gap-4">
               {[
-                { href: "https://www.instagram.com", icon: <BsInstagram size={17} />, label: "Instagram" },
-                { href: "https://www.facebook.com", icon: <BsFacebook size={17} />, label: "Facebook" },
-                { href: "https://twitter.com", icon: <BsTwitterX size={17} />, label: "X" },
-                { href: "https://www.linkedin.com", icon: <BsLinkedin size={17} />, label: "LinkedIn" },
+                { href: "https://www.facebook.com/profile.php?id=61590573535992", icon: <BsFacebook size={17} />, label: "Facebook" },
+                { href: "https://x.com/Proxilioapp", icon: <BsTwitterX size={17} />, label: "X" },
+                { href: "https://www.linkedin.com/company/proxilio-pro-et-particulier/", icon: <BsLinkedin size={17} />, label: "LinkedIn" },
               ].map(({ href, icon, label }) => (
                 <a
                   key={label}
