@@ -3,6 +3,11 @@ import { FiCalendar, FiClock } from "react-icons/fi";
 
 const formatDurationLabel = (minutes) => {
   const total = Number(minutes) || 0;
+  if (total === 0) return "Sur devis";
+  if (total >= 1440 && total % 1440 === 0) {
+    const d = total / 1440;
+    return `${d} jour${d > 1 ? "s" : ""}`;
+  }
   if (total >= 60) {
     const hours = Math.floor(total / 60);
     const remainder = total % 60;

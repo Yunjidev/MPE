@@ -9,3 +9,4 @@ uploads/
 .DS_Store
 pnpm-lock.yaml
 deploy_vps.py
+agents.md

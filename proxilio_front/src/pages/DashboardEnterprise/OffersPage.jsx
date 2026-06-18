@@ -9,11 +9,9 @@ function OfferModal({ offer, onClose, onSaved }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm px-4"
-      onClick={onClose}
     >
       <div
         className="w-full max-w-lg bg-white border border-black/5 rounded-2xl shadow-[0_20px_60px_-12px_rgba(0,0,0,0.15)] overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-black/5">
           <h2 className="text-[#132A24] font-light text-base">
@@ -33,8 +31,14 @@ function OfferModal({ offer, onClose, onSaved }) {
 }
 
 function formatDuration(minutes) {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
+  const val = Number(minutes);
+  if (!val || val === 0) return "Sur devis";
+  if (val >= 1440 && val % 1440 === 0) {
+    const d = val / 1440;
+    return `${d} jour${d > 1 ? "s" : ""}`;
+  }
+  const h = Math.floor(val / 60);
+  const m = val % 60;
   if (h > 0 && m > 0) return `${h}h${m}`;
   if (h > 0) return `${h}h`;
   return `${m} min`;

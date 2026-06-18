@@ -9,9 +9,9 @@ const offerValidationRules = (isUpdate = false) => {
       body("name")
         .notEmpty()
         .trim()
-        .isLength({ min: 3, max: 20 })
+        .isLength({ min: 3, max: 50 })
         .withMessage(
-          "Votre nom d'offre doit être compris entre 3 et 20 caractères",
+          "Le nom du service doit faire entre 3 et 50 caractères",
         ),
       body("description").bail().trim(),
       body("price")
@@ -24,9 +24,9 @@ const offerValidationRules = (isUpdate = false) => {
       body("name")
         .optional({ checkFalsy: true })
         .trim()
-        .isLength({ min: 3, max: 20 })
+        .isLength({ min: 3, max: 50 })
         .withMessage(
-          "Votre nom d'offre doit être compris entre 3 et 20 caractères",
+          "Le nom du service doit faire entre 3 et 50 caractères",
         ),
       body("description").optional({ checkFalsy: true }).trim(),
       body("price")
