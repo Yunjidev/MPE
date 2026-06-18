@@ -18,7 +18,7 @@ echo "▶ [2/5] Rebuild images Docker..."
 docker compose build --parallel
 
 echo "▶ [3/5] Migrations base de données..."
-docker compose run --rm backend npx sequelize-cli db:migrate --env production
+docker compose run --rm backend npx --yes sequelize-cli db:migrate --env production
 
 echo "▶ [4/5] Redémarrage services (rolling)..."
 docker compose up -d --no-deps prerender
