@@ -29,9 +29,12 @@ const storage = (folder) =>
   });
 
 const fileFilter = (req, file, cb) => {
-  const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-  if (allowed.includes(file.mimetype)) cb(null, true);
-  else cb(new Error("Format non supporté"));
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    console.error(`[fileFilter] Rejeté — field: ${file.fieldname}, mimetype: ${file.mimetype}, originalname: ${file.originalname}`);
+    cb(new Error(`Format non supporté : ${file.mimetype}`));
+  }
 };
 
 const upload = (folder) =>
