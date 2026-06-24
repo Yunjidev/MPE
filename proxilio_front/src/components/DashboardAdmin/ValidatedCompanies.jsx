@@ -8,6 +8,7 @@ import { getData, deleteData, patchData } from "../../services/data-fetch";
 import { addSubscription } from "./SubscriptionManagement/FunctionForSubscription";
 import { FaEdit, FaTrash, FaEye, FaPlusCircle, FaSearch, FaMapMarkerAlt, FaUserAlt, FaStar, FaBriefcase } from "react-icons/fa";
 import Modal from "./Modal";
+import EditEnterprise from "../Enterprise/EditEnterprise";
 import { toast } from "react-toastify";
 import Switch from "react-switch";
 
@@ -15,7 +16,7 @@ const ValidatedCompanies = () => {
   const [companies, setCompanies] = useState([]);
   const [filteredCompanies, setFilteredCompanies] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // (réservé si tu veux un modal d’édition plus tard)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [updatingPremiumId, setUpdatingPremiumId] = useState(null);
   const [premiumDurations, setPremiumDurations] = useState({});
@@ -326,6 +327,9 @@ const ValidatedCompanies = () => {
                       <button onClick={() => viewCompany(company)} className={primaryIconBtn} title="Voir la fiche">
                         <FaEye />
                       </button>
+                      <button onClick={() => { setSelectedCompany(company); setIsEditModalOpen(true); }} className={primaryIconBtn} title="Modifier l'entreprise">
+                        <FaEdit />
+                      </button>
                       <button onClick={() => { setSelectedCompany(company); setIsSubscriptionModalOpen(true); }} className={primaryIconBtn} title="Ajouter un abonnement">
                         <FaPlusCircle />
                       </button>
@@ -363,6 +367,17 @@ const ValidatedCompanies = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal édition entreprise (admin) */}
+      {isEditModalOpen && selectedCompany && (
+        <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} maxWidth="max-w-4xl">
+          <EditEnterprise
+            enterpriseId={selectedCompany.slug || selectedCompany.id}
+            onSave={() => setIsEditModalOpen(false)}
+            onClose={() => setIsEditModalOpen(false)}
+          />
+        </Modal>
+      )}
 
       {/* Modal confirmation suppression */}
       {isDeleteConfirmOpen && (
