@@ -24,6 +24,7 @@ import Contact from "./pages/contact/contact";
 import SearchEntreprise from "./pages/searchentreprises/SearchEntreprise";
 import ProfessionnelsByJob from "./pages/Professionnels/ProfessionnelsByJob";
 import ProfessionnelsByJobCity from "./pages/Professionnels/ProfessionnelsByJobCity";
+import ProfessionnelsByCity from "./pages/Professionnels/ProfessionnelsByCity";
 import BlogIndex from "./pages/Blog/BlogIndex";
 import BlogArticle from "./pages/Blog/BlogArticle";
 import AboutPage from "./pages/About/AboutPage";
@@ -129,6 +130,7 @@ function AppContent() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/professionnels" element={<SearchEntreprise />} />
+          <Route path="/professionnels/ville/:citySlug" element={<ProfessionnelsByCity />} />
           <Route path="/professionnels/:jobSlug/:citySlug" element={<ProfessionnelsByJobCity />} />
           <Route path="/professionnels/:jobSlug" element={<ProfessionnelsByJob />} />
           <Route path="/searchentreprise" element={<Navigate to="/professionnels" replace />} />

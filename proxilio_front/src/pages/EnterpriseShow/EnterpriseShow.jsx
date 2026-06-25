@@ -514,7 +514,7 @@ const EnterpriseShow = () => {
               <>
                 <span className="text-white/30">/</span>
                 <Link
-                  to={jobSlug ? `/professionnels/${jobSlug}?city=${encodeURIComponent(enterprise.city)}` : `/professionnels?city=${encodeURIComponent(enterprise.city)}`}
+                  to={`/professionnels/ville/${enterprise.city.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`}
                   className="hover:text-white hover:underline underline-offset-2 transition-colors"
                 >
                   {enterprise.city}

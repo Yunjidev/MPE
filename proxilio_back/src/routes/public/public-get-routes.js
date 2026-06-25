@@ -73,6 +73,10 @@ const byJobController = require("../../controllers/enterprises/by-job-controller
 router.get("/jobs-with-count",          byJobController.getJobsWithCount);
 router.get("/enterprises/by-job/:jobSlug", byJobController.getByJob);
 
+// Routes pages ville programmatiques
+const byCityController = require("../../controllers/enterprises/by-city-controller");
+router.get("/enterprises/by-city/:citySlug", byCityController.getByCity);
+
 // Routes Search
 router.get("/search", searchController.search);
 
