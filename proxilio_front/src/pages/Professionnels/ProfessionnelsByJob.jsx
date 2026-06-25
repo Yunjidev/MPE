@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { getData } from "../../services/data-fetch";
 import { FaStar } from "react-icons/fa";
@@ -15,6 +15,8 @@ function citySlug(city) {
 
 export default function ProfessionnelsByJob() {
   const { jobSlug } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const cityFilter = searchParams.get("city") || "";
   const [data, setData]     = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +32,10 @@ export default function ProfessionnelsByJob() {
   }, [jobSlug]);
 
   const jobName    = data?.jobName || slugToLabel(jobSlug);
-  const enterprises = data?.enterprises || [];
+  const allEnterprises = data?.enterprises || [];
+  const enterprises = cityFilter
+    ? allEnterprises.filter((e) => e.city?.toLowerCase() === cityFilter.toLowerCase())
+    : allEnterprises;
   const cities      = data?.cities || [];
 
   const title       = `${jobName} — Professionnels vérifiés | Proxilio`;
@@ -96,24 +101,41 @@ export default function ProfessionnelsByJob() {
         {/* Header */}
         <div>
           <h1 className="text-3xl font-light text-[#132A24] tracking-tight">
-            {jobName} <span className="text-[#879f98]">en France</span>
+            {jobName}{" "}
+            <span className="text-[#879f98]">{cityFilter ? `à ${cityFilter}` : "en France"}</span>
           </h1>
           <p className="mt-2 text-sm font-light text-[#879f98]">
             {loading ? "Chargement…" : `${enterprises.length} professionnel${enterprises.length > 1 ? "s" : ""} vérifié${enterprises.length > 1 ? "s" : ""} sur Proxilio`}
           </p>
         </div>
 
-        {/* Filtre villes */}
-        {cities.length > 1 && (
+        {/* Filtre ville actif */}
+        {cityFilter && (
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-light rounded-full bg-[#132A24] text-white">
+              📍 {cityFilter}
+              <button
+                onClick={() => setSearchParams({})}
+                className="hover:opacity-70 transition-opacity"
+                aria-label="Supprimer le filtre ville"
+              >
+                ✕
+              </button>
+            </span>
+          </div>
+        )}
+
+        {/* Filtre villes disponibles */}
+        {!cityFilter && cities.length > 1 && (
           <div className="flex flex-wrap gap-2">
             {cities.slice(0, 12).map((city) => (
-              <Link
+              <button
                 key={city}
-                to={`/professionnels/${jobSlug}/${citySlug(city)}`}
+                onClick={() => setSearchParams({ city })}
                 className="px-3 py-1.5 text-xs font-light rounded-full border border-black/10 text-[#132A24] hover:bg-[#eef5f1] transition-colors"
               >
                 {city}
-              </Link>
+              </button>
             ))}
           </div>
         )}

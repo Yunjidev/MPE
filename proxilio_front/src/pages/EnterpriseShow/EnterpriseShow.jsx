@@ -526,6 +526,9 @@ const EnterpriseShow = () => {
           </div>
         </div>
 
+        {/* Contenu centré — bannière et breadcrumb restent en pleine largeur */}
+        <div className="max-w-5xl mx-auto w-full">
+
         {/* Avatar centré — pointer-events-none sur le wrapper pour ne pas bloquer le breadcrumb */}
         <div className="flex justify-center -mt-12 relative z-10 pointer-events-none">
           {enterprise.logo ? (
@@ -765,6 +768,8 @@ const EnterpriseShow = () => {
           )}
 
         </div>
+
+        </div>{/* fin max-w-5xl */}
       </div>
 
       {/* ── Modals ── */}
