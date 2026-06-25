@@ -48,6 +48,7 @@ const EnterpriseShow = () => {
   const [claimCode, setClaimCode]       = useState("");
   const [claimMailHint, setClaimMailHint] = useState("");
   const [activeTab, setActiveTab]       = useState("about");
+  const [mapCoords, setMapCoords]       = useState(null);
 
   const fetchEnterprise = useCallback(async () => {
     try {
@@ -67,6 +68,20 @@ const EnterpriseShow = () => {
       navigate(`/enterprise/${enterprise.slug}`, { replace: true });
     }
   }, [enterprise, slug, navigate]);
+
+  useEffect(() => {
+    if (!enterprise) return;
+    const addr = [enterprise.adress, enterprise.city, enterprise.zip_code].filter(Boolean).join(", ");
+    if (!addr) return;
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1`, {
+      headers: { "Accept-Language": "fr", "User-Agent": "Proxilio/1.0" },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.[0]) setMapCoords({ lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) });
+      })
+      .catch(() => {});
+  }, [enterprise]);
 
   const handleBookingSuccess = useCallback(() => { fetchEnterprise(); }, [fetchEnterprise]);
   const openPopup  = (photo) => { setSelectedPhoto(photo); setIsPopupOpen(true); };
@@ -397,6 +412,38 @@ const EnterpriseShow = () => {
     </>
   );
 
+  const SidebarMap = () => {
+    if (!mapCoords) return null;
+    const { lat, lon } = mapCoords;
+    const delta = 0.008;
+    const bbox = `${lon - delta},${lat - delta},${lon + delta},${lat + delta}`;
+    const src  = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+    const link = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=15/${lat}/${lon}`;
+    return (
+      <div className="bg-white border border-black/5 rounded-2xl overflow-hidden shadow-[0_4px_16px_-8px_rgba(0,0,0,0.06)]">
+        <iframe
+          src={src}
+          width="100%"
+          height="200"
+          style={{ border: 0, display: "block" }}
+          title={`Localisation de ${enterprise.name}`}
+          loading="lazy"
+        />
+        <div className="px-4 py-2.5 border-t border-black/5">
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-[#879f98] hover:text-[#132A24] transition font-light flex items-center gap-1.5"
+          >
+            <FiMapPin className="text-xs" />
+            Voir sur OpenStreetMap
+          </a>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <Helmet>
@@ -439,33 +486,54 @@ const EnterpriseShow = () => {
       {/* ── Main layout ── */}
       <div className="pb-24 lg:pb-16 bg-white min-h-screen">
 
-        {/* Cover + avatar */}
-        <div className="relative">
-          <div className="h-48 sm:h-60 lg:h-72 overflow-hidden bg-[#eef5f1]">
-            {coverPhoto ? (
-              <img src={coverPhoto} alt={`${enterprise.name} — photo de couverture`}
-                className="w-full h-full object-cover cursor-pointer"
-                onClick={() => openPopup(coverPhoto)}
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-[#eef5f1] to-[#d4e6de]" />
-            )}
-          </div>
+        {/* Cover — pleine largeur */}
+        <div className="h-52 sm:h-64 lg:h-80 overflow-hidden bg-[#eef5f1]">
+          {coverPhoto ? (
+            <img
+              src={coverPhoto}
+              alt={`${enterprise.name} — photo de couverture`}
+              className="w-full h-full object-cover cursor-pointer"
+              onClick={() => openPopup(coverPhoto)}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#eef5f1] to-[#d4e6de]" />
+          )}
+        </div>
 
-          {/* Avatar centré sur la bordure basse de la cover */}
-          <div className="absolute bottom-0 translate-y-1/2 inset-x-0 flex justify-center z-10">
-            {enterprise.logo ? (
-              <img src={enterprise.logo} alt={`Logo ${enterprise.name}`}
-                className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white object-cover shadow-lg"
-              />
-            ) : (
-              <div className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white bg-[#f5f7f6] shadow-lg flex items-center justify-center">
-                <span className="text-[#132A24] text-3xl lg:text-4xl font-light">
-                  {enterprise.name?.[0]?.toUpperCase()}
-                </span>
-              </div>
+        {/* Bandeau vert — breadcrumb */}
+        <div className="bg-[#132A24] py-2.5 px-4">
+          <div className="max-w-5xl mx-auto flex items-center gap-1.5 text-xs font-light text-white/60 flex-wrap">
+            <Link to="/" className="hover:text-white transition-colors">Accueil</Link>
+            {jobSlug && enterprise.job?.name && (
+              <>
+                <span className="text-white/30">/</span>
+                <Link to={`/professionnels/${jobSlug}`} className="hover:text-white transition-colors">{enterprise.job.name}</Link>
+              </>
             )}
+            {enterprise.city && (
+              <>
+                <span className="text-white/30">/</span>
+                <span className="text-white/60">{enterprise.city}</span>
+              </>
+            )}
+            <span className="text-white/30">/</span>
+            <span className="text-white truncate max-w-[200px]">{enterprise.name}</span>
           </div>
+        </div>
+
+        {/* Avatar centré */}
+        <div className="flex justify-center -mt-12 relative z-10">
+          {enterprise.logo ? (
+            <img src={enterprise.logo} alt={`Logo ${enterprise.name}`}
+              className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white object-cover shadow-lg"
+            />
+          ) : (
+            <div className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white bg-[#f5f7f6] shadow-lg flex items-center justify-center">
+              <span className="text-[#132A24] text-3xl lg:text-4xl font-light">
+                {enterprise.name?.[0]?.toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Identity */}
@@ -564,6 +632,7 @@ const EnterpriseShow = () => {
                 {/* Contact + extras inline sur mobile uniquement */}
                 <div className="lg:hidden space-y-4 pt-2">
                   <SidebarContact />
+                  <SidebarMap />
                   <SidebarExtras />
                 </div>
               </div>
@@ -571,6 +640,7 @@ const EnterpriseShow = () => {
               {/* Sidebar — desktop uniquement */}
               <aside className="hidden lg:flex flex-col gap-4">
                 <SidebarContact />
+                <SidebarMap />
                 <SidebarExtras />
               </aside>
             </div>
