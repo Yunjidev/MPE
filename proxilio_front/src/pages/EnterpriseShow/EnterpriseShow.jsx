@@ -464,7 +464,7 @@ const EnterpriseShow = () => {
 
       {/* Claim banner */}
       {enterprise.is_public_listing && !enterprise.is_claimed && (
-        <div className="max-w-5xl mx-auto px-4 mt-4">
+        <div className="px-6 lg:px-10 mt-4">
           <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex items-start gap-3 flex-1">
               <span className="text-amber-500 text-xl shrink-0 mt-0.5">🟡</span>
@@ -500,35 +500,40 @@ const EnterpriseShow = () => {
           )}
         </div>
 
-        {/* Bandeau vert — breadcrumb (z-20 pour rester cliquable au-dessus de l'avatar) */}
-        <div className="bg-[#132A24] py-2.5 px-4 relative z-20">
-          <div className="flex items-center gap-1.5 text-xs font-light text-white/60 flex-wrap px-2 lg:px-6">
-            <Link to="/" className="hover:text-white underline-offset-2 hover:underline transition-colors">Accueil</Link>
+        {/* Bandeau vert — breadcrumb */}
+        <div className="bg-[#132A24] py-2.5 px-6 lg:px-10">
+          <div className="flex items-center gap-1.5 text-xs font-light text-white/60 flex-wrap">
+            <Link to="/" className="hover:text-white hover:underline underline-offset-2 transition-colors">Accueil</Link>
             {jobSlug && enterprise.job?.name && (
               <>
                 <span className="text-white/30">/</span>
-                <Link to={`/professionnels/${jobSlug}`} className="hover:text-white underline-offset-2 hover:underline transition-colors">{enterprise.job.name}</Link>
+                <Link to={`/professionnels/${jobSlug}`} className="hover:text-white hover:underline underline-offset-2 transition-colors">{enterprise.job.name}</Link>
               </>
             )}
             {enterprise.city && (
               <>
                 <span className="text-white/30">/</span>
-                <span className="text-white/60">{enterprise.city}</span>
+                <Link
+                  to={jobSlug ? `/professionnels/${jobSlug}?city=${encodeURIComponent(enterprise.city)}` : `/professionnels?city=${encodeURIComponent(enterprise.city)}`}
+                  className="hover:text-white hover:underline underline-offset-2 transition-colors"
+                >
+                  {enterprise.city}
+                </Link>
               </>
             )}
             <span className="text-white/30">/</span>
-            <span className="text-white truncate max-w-[200px]">{enterprise.name}</span>
+            <span className="text-white">{enterprise.name}</span>
           </div>
         </div>
 
-        {/* Avatar centré */}
-        <div className="flex justify-center -mt-12 relative z-10">
+        {/* Avatar centré — pointer-events-none sur le wrapper pour ne pas bloquer le breadcrumb */}
+        <div className="flex justify-center -mt-12 relative z-10 pointer-events-none">
           {enterprise.logo ? (
             <img src={enterprise.logo} alt={`Logo ${enterprise.name}`}
-              className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white object-cover shadow-lg"
+              className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white object-cover shadow-lg pointer-events-auto"
             />
           ) : (
-            <div className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white bg-[#f5f7f6] shadow-lg flex items-center justify-center">
+            <div className="h-24 w-24 lg:h-32 lg:w-32 rounded-full border-4 border-white bg-[#f5f7f6] shadow-lg flex items-center justify-center pointer-events-auto">
               <span className="text-[#132A24] text-3xl lg:text-4xl font-light">
                 {enterprise.name?.[0]?.toUpperCase()}
               </span>
@@ -537,7 +542,7 @@ const EnterpriseShow = () => {
         </div>
 
         {/* Identity */}
-        <div className="max-w-2xl mx-auto px-4 pt-16 lg:pt-20 text-center">
+        <div className="px-6 lg:px-10 pt-16 lg:pt-20 text-center">
           {enterprise.isPremium && (
             <span className="inline-flex mb-2 px-3 py-1 rounded-full text-xs font-light bg-[#132A24] text-white">
               ★ Premium
