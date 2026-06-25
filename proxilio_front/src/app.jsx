@@ -106,7 +106,9 @@ function AppContent() {
   useEffect(() => {
     setIsDashboardRoute(location.pathname.startsWith("/dashboard"));
     setIsFullWidthRoute(
-      location.pathname === "/" || location.pathname === "/professionnels"
+      location.pathname === "/" ||
+      location.pathname === "/professionnels" ||
+      location.pathname.startsWith("/enterprise/")
     );
   }, [location.pathname]);
 
