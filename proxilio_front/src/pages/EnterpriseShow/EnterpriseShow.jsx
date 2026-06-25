@@ -500,14 +500,14 @@ const EnterpriseShow = () => {
           )}
         </div>
 
-        {/* Bandeau vert — breadcrumb */}
-        <div className="bg-[#132A24] py-2.5 px-4">
-          <div className="max-w-5xl mx-auto flex items-center gap-1.5 text-xs font-light text-white/60 flex-wrap">
-            <Link to="/" className="hover:text-white transition-colors">Accueil</Link>
+        {/* Bandeau vert — breadcrumb (z-20 pour rester cliquable au-dessus de l'avatar) */}
+        <div className="bg-[#132A24] py-2.5 px-4 relative z-20">
+          <div className="flex items-center gap-1.5 text-xs font-light text-white/60 flex-wrap px-2 lg:px-6">
+            <Link to="/" className="hover:text-white underline-offset-2 hover:underline transition-colors">Accueil</Link>
             {jobSlug && enterprise.job?.name && (
               <>
                 <span className="text-white/30">/</span>
-                <Link to={`/professionnels/${jobSlug}`} className="hover:text-white transition-colors">{enterprise.job.name}</Link>
+                <Link to={`/professionnels/${jobSlug}`} className="hover:text-white underline-offset-2 hover:underline transition-colors">{enterprise.job.name}</Link>
               </>
             )}
             {enterprise.city && (
@@ -597,7 +597,7 @@ const EnterpriseShow = () => {
         </div>
 
         {/* Tab navigation */}
-        <div className="max-w-5xl mx-auto px-4 mt-8 lg:mt-10">
+        <div className="px-4 lg:px-8 mt-8 lg:mt-10">
           <div className="flex border-b border-black/5 overflow-x-auto scrollbar-none">
             {tabs.map((tab) => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
@@ -613,7 +613,7 @@ const EnterpriseShow = () => {
         </div>
 
         {/* Tab content */}
-        <div className="max-w-5xl mx-auto px-4 py-6 lg:py-10">
+        <div className="px-4 lg:px-8 py-6 lg:py-10">
 
           {/* ── À propos ── */}
           {activeTab === "about" && (
